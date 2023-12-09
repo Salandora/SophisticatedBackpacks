@@ -1,0 +1,30 @@
+{
+    "added": [
+        "sophisticatedbackpacks:stack_upgrade_tier_1",
+        "sophisticatedbackpacks:blasting_upgrade",
+        "sophisticatedbackpacks:smelting_upgrade",
+        "sophisticatedbackpacks:magnet_upgrade",
+        "sophisticatedbackpacks:deposit_upgrade",
+        "sophisticatedbackpacks:restock_upgrade",
+        "sophisticatedbackpacks:refill_upgrade",
+        "sophisticatedbackpacks:stack_upgrade_tier_2",
+        "sophisticatedbackpacks:diamond_backpack",
+        "sophisticatedbackpacks:backpack",
+        "sophisticatedbackpacks:gold_backpack",
+        "sophisticatedbackpacks:stack_upgrade_tier_3",
+        "sophisticatedbackpacks:tool_swapper_upgrade",
+        "sophisticatedbackpacks:pickup_upgrade",
+        "sophisticatedbackpacks:feeding_upgrade",
+        "sophisticatedbackpacks:compacting_upgrade",
+        "sophisticatedbackpacks:smoking_upgrade",
+        "sophisticatedbackpacks:void_upgrade",
+        "sophisticatedbackpacks:advanced_pump_upgrade",
+        "sophisticatedbackpacks:filter_upgrade",
+        "sophisticatedbackpacks:pump_upgrade",
+        "sophisticatedbackpacks:upgrade_base",
+        "sophisticatedbackpacks:iron_backpack"
+    ],
+    "tags": {
+        "#item:c:chests": "item:minecraft:chest"
+    }
+}
