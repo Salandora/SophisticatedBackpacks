@@ -49,7 +49,7 @@ public class SmithingBackpackUpgradeRecipe extends LegacyUpgradeRecipe implement
 	}
 
 	private Optional<ItemStack> getBackpack(Container inv) {
-		ItemStack slotStack = inv.getItem(1);
+		ItemStack slotStack = inv.getItem(0);
 		if (slotStack.getItem() instanceof BackpackItem) {
 			return Optional.of(slotStack);
 		}
