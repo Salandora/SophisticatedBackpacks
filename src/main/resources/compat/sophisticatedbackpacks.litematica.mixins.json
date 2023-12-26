@@ -1,0 +1,14 @@
+{
+    "required": true,
+    "priority": 1100,
+    "compatibilityLevel": "JAVA_17",
+    "minVersion": "0.8",
+    "package": "net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica.mixin",
+    "plugin": "net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica.LitematicaMixinPlugin",
+    "mixins": [
+        "MaterialListUtilsMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

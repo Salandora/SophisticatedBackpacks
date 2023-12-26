@@ -40,7 +40,10 @@
             "net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REIClientCompat"
         ]
     },
-    "mixins": ["sophisticatedbackpacks.mixins.json"],
+    "mixins": [
+        "sophisticatedbackpacks.mixins.json",
+        "compat/sophisticatedbackpacks.litematica.mixins.json"
+    ],
     "accessWidener": "sophisticatedbackpacks.accesswidener",
     "depends": {
         "fabricloader": ">=${loader_version}",

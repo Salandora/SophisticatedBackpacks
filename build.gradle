@@ -70,14 +70,14 @@ repositories {
     maven { url = "https://modmaven.dev" } // Jei
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
     maven { url = "https://www.cursemaven.com" } // Balm, CraftingTweaks
-/*    maven {
+    maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Salandora/sophisticatedbackpacks")
+        url = uri("https://maven.pkg.github.com/Salandora/sophisticatedcore")
         credentials {
             username = System.getenv("USERNAME")
             password = System.getenv("READ_PACKAGES_TOKEN")
         }
-    }*/
+    }
 }
 
 configurations.configureEach {
@@ -116,6 +116,7 @@ def devEnv(DependencyHandler deps) {
     deps.modLocalRuntime("curse.maven:balm-500525:$balm_cf_file_id")
     deps.modLocalRuntime("curse.maven:craftingtweaks-502516:$crafting_tweaks_cf_file_id")
     deps.modLocalRuntime("com.terraformersmc:modmenu:$modmenu_version")
+
     // deps.modLocalRuntime("vazkii.botania:Botania:$botania_version")
     // deps.modLocalRuntime("vazkii.patchouli:Patchouli:$patchouli_version")
 }
@@ -143,6 +144,9 @@ def dependencies(DependencyHandler deps) {
 
 def compat(DependencyHandler deps) {
     deps.modCompileOnly("com.terraformersmc:modmenu:$modmenu_version")
+
+    deps.modImplementation("curse.maven:malilib-303119:$malilib_cf_file_id")
+    deps.modImplementation("curse.maven:litematica-308892:$litematica_cf_file_id")
 
     /*compileOnly fg.deobf("curse.maven:chipped-456956:${chipped_cf_file_id}")
     runtimeOnly fg.deobf("curse.maven:chipped-456956:${chipped_cf_file_id}")
