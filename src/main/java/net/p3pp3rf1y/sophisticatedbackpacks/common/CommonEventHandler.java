@@ -230,7 +230,7 @@ public class CommonEventHandler {
 		try(Transaction ctx = Transaction.openOuter()) {
 			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
 					.map(wrapper -> {
-						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(world, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
+						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(world, player, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
 						return remainingStack.get().isEmpty();
 					}).orElse(false), Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
 			);
