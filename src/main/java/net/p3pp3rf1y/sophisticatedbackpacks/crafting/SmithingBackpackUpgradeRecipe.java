@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
-import io.github.fabricators_of_create.porting_lib.util.LogicalSidedProvider;
-import net.fabricmc.api.EnvType;
+import io.github.fabricators_of_create.porting_lib.util.ServerLifecycleHooks;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -37,7 +36,7 @@ public class SmithingBackpackUpgradeRecipe extends LegacyUpgradeRecipe implement
 	@Override
 	public ItemStack assemble(Container inventory, RegistryAccess registryManager) {
 		ItemStack upgradedBackpack = result.copy();
-		if (LogicalSidedProvider.WORKQUEUE.get(EnvType.SERVER).isSameThread()) {
+		if (ServerLifecycleHooks.getCurrentServer() != null && ServerLifecycleHooks.getCurrentServer().isSameThread()) {
 			getBackpack(inventory).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
 			BackpackWrapperLookup.get(upgradedBackpack)
 					.ifPresent(wrapper -> {

@@ -1,8 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
-import io.github.fabricators_of_create.porting_lib.util.LogicalSidedProvider;
 import io.github.fabricators_of_create.porting_lib.util.ServerLifecycleHooks;
-import net.fabricmc.api.EnvType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
@@ -33,7 +31,7 @@ public class BackpackStorage extends SavedData {
 	private BackpackStorage() {}
 
 	public static BackpackStorage get() {
-		if (LogicalSidedProvider.WORKQUEUE.get(EnvType.SERVER).isSameThread()) {
+		if (ServerLifecycleHooks.getCurrentServer() != null && ServerLifecycleHooks.getCurrentServer().isSameThread()) {
 			MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 			if (server != null) {
 				ServerLevel overworld = server.getLevel(Level.OVERWORLD);
