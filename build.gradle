@@ -132,7 +132,7 @@ def dependencies(DependencyHandler deps) {
             deps.modImplementation("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version")
         }
     } else {
-        deps.modImplementation("net.p3pp3rf1y:sophisticatedcore-fabric:${sc_version}")
+        deps.modImplementation("com.github.salandora:sophisticatedcore-fabric:${sc_version}")
     }
 
     deps.modImplementation("committee.nova.mkb.fabric:mkb-${minecraft_version}:${mkb_mod_version}")
