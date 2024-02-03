@@ -25,7 +25,7 @@ import java.util.List;
 
 @Mixin(MaterialListUtils.class)
 public class MaterialListUtilsMixin {
-	@Inject(method = "getMaterialList", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/Object2IntOpenHashMap;keySet()Lit/unimi/dsi/fastutil/objects/ObjectSet;"), locals = LocalCapture.CAPTURE_FAILHARD)
+	@Inject(method = "getMaterialList", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/Object2IntOpenHashMap;keySet()Lit/unimi/dsi/fastutil/objects/ObjectSet;", remap = false), locals = LocalCapture.CAPTURE_FAILHARD)
 	private static void sophisticatedBackpacks$injectTrinketBackpacks(Object2IntOpenHashMap<BlockState> countsTotal, Object2IntOpenHashMap<BlockState> countsMissing, Object2IntOpenHashMap<BlockState> countsMismatch, Player player, CallbackInfoReturnable<List<MaterialListEntry>> cir,
 			List<MaterialListEntry> list, MaterialCache cache, Object2IntOpenHashMap<ItemType> itemTypesTotal, Object2IntOpenHashMap<ItemType> itemTypesMissing, Object2IntOpenHashMap<ItemType> itemTypesMismatch, Object2IntOpenHashMap<ItemType> playerInvItems) {
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
