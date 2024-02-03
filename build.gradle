@@ -14,7 +14,7 @@ plugins {
     id "fabric-loom" version "1.5-SNAPSHOT"
 
     id "io.github.p03w.machete" version "1.+" // automatic jar compressing on build
-    id "org.sonarqube" version "4.3.1.3277"
+//    id "org.sonarqube" version "4.3.1.3277"
 
     id "maven-publish"
 }
@@ -361,12 +361,12 @@ publishing {
     }
 }
 
-sonarqube {
-    properties {
-        property "sonar.projectName", "${mod_id}"
-        property "sonar.projectKey", "${sonar_project_key}"
-    }
-}
+//sonarqube {
+//    properties {
+//        property "sonar.projectName", "${mod_id}"
+//        property "sonar.projectKey", "${sonar_project_key}"
+//    }
+//}
 
 task printVersionName {
     println "version:" + project.version
