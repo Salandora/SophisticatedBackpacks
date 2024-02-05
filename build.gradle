@@ -1,15 +1,3 @@
-//file:noinspection GrMethodMayBeStatic
-buildscript {
-    repositories {
-        maven { url = "https://plugins.gradle.org/m2/" }
-        maven { url = "https://maven.fabricmc.net/" }
-        maven { url = "https://server.bbkr.space/artifactory/libs-release/" }
-        maven { url = "https://maven.quiltmc.org/repository/release" }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
 plugins {
     id "fabric-loom" version "1.5-SNAPSHOT"
 
@@ -72,7 +60,15 @@ repositories {
     maven { url = "https://www.cursemaven.com" } // Balm, CraftingTweaks
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Salandora/sophisticatedcore")
+        url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
+        credentials {
+            username = System.getenv("USERNAME")
+            password = System.getenv("READ_PACKAGES_TOKEN")
+        }
+    }
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Salandora/Porting-Lib")
         credentials {
             username = System.getenv("USERNAME")
             password = System.getenv("READ_PACKAGES_TOKEN")
@@ -267,25 +263,7 @@ test {
 }
 test.dependsOn("processResources")
 
-tasks.named('jar', Jar).configure {
-    from('/') {
-        include 'LICENSE'
-    }
-
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : "p3pp3rf1y",
-                'Specification-Version'   : '1', // We are version 1 of ourselves
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : "p3pp3rf1y",
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-}
-
-if (project.tasks.findByName("generateResources")) {
+if (project.tasks.named("generateResources")) {
     generateResources.dependsOn runDatagen
 }
 
@@ -317,7 +295,6 @@ tasks.withType(ProcessResources).configureEach {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = 'UTF-8'
     it.options.release = 17
 }
 
@@ -326,6 +303,24 @@ java {
 
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.named('jar', Jar).configure {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}"}
+    }
+
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : "p3pp3rf1y",
+                'Specification-Version'   : '1', // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : "p3pp3rf1y",
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 }
 
 static def getBuildNumber() {
@@ -354,9 +349,25 @@ publishing {
         }
     }
     publications {
-        gpr(MavenPublication) {
-            artifactId = base.archivesName.get()
-            from(components.java)
+        mavenJava(MavenPublication) {
+            artifact(remapJar) {
+                builtBy(remapJar)
+            }
+
+            artifact(sourcesJar) {
+                builtBy(remapSourcesJar)
+            }
+
+            pom.withXml {
+                def depsNode = asNode().appendNode("dependencies")
+                subprojects.each {
+                    def depNode = depsNode.appendNode("dependency")
+                    depNode.appendNode("groupId", it.group)
+                    depNode.appendNode("artifactId", it.name)
+                    depNode.appendNode("version", it.version)
+                    depNode.appendNode("scope", "compile")
+                }
+            }
         }
     }
 }
@@ -368,6 +379,6 @@ publishing {
 //    }
 //}
 
-task printVersionName {
+tasks.register('printVersionName') {
     println "version:" + project.version
 }
