@@ -1,15 +1,15 @@
 plugins {
     id "fabric-loom" version "1.5-SNAPSHOT"
 
-    id "io.github.p03w.machete" version "1.+" // automatic jar compressing on build
+    id "io.github.p03w.machete" version "2.0.1" // automatic jar compressing on build
 //    id "org.sonarqube" version "4.3.1.3277"
 
     id "maven-publish"
 }
 
-if (findProject(':SophisticatedCore') != null) {
+/*if (findProject(':SophisticatedCore') != null) {
     evaluationDependsOn(':SophisticatedCore')
-}
+}*/
 
 group = mod_group_id
 version = "${project.minecraft_version}-${project.mod_version}.${getBuildNumber()}${getStable()}"
@@ -21,6 +21,29 @@ base {
 repositories {
     mavenLocal()
     mavenCentral()
+
+    exclusiveContent {
+        forRepositories(
+            maven {
+                url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
+                credentials {
+                    username = System.getenv("REPO_USERNAME")
+                    password = System.getenv("READ_PACKAGES_TOKEN")
+                }
+            },
+            maven {
+                url = uri("https://maven.pkg.github.com/Salandora/Porting-Lib")
+                credentials {
+                    username = System.getenv("REPO_USERNAME")
+                    password = System.getenv("READ_PACKAGES_TOKEN")
+                }
+            }
+        )
+        filter {
+            includeGroup "com.github.salandora"
+            includeGroup "io.github.fabricators_of_create.Porting-Lib"
+        }
+    }
 
     maven { url = "https://maven.quiltmc.org/repository/release" } // QM
     maven { url = 'https://maven.parchmentmc.org' } // Parchment
@@ -58,22 +81,6 @@ repositories {
     maven { url = "https://modmaven.dev" } // Jei
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
     maven { url = "https://www.cursemaven.com" } // Balm, CraftingTweaks
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
-        credentials {
-            username = System.getenv("USERNAME")
-            password = System.getenv("READ_PACKAGES_TOKEN")
-        }
-    }
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Salandora/Porting-Lib")
-        credentials {
-            username = System.getenv("USERNAME")
-            password = System.getenv("READ_PACKAGES_TOKEN")
-        }
-    }
 }
 
 configurations.configureEach {
@@ -120,21 +127,23 @@ def devEnv(DependencyHandler deps) {
 def dependencies(DependencyHandler deps) {
     deps.modImplementation("net.fabricmc.fabric-api:fabric-api:$fabric_version")
 
+    for (def module in port_lib_modules.split(',')) {
+        deps.modApi(deps.include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
+    }
+
     if (findProject(':SophisticatedCore') != null) {
         deps.implementation(deps.project(path: ':SophisticatedCore', configuration: 'namedElements'))
-
-        def modules = project(':SophisticatedCore')['port_lib_modules'].split(',')
-        for (def module in modules) {
-            deps.modImplementation("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version")
-        }
     } else {
         deps.modImplementation("com.github.salandora:sophisticatedcore-fabric:${sc_version}")
     }
 
-    deps.modImplementation("committee.nova.mkb.fabric:mkb-${minecraft_version}:${mkb_mod_version}")
+    deps.modImplementation("committee.nova.mkb.fabric:mkb-${minecraft_version}:${mkb_mod_version}") {
+        transitive = false
+    }
 
-    for (def module in port_lib_modules.split(',')) {
-        deps.include(deps.modApi("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
+    deps.modApi("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$forge_config_api_port_version")
+    deps.modApi("teamreborn:energy:$energy_version") {
+        transitive = false
     }
 }
 
@@ -263,21 +272,33 @@ test {
 }
 test.dependsOn("processResources")
 
-if (project.tasks.named("generateResources")) {
+tasks.register("generateResources") {
+    group = "fabric"
     generateResources.dependsOn runDatagen
 }
 
 machete {
     enabled = System.getenv("GITHUB_RUN_NUMBER") != null
+    json.enabled = false
+    finalizeAfter = ""
+    ignoredTasks.add("jar")
+    additionalTasks.add("remapJar")
 }
+
+tasks.remapJar.finalizedBy('optimizeOutputsOfRemapJar')
+
+tasks.register('optimizedJar') {
+    dependsOn 'optimizeOutputsOfRemapJar'
+}
+tasks.build.dependsOn optimizedJar
 
 tasks.withType(ProcessResources).configureEach {
     exclude '.cache'
 
     var replaceProperties = [
-            mod_id           : mod_id,
-            mod_version      : mod_version,
-            mod_full_version : "${project.mod_version}.${getBuildNumber()}${getStable()}",
+            mod_id           : project.mod_id,
+            mod_version      : project.mod_version,
+            mod_full_version : version,
             minecraft_version: minecraft_version,
             loader_version   : loader_version,
             fabric_version   : fabric_version,
@@ -332,7 +353,7 @@ static def getBuildNumber() {
 
 static def getStable() {
     if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev")) {
-        return "-SNAPSHOT"
+        return "-alpha"
     }
     return ""
 }
@@ -350,8 +371,12 @@ publishing {
     }
     publications {
         mavenJava(MavenPublication) {
+            afterEvaluate {
+                artifactId = project.base.archivesName.get()
+            }
+
             artifact(remapJar) {
-                builtBy(remapJar)
+                builtBy(tasks.named('optimizedJar'))
             }
 
             artifact(sourcesJar) {

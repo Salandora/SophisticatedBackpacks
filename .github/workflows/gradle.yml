@@ -27,22 +27,29 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         env:
-          USERNAME: ${{ secrets.USERNAME }}
+          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
           READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: ./gradlew build
+          command: ./gradlew check build
       - name: Publish to Github Packages
         if: ${{ matrix.java == '21' }} # Only upload artifacts built from latest java
         env:
+          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+          READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew build publish
+        run: ./gradlew publish
+      - name: Capture build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Artifacts
+          path: build/libs/
       - name: Cleanup old artifacts
         uses: actions/delete-package-versions@v3
         with:
-          package-name: 'sophisticatedbackpacks.sophisticatedbackpacks'
+          package-name: 'com.github.salandora.sophisticatedbackpacks-fabric'
           min-versions-to-keep: 10
 #      - name: Code Quality
 #        env:
