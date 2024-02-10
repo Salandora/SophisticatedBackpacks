@@ -269,6 +269,8 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
+
+    workingDir "run/test_client"
 }
 test.dependsOn("processResources")
 
