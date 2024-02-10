@@ -134,7 +134,7 @@ def dependencies(DependencyHandler deps) {
     if (findProject(':SophisticatedCore') != null) {
         deps.implementation(deps.project(path: ':SophisticatedCore', configuration: 'namedElements'))
     } else {
-        deps.modImplementation("com.github.salandora:sophisticatedcore-fabric:${sc_version}")
+        deps.modImplementation("com.github.salandora:sophisticatedcore:${sc_version}")
     }
 
     deps.modImplementation("committee.nova.mkb.fabric:mkb-${minecraft_version}:${mkb_mod_version}") {

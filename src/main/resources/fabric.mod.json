@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "sophisticatedbackpacks-fabric",
+    "id": "sophisticatedbackpacks",
     "version": "${mod_full_version}",
     "name": "Sophisticated Backpacks",
     "description": "Fancy and functional backpacks.",
@@ -49,7 +49,7 @@
         "fabricloader": ">=${loader_version}",
         "fabric-api": ">=${fabric_version}",
         "minecraft": "${minecraft_version}",
-        "sophisticatedcore-fabric": ">=${sc_version}",
+        "sophisticatedcore": ">=${sc_version}",
         "mkb": "${mkb_version}",
         "porting_lib_loot": ">=${port_lib_loot_version}",
         "porting_lib_model_loader": ">=${port_lib_model_loader_version}",
