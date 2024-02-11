@@ -1,0 +1,30 @@
+name: Release
+on: [workflow_dispatch] # Manual trigger
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    container:
+      image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
+      options: --user root
+    steps:
+      - run: apt update && apt install git -y && git --version
+      - run: git config --global --add safe.directory /__w/sophisticated/sophisticated
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gradle/wrapper-validation-action@v1
+      - env:
+          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+          READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew build publish --stacktrace -Porg.gradle.parallel.threads=4
+      - name: Cleanup old artifacts
+        uses: actions/delete-package-versions@v3
+        with:
+          package-name: 'com.github.salandora.sophisticatedbackpacks'
+          min-versions-to-keep: 50
