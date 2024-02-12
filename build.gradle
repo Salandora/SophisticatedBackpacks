@@ -7,12 +7,12 @@ plugins {
     id "maven-publish"
 }
 
-/*if (findProject(':SophisticatedCore') != null) {
+if (findProject(':SophisticatedCore') != null) {
     evaluationDependsOn(':SophisticatedCore')
-}*/
+}
 
 group = mod_group_id
-version = "${project.minecraft_version}-${project.mod_version}.${getBuildNumber()}${getStable()}"
+version = "${project.minecraft_version}-${project.mod_version}${getStable()}${getBuildNumber()}"
 
 base {
     archivesName = project.mod_id
@@ -280,7 +280,7 @@ tasks.register("generateResources") {
 }
 
 machete {
-    enabled = System.getenv("GITHUB_RUN_NUMBER") != null
+//    enabled = System.getenv("GITHUB_RUN_NUMBER") != null
     json.enabled = false
     finalizeAfter = ""
     ignoredTasks.add("jar")
@@ -298,17 +298,17 @@ tasks.withType(ProcessResources).configureEach {
     exclude '.cache'
 
     var replaceProperties = [
-            mod_id           : project.mod_id,
-            mod_version      : project.mod_version,
-            mod_full_version : version,
-            minecraft_version: minecraft_version,
-            loader_version   : loader_version,
-            fabric_version   : fabric_version,
-            sc_version       : project.sc_version,
-            mkb_version      : project.mkb_mod_version
+            mod_id              : project.mod_id,
+            mod_version         : "${project.mod_version}${getStable()}${getBuildNumber()}+mc${project.minecraft_version}",
+            minecraft_version   : minecraft_version,
+            loader_version      : loader_version,
+            fabric_version      : fabric_version,
+            sc_version          : project.sc_fabric_version,
+            mkb_version         : project.mkb_mod_version,
+            forge_config_version: project.forge_config_api_port_version,
+            energy_version      : project.energy_version,
+            port_lib_version    : project.port_lib_version
     ]
-    for (String module in port_lib_modules.split(","))
-        replaceProperties.put("port_lib_${module.trim()}_version".toString(), port_lib_version)
 
     inputs.properties replaceProperties
 
@@ -348,14 +348,14 @@ tasks.named('jar', Jar).configure {
 
 static def getBuildNumber() {
     if (System.getenv("GITHUB_RUN_NUMBER") != null) {
-        return System.getenv("GITHUB_RUN_NUMBER").toString()
+        return "." + System.getenv("GITHUB_RUN_NUMBER").toString()
     }
     return ""
 }
 
 static def getStable() {
     if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev")) {
-        return "-alpha"
+        return "-SNAPSHOT"
     }
     return ""
 }

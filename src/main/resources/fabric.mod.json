@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "sophisticatedbackpacks",
-    "version": "${mod_full_version}",
+    "version": "${mod_version}",
     "name": "Sophisticated Backpacks",
     "description": "Fancy and functional backpacks.",
     "license": "GNU General Public License v3.0",
@@ -50,10 +50,16 @@
         "fabric-api": ">=${fabric_version}",
         "minecraft": "${minecraft_version}",
         "sophisticatedcore": ">=${sc_version}",
-        "mkb": "${mkb_version}",
-        "porting_lib_loot": ">=${port_lib_loot_version}",
-        "porting_lib_model_loader": ">=${port_lib_model_loader_version}",
-        "porting_lib_tool_actions": ">=${port_lib_tool_actions_version}"
+        "mkb": ">=${mkb_version}",
+        "forgeconfigapiport": ">=${forge_config_version}",
+        "team_reborn_energy": ">=${energy_version}",
+        "porting_lib_loot": ">=${port_lib_version}",
+        "porting_lib_model_loader": ">=${port_lib_version}",
+        "porting_lib_tool_actions": ">=${port_lib_version}",
+        "porting_lib_networking": ">=${port_lib_version}",
+        "porting_lib_transfer": ">=${port_lib_version}",
+        "porting_lib_tags": ">=${port_lib_version}",
+        "porting_lib_utility": ">=${port_lib_version}"
     },
     "suggests": {
         "modmenu": "*"
