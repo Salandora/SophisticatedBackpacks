@@ -58,8 +58,7 @@
         "porting_lib_tool_actions": ">=${port_lib_version}",
         "porting_lib_networking": ">=${port_lib_version}",
         "porting_lib_transfer": ">=${port_lib_version}",
-        "porting_lib_tags": ">=${port_lib_version}",
-        "porting_lib_utility": ">=${port_lib_version}"
+        "porting_lib_tags": ">=${port_lib_version}"
     },
     "suggests": {
         "modmenu": "*"

@@ -5,9 +5,8 @@
     "package": "net.p3pp3rf1y.sophisticatedbackpacks.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "CreeperMixin",
-        "PiglinAiMixin",
-        "PlayerInventoryMixin"
+        "CreeperMixin", "EnderDragonMixin", "ExplosionDamageCalculatorMixin", "PiglinAiMixin", "PlayerInventoryMixin", "WitherBossMixin",
+        "WitherSkullMixin"
     ],
     "client": [
         "CreativeModeInventoryScreenSlotWrapperMixin",

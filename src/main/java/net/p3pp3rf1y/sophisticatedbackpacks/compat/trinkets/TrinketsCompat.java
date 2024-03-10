@@ -6,8 +6,8 @@ import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
 import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 
-import io.github.fabricators_of_create.porting_lib.util.EnvExecutor;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -59,7 +59,9 @@ public class TrinketsCompat implements ICompat {
 	public void init() {
 		for (BackpackItem backpack : ModItems.BACKPACKS) {
             TrinketsApi.registerTrinket(backpack, TRINKET_BACKPACK);
-            EnvExecutor.runWhenOn(EnvType.CLIENT, () -> () -> TrinketRendererRegistry.registerRenderer(backpack, TRINKET_BACKPACK));
+			if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+				TrinketRendererRegistry.registerRenderer(backpack, TRINKET_BACKPACK);
+			}
         }
 
         PlayerInventoryProvider.get().addPlayerInventoryHandler(CompatModIds.TRINKETS, this::getTrinketTags,

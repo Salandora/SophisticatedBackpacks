@@ -3,8 +3,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 import com.mojang.math.Axis;
 import org.joml.Vector3f;
 
-import io.github.fabricators_of_create.porting_lib.utility.block.EntityDestroyBlock;
-import io.github.fabricators_of_create.porting_lib.utility.block.ExplosionResistanceBlock;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.client.Minecraft;
@@ -68,7 +66,7 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BackpackBlock extends BlockBase implements EntityBlock, SimpleWaterloggedBlock, ExplosionResistanceBlock, EntityDestroyBlock {
+public class BackpackBlock extends BlockBase implements EntityBlock, SimpleWaterloggedBlock, BlockInterfaceHelper {
 	public static final BooleanProperty LEFT_TANK = BooleanProperty.create("left_tank");
 	public static final BooleanProperty RIGHT_TANK = BooleanProperty.create("right_tank");
 	public static final BooleanProperty BATTERY = BooleanProperty.create("battery");
@@ -255,7 +253,7 @@ public class BackpackBlock extends BlockBase implements EntityBlock, SimpleWater
 		if (hasEverlastingUpgrade(world, pos)) {
 			return false;
 		}
-		return EntityDestroyBlock.super.canEntityDestroy(state, world, pos, entity);
+		return BlockInterfaceHelper.super.canEntityDestroy(state, world, pos, entity);
 	}
 
 	private void tryToPickup(Level world, ItemEntity itemEntity, IStorageWrapper w) {

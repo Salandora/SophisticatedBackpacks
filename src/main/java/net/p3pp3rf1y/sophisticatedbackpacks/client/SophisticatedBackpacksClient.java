@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.client.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.render.ClientBackpackContentsTooltip;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 
@@ -19,7 +20,10 @@ public class SophisticatedBackpacksClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		KeybindHandler.registerKeyMappings();
 		KeybindHandler.register();
+
 		ClientEventHandler.registerHandlers();
+
+		ModItems.registerScreens();
 
 		TooltipComponentCallback.EVENT.register(SophisticatedBackpacksClient::registerTooltipComponent);
 
