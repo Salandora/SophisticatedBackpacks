@@ -5,7 +5,9 @@
       "conditions": {
         "items": [
           {
-            "tag": "c:leather"
+            "items": [
+              "minecraft:leather"
+            ]
           }
         ]
       },

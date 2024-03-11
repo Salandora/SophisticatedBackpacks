@@ -15,13 +15,13 @@
       "tag": "c:wooden_chests"
     },
     "E": {
-      "tag": "c:ender_pearls"
+      "item": "minecraft:ender_pearl"
     },
     "I": {
       "tag": "c:iron_ingots"
     },
     "R": {
-      "tag": "c:dusts/redstone"
+      "tag": "c:redstone_dusts"
     }
   },
   "pattern": [

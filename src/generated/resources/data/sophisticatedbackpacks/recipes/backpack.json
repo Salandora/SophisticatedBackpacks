@@ -12,10 +12,10 @@
       "tag": "c:wooden_chests"
     },
     "L": {
-      "tag": "c:leather"
+      "item": "minecraft:leather"
     },
     "S": {
-      "tag": "c:string"
+      "item": "minecraft:string"
     }
   },
   "pattern": [

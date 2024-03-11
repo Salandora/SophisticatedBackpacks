@@ -21,7 +21,7 @@
       "item": "sophisticatedbackpacks:pump_upgrade"
     },
     "R": {
-      "tag": "c:dusts/redstone"
+      "tag": "c:redstone_dusts"
     }
   },
   "pattern": [

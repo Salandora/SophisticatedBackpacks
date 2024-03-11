@@ -9,7 +9,7 @@
   "category": "misc",
   "key": {
     "N": {
-      "tag": "c:netherite_blocks"
+      "item": "minecraft:netherite_block"
     },
     "S": {
       "item": "sophisticatedbackpacks:stack_upgrade_tier_3"

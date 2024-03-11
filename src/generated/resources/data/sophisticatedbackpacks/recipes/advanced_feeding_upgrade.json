@@ -15,7 +15,7 @@
       "tag": "c:gold_ingots"
     },
     "R": {
-      "tag": "c:dusts/redstone"
+      "tag": "c:redstone_dusts"
     },
     "V": {
       "item": "sophisticatedbackpacks:feeding_upgrade"

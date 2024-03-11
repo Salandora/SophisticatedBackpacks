@@ -1,7 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.common;
 
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -30,12 +33,12 @@ public class DyeRecipesMaker {
 
 	private static void addMultipleColorsRecipe(List<CraftingRecipe> recipes) {
 		NonNullList<Ingredient> ingredients = NonNullList.create();
-		ingredients.add(Ingredient.of(DyeColor.YELLOW.getTag()));
+		ingredients.add(Ingredient.of(ConventionalItemTags.YELLOW_DYES));
 		ingredients.add(Ingredient.of(ModItems.BACKPACK));
 		ingredients.add(Ingredient.EMPTY);
-		ingredients.add(Ingredient.of(DyeColor.LIME.getTag()));
-		ingredients.add(Ingredient.of(DyeColor.BLUE.getTag()));
-		ingredients.add(Ingredient.of(DyeColor.BLACK.getTag()));
+		ingredients.add(Ingredient.of(ConventionalItemTags.LIME_DYES));
+		ingredients.add(Ingredient.of(ConventionalItemTags.BLUE_DYES));
+		ingredients.add(Ingredient.of(ConventionalItemTags.BLACK_DYES));
 
 		ItemStack backpackOutput = new ItemStack(ModItems.BACKPACK);
 		int clothColor = ColorHelper.calculateColor(BackpackWrapper.DEFAULT_CLOTH_COLOR, BackpackWrapper.DEFAULT_CLOTH_COLOR, List.of(
@@ -59,7 +62,7 @@ public class DyeRecipesMaker {
 					wrapper -> wrapper.setColors(ColorHelper.getColor(color.getTextureDiffuseColors()), ColorHelper.getColor(color.getTextureDiffuseColors())));
 			NonNullList<Ingredient> ingredients = NonNullList.create();
 			ingredients.add(Ingredient.of(ModItems.BACKPACK));
-			ingredients.add(Ingredient.of(color.getTag()));
+			ingredients.add(Ingredient.of(TagKey.create(Registries.ITEM, new ResourceLocation("c", color.getName() + "_dyes"))));
 			recipes.add(new ShapedRecipe(id, "", CraftingBookCategory.MISC, 1, 2, ingredients, backpackOutput));
 		}
 	}

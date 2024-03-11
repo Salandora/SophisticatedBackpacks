@@ -18,7 +18,7 @@
       "item": "minecraft:jukebox"
     },
     "R": {
-      "tag": "c:dusts/redstone"
+      "tag": "c:redstone_dusts"
     }
   },
   "pattern": [

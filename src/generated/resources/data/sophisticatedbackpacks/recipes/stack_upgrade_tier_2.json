@@ -9,7 +9,7 @@
   "category": "misc",
   "key": {
     "G": {
-      "tag": "c:gold_blocks"
+      "item": "minecraft:gold_block"
     },
     "S": {
       "item": "sophisticatedbackpacks:stack_upgrade_tier_1"

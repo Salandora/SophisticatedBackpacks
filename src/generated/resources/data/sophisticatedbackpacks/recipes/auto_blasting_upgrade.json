@@ -18,7 +18,7 @@
       "item": "minecraft:hopper"
     },
     "R": {
-      "tag": "c:dusts/redstone"
+      "tag": "c:redstone_dusts"
     },
     "S": {
       "item": "sophisticatedbackpacks:blasting_upgrade"

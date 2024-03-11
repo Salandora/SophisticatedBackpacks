@@ -9,7 +9,7 @@
   "category": "misc",
   "key": {
     "D": {
-      "tag": "c:diamond_blocks"
+      "item": "minecraft:diamond_block"
     },
     "S": {
       "item": "sophisticatedbackpacks:stack_upgrade_tier_2"

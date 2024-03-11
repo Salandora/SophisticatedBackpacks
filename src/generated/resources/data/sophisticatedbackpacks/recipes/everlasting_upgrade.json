@@ -15,7 +15,7 @@
       "item": "minecraft:end_crystal"
     },
     "S": {
-      "tag": "c:nether_stars"
+      "item": "minecraft:nether_star"
     }
   },
   "pattern": [

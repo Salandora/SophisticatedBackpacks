@@ -18,7 +18,7 @@
       "item": "minecraft:ender_eye"
     },
     "S": {
-      "tag": "c:nether_stars"
+      "item": "minecraft:nether_star"
     }
   },
   "pattern": [

@@ -21,7 +21,7 @@
       "item": "minecraft:wooden_pickaxe"
     },
     "R": {
-      "tag": "c:dusts/redstone"
+      "tag": "c:redstone_dusts"
     },
     "S": {
       "item": "minecraft:wooden_shovel"
