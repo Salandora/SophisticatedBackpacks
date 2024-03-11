@@ -24,7 +24,6 @@ public class SophisticatedBackpacks implements ModInitializer {
 	public SophisticatedBackpacks() {
 	}
 
-
 	@Override
 	public void onInitialize() {
 		Config.register();

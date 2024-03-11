@@ -31,6 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IAttackEntityResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
@@ -38,6 +39,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenMes
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
+import net.p3pp3rf1y.sophisticatedcore.event.common.EntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.ItemEntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.LivingEntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.MobSpawnEvents;
@@ -76,6 +78,18 @@ public class CommonEventHandler {
 		ServerPlayerEvents.AFTER_RESPAWN.register(this::onPlayerRespawn);
 		ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
 		UseEntityCallback.EVENT.register(this::interactWithEntity);
+
+		EntityEvents.ON_JOIN_WORLD.register((entity, world, loadedFromDisk) -> {
+			if (entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof BackpackItem backpack) {
+				Entity newEntity = backpack.createCustomEntity(world, entity, itemEntity.getItem());
+				if (newEntity != null) {
+					entity.discard();
+					world.addFreshEntity(newEntity);
+					return false;
+				}
+			}
+			return true;
+		});
 	}
 
 	private static final int BACKPACK_CHECK_COOLDOWN = 40;

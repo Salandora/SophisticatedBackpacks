@@ -140,18 +140,12 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return Optional.ofNullable(ret);
 	}
 
-	@Override
-	public boolean hasCustomEntity(ItemStack stack) {
-		return true;
-	}
-
 	private boolean hasEverlastingUpgrade(ItemStack stack) {
 		return BackpackWrapperLookup.get(stack).map(w -> !w.getUpgradeHandler().getTypeWrappers(EverlastingUpgradeItem.TYPE).isEmpty()).orElse(false);
 	}
 
 	@Nullable
-	@Override
-	public Entity createEntity(Level world, Entity entity, ItemStack itemstack) {
+	public Entity createCustomEntity(Level world, Entity entity, ItemStack itemstack) {
 		if (!(entity instanceof ItemEntity itemEntity)) {
 			return null;
 		}
