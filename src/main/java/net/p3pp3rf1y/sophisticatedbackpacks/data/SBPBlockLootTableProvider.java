@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -11,13 +11,13 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 
-public class SBPBlockLootSubProvider extends FabricBlockLootTableProvider {
-	protected SBPBlockLootSubProvider(FabricDataOutput output) {
+public class SBPBlockLootTableProvider extends FabricBlockLootTableProvider {
+	protected SBPBlockLootTableProvider(FabricDataGenerator output) {
 		super(output);
 	}
 
 	@Override
-	public void generate() {
+	protected void generateBlockLootTables() {
 		add(ModBlocks.BACKPACK, dropBackpackWithContents(ModItems.BACKPACK));
 		add(ModBlocks.IRON_BACKPACK, dropBackpackWithContents(ModItems.IRON_BACKPACK));
 		add(ModBlocks.GOLD_BACKPACK, dropBackpackWithContents(ModItems.GOLD_BACKPACK));

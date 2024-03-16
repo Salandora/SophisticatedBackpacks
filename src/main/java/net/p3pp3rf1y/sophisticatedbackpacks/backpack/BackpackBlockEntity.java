@@ -2,7 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
 import team.reborn.energy.api.EnergyStorage;
 
-import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
@@ -16,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.p3pp3rf1y.porting_lib.transfer.items.SlottedStackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
@@ -139,7 +139,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 
 	@Nullable
 	public <T> T getCapability(BlockApiLookup<T, Direction> cap, @Nullable Direction opt) {
-		if (opt != null && level != null && Config.SERVER.noConnectionBlocks.isBlockConnectionDisallowed(level.getBlockState(getBlockPos().relative(opt)).getBlock())) {
+		if (opt != null && level != null && Config.COMMON.noConnectionBlocks.isBlockConnectionDisallowed(level.getBlockState(getBlockPos().relative(opt)).getBlock())) {
 			return null;
 		}
 

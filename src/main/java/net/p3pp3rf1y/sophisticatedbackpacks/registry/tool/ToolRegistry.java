@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Tuple;
@@ -41,8 +40,8 @@ public class ToolRegistry {
 
 	private static final Set<String> modsWithMapping = new HashSet<>();
 
-	private static final ToolMapping<Block, BlockContext> BLOCK_TOOL_MAPPING = new ToolMapping<>(BuiltInRegistries.BLOCK, BlockContext::getBlock);
-	private static final ToolMapping<EntityType<?>, Entity> ENTITY_TOOL_MAPPING = new ToolMapping<>(BuiltInRegistries.ENTITY_TYPE, Entity::getType);
+	private static final ToolMapping<Block, BlockContext> BLOCK_TOOL_MAPPING = new ToolMapping<>(Registry.BLOCK, BlockContext::getBlock);
+	private static final ToolMapping<EntityType<?>, Entity> ENTITY_TOOL_MAPPING = new ToolMapping<>(Registry.ENTITY_TYPE, Entity::getType);
 
 	public static boolean isToolForBlock(ItemStack stack, Block block, Level world, BlockState blockState, BlockPos pos) {
 		return BLOCK_TOOL_MAPPING.isToolFor(stack, block, () -> new BlockContext(world, blockState, block, pos));
@@ -188,10 +187,10 @@ public class ToolRegistry {
 		for (JsonElement jsonElement : toolArray) {
 			if (jsonElement.isJsonPrimitive()) {
 				ResourceLocation itemName = new ResourceLocation(jsonElement.getAsString());
-				if (!BuiltInRegistries.ITEM.containsKey(itemName)) {
+				if (!Registry.ITEM.containsKey(itemName)) {
 					SophisticatedBackpacks.LOGGER.debug("{} isn't loaded in item registry, skipping ...", itemName);
 				}
-				Item item = BuiltInRegistries.ITEM.get(itemName);
+				Item item = Registry.ITEM.get(itemName);
 				items.add(item);
 			} else if (jsonElement.isJsonObject()) {
 				Matchers.getItemMatcher(jsonElement).ifPresent(itemPredicates::add);
@@ -202,13 +201,13 @@ public class ToolRegistry {
 
 	public static class BlockToolsLoader extends ToolsLoaderBase<Block, BlockContext> {
 		public BlockToolsLoader() {
-			super(Matchers.getBlockMatcherFactories(), BLOCK_TOOL_MAPPING, BuiltInRegistries.BLOCK, rn -> Optional.of(BuiltInRegistries.BLOCK.get(rn)), "block_tools", "blocks");
+			super(Matchers.getBlockMatcherFactories(), BLOCK_TOOL_MAPPING, Registry.BLOCK, rn -> Optional.of(Registry.BLOCK.get(rn)), "block_tools", "blocks");
 		}
 	}
 
 	public static class EntityToolsLoader extends ToolsLoaderBase<EntityType<?>, Entity> {
 		public EntityToolsLoader() {
-			super(Matchers.getEntityMatcherFactories(), ENTITY_TOOL_MAPPING, BuiltInRegistries.ENTITY_TYPE, rn -> Optional.of(BuiltInRegistries.ENTITY_TYPE.get(rn)), "entity_tools", "entities");
+			super(Matchers.getEntityMatcherFactories(), ENTITY_TOOL_MAPPING, Registry.ENTITY_TYPE, rn -> Optional.of(Registry.ENTITY_TYPE.get(rn)), "entity_tools", "entities");
 		}
 	}
 
@@ -291,7 +290,7 @@ public class ToolRegistry {
 		private boolean isNoMappingModAndNonStackableItemFromSameMod(ItemStack stack, V object) {
 			return RegistryHelper.getRegistryName(registry, object).map(rn ->
 					!rn.getNamespace().equals("minecraft")
-							&& !modsWithMapping.contains(rn.getNamespace()) && RegistryHelper.getRegistryName(BuiltInRegistries.ITEM, stack.getItem()).map(itemRegistryName -> itemRegistryName.getNamespace().equals(rn.getNamespace())).orElse(false)
+							&& !modsWithMapping.contains(rn.getNamespace()) && RegistryHelper.getRegistryName(Registry.ITEM, stack.getItem()).map(itemRegistryName -> itemRegistryName.getNamespace().equals(rn.getNamespace())).orElse(false)
 			).orElse(false) && stack.getMaxStackSize() == 1;
 		}
 

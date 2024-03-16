@@ -1,6 +1,5 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +20,7 @@ public class BackpackUpgradeRecipe extends ShapedRecipe implements IWrapperRecip
 	private final ShapedRecipe compose;
 
 	public BackpackUpgradeRecipe(ShapedRecipe compose) {
-		super(compose.getId(), compose.getGroup(), compose.category(), compose.getWidth(), compose.getHeight(), compose.getIngredients(), compose.result);
+		super(compose.getId(), compose.getGroup(), compose.getWidth(), compose.getHeight(), compose.getIngredients(), compose.result);
 		this.compose = compose;
 		REGISTERED_RECIPES.add(compose.getId());
 	}
@@ -37,8 +36,8 @@ public class BackpackUpgradeRecipe extends ShapedRecipe implements IWrapperRecip
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
-		ItemStack upgradedBackpack = super.assemble(inv, registryAccess);
+	public ItemStack assemble(CraftingContainer inv) {
+		ItemStack upgradedBackpack = super.assemble(inv);
 		getBackpack(inv).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
 		BackpackWrapperLookup.get(upgradedBackpack).ifPresent(wrapper -> {
 			BackpackItem backpackItem = ((BackpackItem) upgradedBackpack.getItem());

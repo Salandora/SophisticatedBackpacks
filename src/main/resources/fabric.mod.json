@@ -53,9 +53,10 @@
         "mkb": ">=${mkb_version}",
         "forgeconfigapiport": ">=${forge_config_version}",
         "team_reborn_energy": ">=${energy_version}",
+        "porting_lib_common": ">=${port_lib_version}",
+        "porting_lib_fake_players": ">=${port_lib_version}",
         "porting_lib_loot": ">=${port_lib_version}",
         "porting_lib_model_loader": ">=${port_lib_version}",
-        "porting_lib_tool_actions": ">=${port_lib_version}",
         "porting_lib_networking": ">=${port_lib_version}",
         "porting_lib_transfer": ">=${port_lib_version}"
     },

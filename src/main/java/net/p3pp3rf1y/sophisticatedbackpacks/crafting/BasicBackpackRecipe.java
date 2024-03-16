@@ -1,6 +1,5 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -15,7 +14,7 @@ public class BasicBackpackRecipe extends ShapedRecipe implements IWrapperRecipe<
 	private final ShapedRecipe compose;
 
 	public BasicBackpackRecipe(ShapedRecipe compose) {
-		super(compose.getId(), compose.getGroup(), compose.category(), compose.getWidth(), compose.getHeight(), compose.getIngredients(), compose.result);
+		super(compose.getId(), compose.getGroup(), compose.getWidth(), compose.getHeight(), compose.getIngredients(), compose.result);
 		this.compose = compose;
 	}
 
@@ -25,8 +24,8 @@ public class BasicBackpackRecipe extends ShapedRecipe implements IWrapperRecipe<
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
-		ItemStack result = super.assemble(inv, registryAccess);
+	public ItemStack assemble(CraftingContainer inv) {
+		ItemStack result = super.assemble(inv);
 		removeUuid(result);
 		return result;
 	}

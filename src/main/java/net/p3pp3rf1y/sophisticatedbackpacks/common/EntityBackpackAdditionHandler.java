@@ -2,8 +2,8 @@ package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import com.google.common.primitives.Ints;
 
-import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.minecraft.core.registries.BuiltInRegistries;
+import io.github.fabricators_of_create.porting_lib.fake_players.FakePlayer;
+import net.minecraft.core.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
@@ -111,8 +111,8 @@ public class EntityBackpackAdditionHandler {
 
 	static void addBackpack(Monster monster, LevelAccessor level) {
 		RandomSource rnd = level.getRandom();
-		if (!Config.SERVER.entityBackpackAdditions.canWearBackpack(monster.getType())
-				|| rnd.nextInt((int) (1 / Config.SERVER.entityBackpackAdditions.chance.get())) != 0 || (monster instanceof Raider raider && raider.getCurrentRaid() != null)) {
+		if (!Config.COMMON.entityBackpackAdditions.canWearBackpack(monster.getType())
+				|| rnd.nextInt((int) (1 / Config.COMMON.entityBackpackAdditions.chance.get())) != 0 || (monster instanceof Raider raider && raider.getCurrentRaid() != null)) {
 			return;
 		}
 
@@ -124,10 +124,10 @@ public class EntityBackpackAdditionHandler {
 			ItemStack backpack = new ItemStack(backpackAddition.getBackpackItem());
 			int minDifficulty = backpackAddition.getMinDifficulty();
 			int difficulty = Math.max(minDifficulty, rnd.nextInt(MAX_DIFFICULTY + 1));
-			equipBackpack(monster, backpack, difficulty, Boolean.TRUE.equals(Config.SERVER.entityBackpackAdditions.playJukebox.get()) && rnd.nextInt(4) == 0, level, rnd);
+			equipBackpack(monster, backpack, difficulty, Boolean.TRUE.equals(Config.COMMON.entityBackpackAdditions.playJukebox.get()) && rnd.nextInt(4) == 0, level, rnd);
 			applyPotions(monster, difficulty, minDifficulty, rnd);
 			raiseHealth(monster, minDifficulty);
-			if (Boolean.TRUE.equals(Config.SERVER.entityBackpackAdditions.equipWithArmor.get())) {
+			if (Boolean.TRUE.equals(Config.COMMON.entityBackpackAdditions.equipWithArmor.get())) {
 				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getHelmetChances(), EquipmentSlot.HEAD, level);
 				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getLeggingsChances(), EquipmentSlot.LEGS, level);
 				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getBootsChances(), EquipmentSlot.FEET, level);
@@ -185,11 +185,11 @@ public class EntityBackpackAdditionHandler {
 			if (records == null) {
 				musicDiscs = new ArrayList<>();
 			} else {
-				Set<String> blockedDiscs = new HashSet<>(Config.SERVER.entityBackpackAdditions.discBlockList.get());
+				Set<String> blockedDiscs = new HashSet<>(Config.COMMON.entityBackpackAdditions.discBlockList.get());
 				musicDiscs = new ArrayList<>();
 				records.forEach((sound, musicDisc) -> {
 					//noinspection ConstantConditions - by this point the disc has registry name
-					if (!blockedDiscs.contains(BuiltInRegistries.ITEM.getKey(musicDisc).toString())) {
+					if (!blockedDiscs.contains(Registry.ITEM.getKey(musicDisc).toString())) {
 						musicDiscs.add(musicDisc);
 					}
 				});
@@ -200,7 +200,7 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void raiseHealth(Monster monster, int minDifficulty) {
-		if (Boolean.FALSE.equals(Config.SERVER.entityBackpackAdditions.buffHealth.get())) {
+		if (Boolean.FALSE.equals(Config.COMMON.entityBackpackAdditions.buffHealth.get())) {
 			return;
 		}
 		AttributeInstance maxHealth = monster.getAttribute(Attributes.MAX_HEALTH);
@@ -242,13 +242,13 @@ public class EntityBackpackAdditionHandler {
 			return;
 		}
 
-		if (Boolean.TRUE.equals(Config.SERVER.entityBackpackAdditions.addLoot.get())) {
+		if (Boolean.TRUE.equals(Config.COMMON.entityBackpackAdditions.addLoot.get())) {
 			addLoot(monster, backpackWrapper, difficulty);
 		}
 	}
 
 	private static void applyPotions(Monster monster, int difficulty, int minDifficulty, RandomSource rnd) {
-		if (Boolean.TRUE.equals(Config.SERVER.entityBackpackAdditions.buffWithPotionEffects.get())) {
+		if (Boolean.TRUE.equals(Config.COMMON.entityBackpackAdditions.buffWithPotionEffects.get())) {
 			RandHelper.getNRandomElements(APPLICABLE_EFFECTS, difficulty + 2)
 					.forEach(applicableEffect -> {
 						int amplifier = Math.min(Math.max(minDifficulty, rnd.nextInt(difficulty + 1)), applicableEffect.getMaxAmplifier());
@@ -259,7 +259,7 @@ public class EntityBackpackAdditionHandler {
 
 	private static void addLoot(Monster monster, IBackpackWrapper backpackWrapper, int difficulty) {
 		if (difficulty != 0) {
-			Config.SERVER.entityBackpackAdditions.getLootTableName(monster.getType()).ifPresent(lootTableName -> {
+			Config.COMMON.entityBackpackAdditions.getLootTableName(monster.getType()).ifPresent(lootTableName -> {
 				float lootPercentage = (float) difficulty / MAX_DIFFICULTY;
 				backpackWrapper.setLoot(lootTableName, lootPercentage);
 			});
@@ -270,7 +270,7 @@ public class EntityBackpackAdditionHandler {
 	static boolean handleBackpackDrop(LivingEntity target, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit) {
 		if (target.getTags().contains(SPAWNED_WITH_BACKPACK)) {
 			ItemStack backpack = target.getItemBySlot(EquipmentSlot.CHEST);
-			Config.Server.EntityBackpackAdditionsConfig additionsConfig = Config.SERVER.entityBackpackAdditions;
+			Config.Server.EntityBackpackAdditionsConfig additionsConfig = Config.COMMON.entityBackpackAdditions;
 			if (shouldDropBackpack(source, additionsConfig, target, backpack, lootingLevel)) {
 				ItemEntity backpackEntity = new ItemEntity(target.getLevel(), target.getX(), target.getY(), target.getZ(), backpack);
 				drops.add(backpackEntity);

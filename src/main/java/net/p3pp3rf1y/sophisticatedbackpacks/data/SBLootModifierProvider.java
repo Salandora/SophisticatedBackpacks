@@ -8,7 +8,7 @@ import io.github.fabricators_of_create.porting_lib.loot.GlobalLootModifierProvid
 import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
 import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
 import io.github.fabricators_of_create.porting_lib.loot.LootTableIdCondition;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -20,20 +20,20 @@ import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 
 public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
-	SBLootModifierProvider(FabricDataOutput packOutput) {
+	SBLootModifierProvider(FabricDataGenerator packOutput) {
 		super(packOutput, SophisticatedBackpacks.ID);
 	}
 
 	@Override
 	protected void start() {
-		addInjectLootTableModifier(SBInjectLootSubProvider.SIMPLE_DUNGEON, BuiltInLootTables.SIMPLE_DUNGEON);
-		addInjectLootTableModifier(SBInjectLootSubProvider.ABANDONED_MINESHAFT, BuiltInLootTables.ABANDONED_MINESHAFT);
-		addInjectLootTableModifier(SBInjectLootSubProvider.DESERT_PYRAMID, BuiltInLootTables.DESERT_PYRAMID);
-		addInjectLootTableModifier(SBInjectLootSubProvider.WOODLAND_MANSION, BuiltInLootTables.WOODLAND_MANSION);
-		addInjectLootTableModifier(SBInjectLootSubProvider.SHIPWRECK_TREASURE, BuiltInLootTables.SHIPWRECK_TREASURE);
-		addInjectLootTableModifier(SBInjectLootSubProvider.BASTION_TREASURE, BuiltInLootTables.BASTION_TREASURE);
-		addInjectLootTableModifier(SBInjectLootSubProvider.END_CITY_TREASURE, BuiltInLootTables.END_CITY_TREASURE);
-		addInjectLootTableModifier(SBInjectLootSubProvider.NETHER_BRIDGE, BuiltInLootTables.NETHER_BRIDGE);
+		addInjectLootTableModifier(SBPLootInjectProvider.SIMPLE_DUNGEON, BuiltInLootTables.SIMPLE_DUNGEON);
+		addInjectLootTableModifier(SBPLootInjectProvider.ABANDONED_MINESHAFT, BuiltInLootTables.ABANDONED_MINESHAFT);
+		addInjectLootTableModifier(SBPLootInjectProvider.DESERT_PYRAMID, BuiltInLootTables.DESERT_PYRAMID);
+		addInjectLootTableModifier(SBPLootInjectProvider.WOODLAND_MANSION, BuiltInLootTables.WOODLAND_MANSION);
+		addInjectLootTableModifier(SBPLootInjectProvider.SHIPWRECK_TREASURE, BuiltInLootTables.SHIPWRECK_TREASURE);
+		addInjectLootTableModifier(SBPLootInjectProvider.BASTION_TREASURE, BuiltInLootTables.BASTION_TREASURE);
+		addInjectLootTableModifier(SBPLootInjectProvider.END_CITY_TREASURE, BuiltInLootTables.END_CITY_TREASURE);
+		addInjectLootTableModifier(SBPLootInjectProvider.NETHER_BRIDGE, BuiltInLootTables.NETHER_BRIDGE);
 	}
 
 	private void addInjectLootTableModifier(ResourceLocation lootTable, ResourceLocation lootTableToInjectInto) {

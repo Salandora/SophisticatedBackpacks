@@ -1,20 +1,24 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.datafixers.util.Either;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 
-import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
-import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
+import io.github.fabricators_of_create.porting_lib.model.geometry.IGeometryBakingContext;
+import io.github.fabricators_of_create.porting_lib.model.geometry.IGeometryLoader;
+import io.github.fabricators_of_create.porting_lib.model.geometry.IUnbakedGeometry;
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -28,7 +32,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
@@ -51,10 +55,12 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedBatteryUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedTankUpgrade;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -85,7 +91,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 	}
 
 	@Override
-	public BakedModel bake(BlockModel context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation, boolean isGui3d) {
+	public BakedModel bake(IGeometryBakingContext context, ModelBakery baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
 		ImmutableMap.Builder<ModelPart, BakedModel> builder = ImmutableMap.builder();
 		modelParts.forEach((part, model) -> {
 			BakedModel bakedModel = model.bake(baker, spriteGetter, modelTransform, modelLocation);
@@ -99,11 +105,13 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 	}
 
 	@Override
-	public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, BlockModel context) {
-		modelParts.values().forEach(model -> model.resolveParents(modelGetter));
+	public Collection<Material> getMaterials(IGeometryBakingContext context, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
+		ImmutableSet.Builder<Material> builder = ImmutableSet.builder();
+		modelParts.forEach((part, model) -> builder.addAll(model.getMaterials(modelGetter, missingTextureErrors)));
+		return builder.build();
 	}
 
-	public static final class BackpackBakedModel implements BakedModel {
+	public static final class BackpackBakedModel implements BakedModel, FabricBakedModel {
 		private static final ItemTransforms ITEM_TRANSFORMS = createItemTransforms();
 		private static final ResourceLocation BACKPACK_MODULES_TEXTURE = new ResourceLocation("sophisticatedbackpacks:block/backpack_modules");
 
@@ -363,9 +371,10 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			return new BakedQuad(quadData, tintIndex, direction, sprite, false);
 		}
 
-		private void rotate(Vector3f posIn, Matrix4f transform) {
+		private void rotate(Vector3f posIn, Matrix4f transformIn) {
 			Vector3f originIn = new Vector3f(0.5f, 0.5f, 0.5f);
-			Vector4f vector4f = transform.transform(new Vector4f(posIn.x() - originIn.x(), posIn.y() - originIn.y(), posIn.z() - originIn.z(), 1.0F));
+			Vector4f vector4f = new Vector4f(posIn.x() - originIn.x(), posIn.y() - originIn.y(), posIn.z() - originIn.z(), 1.0F);
+			vector4f.transform(transformIn);
 			posIn.set(vector4f.x() + originIn.x(), vector4f.y() + originIn.y(), vector4f.z() + originIn.z());
 		}
 	}

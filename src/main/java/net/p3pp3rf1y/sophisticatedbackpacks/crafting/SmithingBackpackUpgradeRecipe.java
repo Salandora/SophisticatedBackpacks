@@ -1,11 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.LegacyUpgradeRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
@@ -18,11 +17,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @SuppressWarnings("removal")
-public class SmithingBackpackUpgradeRecipe extends LegacyUpgradeRecipe implements IWrapperRecipe<LegacyUpgradeRecipe> {
+public class SmithingBackpackUpgradeRecipe extends UpgradeRecipe implements IWrapperRecipe<UpgradeRecipe> {
 	public static final Set<ResourceLocation> REGISTERED_RECIPES = new LinkedHashSet<>();
-	private final LegacyUpgradeRecipe compose;
+	private final UpgradeRecipe compose;
 
-	public SmithingBackpackUpgradeRecipe(LegacyUpgradeRecipe compose) {
+	public SmithingBackpackUpgradeRecipe(UpgradeRecipe compose) {
 		super(compose.getId(), compose.base, compose.addition, compose.result);
 		this.compose = compose;
 		REGISTERED_RECIPES.add(compose.getId());
@@ -34,7 +33,7 @@ public class SmithingBackpackUpgradeRecipe extends LegacyUpgradeRecipe implement
 	}
 
 	@Override
-	public ItemStack assemble(Container inventory, RegistryAccess registryManager) {
+	public ItemStack assemble(Container inventory) {
 		ItemStack upgradedBackpack = result.copy();
 		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
 			getBackpack(inventory).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
@@ -61,11 +60,11 @@ public class SmithingBackpackUpgradeRecipe extends LegacyUpgradeRecipe implement
 	}
 
 	@Override
-	public LegacyUpgradeRecipe getCompose() {
+	public UpgradeRecipe getCompose() {
 		return compose;
 	}
 
-	public static class Serializer extends RecipeWrapperSerializer<LegacyUpgradeRecipe, SmithingBackpackUpgradeRecipe> {
+	public static class Serializer extends RecipeWrapperSerializer<UpgradeRecipe, SmithingBackpackUpgradeRecipe> {
 		public Serializer() {
 			super(SmithingBackpackUpgradeRecipe::new, RecipeSerializer.SMITHING);
 		}

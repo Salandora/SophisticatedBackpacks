@@ -2,7 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
@@ -27,10 +26,10 @@ public class ModBlocks {
 					.build(null));
 
 	public static <T extends Block> T register(String id, Supplier<T> supplier) {
-		return Registry.register(BuiltInRegistries.BLOCK, SophisticatedBackpacks.getRL(id), supplier.get());
+		return Registry.register(Registry.BLOCK, SophisticatedBackpacks.getRL(id), supplier.get());
 	}
 	public static <T extends BlockEntityType<?>> T registerEntityType(String id, Supplier<T> supplier) {
-		return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, SophisticatedBackpacks.getRL(id), supplier.get());
+		return Registry.register(Registry.BLOCK_ENTITY_TYPE, SophisticatedBackpacks.getRL(id), supplier.get());
 	}
 
 	public static void registerEvents() {

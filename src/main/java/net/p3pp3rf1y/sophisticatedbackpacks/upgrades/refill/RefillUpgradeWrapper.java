@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -118,7 +117,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		Storage<ItemVariant> extractFromHandler = storageWrapper.getInventoryForUpgradeProcessing();
 
 		ItemVariant resource = ItemVariant.of(filter);
-		long extracted = StorageUtil.simulateExtract(extractFromHandler, resource, missingCount, null);
+		long extracted = extractFromHandler.simulateExtract(resource, missingCount, null);
 		if (extracted <= 0) {
 			return;
 		}
@@ -161,9 +160,9 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		ItemVariant mainHandResource = ItemVariant.of(mainHandItem);
 
 		ItemVariant filterResource = ItemVariant.of(filter);
-		if (hasItemInBackpack && StorageUtil.simulateExtract(inventoryHandler, filterResource, filter.getMaxStackSize(), null) > 0) {
+		if (hasItemInBackpack && inventoryHandler.simulateExtract(filterResource, filter.getMaxStackSize(), null) > 0) {
 			if ((inventoryHandler.getStackInSlot(stashSlot).getCount() > filter.getMaxStackSize()	|| !inventoryHandler.isItemValid(stashSlot, mainHandResource))
-					&& StorageUtil.simulateInsert(inventoryHandler, mainHandResource, mainHandItem.getCount(), null) > 0) {
+					&& inventoryHandler.simulateInsert(mainHandResource, mainHandItem.getCount(), null) > 0) {
 				if (canMoveMainHandToInventory(player)) {
 					try (Transaction ctx = Transaction.openOuter()) {
 						long extracted = inventoryHandler.extract(filterResource, filter.getMaxStackSize(), ctx);

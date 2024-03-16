@@ -33,7 +33,7 @@ public class AnotherPlayerBackpackOpenMessage extends SimplePacketBase {
 	public boolean handle(Context context) {
 		context.enqueueWork(() -> {
 			ServerPlayer player = context.getSender();
-			if (player == null || Boolean.FALSE.equals(Config.SERVER.allowOpeningOtherPlayerBackpacks.get())) {
+			if (player == null || Boolean.FALSE.equals(Config.COMMON.allowOpeningOtherPlayerBackpacks.get())) {
 				return;
 			}
 

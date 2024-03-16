@@ -1,12 +1,11 @@
 {
+  "type": "sophisticatedbackpacks:backpack_upgrade",
   "fabric:load_conditions": [
     {
       "condition": "sophisticatedcore:item_enabled",
       "itemRegistryName": "sophisticatedbackpacks:diamond_backpack"
     }
   ],
-  "type": "sophisticatedbackpacks:backpack_upgrade",
-  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:gold_backpack"

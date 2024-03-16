@@ -3,7 +3,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 import team.reborn.energy.api.EnergyStorage;
 
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.IntTag;
@@ -240,7 +240,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 					@Override
 					public boolean isItemValid(int slot, ItemVariant resource) {
 						//noinspection ConstantConditions - by this time the upgrade has registryName, so it can't be null
-						return super.isItemValid(slot, resource) && (SophisticatedBackpacks.ID.equals(BuiltInRegistries.ITEM.getKey(resource.getItem()).getNamespace()) || resource.toStack().is(ModItems.BACKPACK_UPGRADE_TAG));
+						return super.isItemValid(slot, resource) && (SophisticatedBackpacks.ID.equals(Registry.ITEM.getKey(resource.getItem()).getNamespace()) || resource.toStack().is(ModItems.BACKPACK_UPGRADE_TAG));
 					}
 				};
 			} else {

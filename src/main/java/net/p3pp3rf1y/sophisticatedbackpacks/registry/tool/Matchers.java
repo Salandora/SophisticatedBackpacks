@@ -5,8 +5,7 @@ import com.google.gson.JsonObject;
 
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
@@ -37,7 +36,7 @@ public class Matchers {
 			@Override
 			protected Optional<Predicate<ItemStack>> getPredicateFromObject(JsonObject jsonObject) {
 				String tagName = GsonHelper.getAsString(jsonObject, "tag");
-				TagKey<Item> tag = TagKey.create(Registries.ITEM, new ResourceLocation(tagName));
+				TagKey<Item> tag = TagKey.create(Registry.ITEM.key(), new ResourceLocation(tagName));
 				return Optional.of(new ItemTagMatcher(tag));
 			}
 		});
@@ -46,10 +45,10 @@ public class Matchers {
 			@Override
 			protected Optional<Predicate<ItemStack>> getPredicateFromObject(JsonObject jsonObject) {
 				ResourceLocation itemName = new ResourceLocation(GsonHelper.getAsString(jsonObject, "item"));
-				if (!BuiltInRegistries.ITEM.containsKey(itemName)) {
+				if (!Registry.ITEM.containsKey(itemName)) {
 					SophisticatedBackpacks.LOGGER.debug("{} isn't loaded in item registry, skipping ...", itemName);
 				}
-				Item item = BuiltInRegistries.ITEM.get(itemName);
+				Item item = Registry.ITEM.get(itemName);
 				return Optional.of(st -> st.getItem() == item && (st.getTag() == null || st.getTag().isEmpty()));
 			}
 		});
@@ -68,7 +67,7 @@ public class Matchers {
 					return Optional.empty();
 				}
 
-				return Optional.of(new ModMatcher<>(BuiltInRegistries.BLOCK, modId, BlockContext::getBlock));
+				return Optional.of(new ModMatcher<>(Registry.BLOCK, modId, BlockContext::getBlock));
 			}
 		});
 		BLOCK_MATCHER_FACTORIES.add(new TypedMatcherFactory<>("all") {

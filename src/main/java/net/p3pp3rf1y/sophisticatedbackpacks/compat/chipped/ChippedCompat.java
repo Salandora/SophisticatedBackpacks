@@ -1,19 +1,19 @@
-/*
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.chipped;
 
 import earth.terrarium.chipped.common.compat.jei.ChippedRecipeCategory;
+import earth.terrarium.chipped.common.registry.ModBlocks;
 import earth.terrarium.chipped.common.registry.ModRecipeTypes;
+import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import me.shedaniel.rei.api.common.util.EntryStacks;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
-import net.minecraftforge.registries.RegistryObject;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPButtonDefinitions;
-import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBPPlugin;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBJeiPlugin;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REIClientCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.UpgradeGuiManager;
@@ -27,47 +27,64 @@ import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgrade
 import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeTab;
 import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeWrapper;
 
-import java.util.function.Supplier;
-
 public class ChippedCompat implements ICompat {
-
-	public static final RegistryObject<BlockTransformationUpgradeItem> BOTANIST_WORKBENCH_UPGRADE = ModItems.ITEMS.register("chipped/botanist_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.BOTANIST_WORKBENCH_TYPE));
-	public static final RegistryObject<BlockTransformationUpgradeItem> GLASSBLOWER_UPGRADE = ModItems.ITEMS.register("chipped/glassblower_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.GLASSBLOWER_TYPE));
-	public static final RegistryObject<BlockTransformationUpgradeItem> CARPENTERS_TABLE_UPGRADE = ModItems.ITEMS.register("chipped/carpenters_table_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.CARPENTERS_TABLE_TYPE));
-	public static final RegistryObject<BlockTransformationUpgradeItem> LOOM_TABLE_UPGRADE = ModItems.ITEMS.register("chipped/loom_table_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.LOOM_TABLE_TYPE));
-	public static final RegistryObject<BlockTransformationUpgradeItem> MASON_TABLE_UPGRADE = ModItems.ITEMS.register("chipped/mason_table_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.MASON_TABLE_TYPE));
-	public static final RegistryObject<BlockTransformationUpgradeItem> ALCHEMY_BENCH_UPGRADE = ModItems.ITEMS.register("chipped/alchemy_bench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.ALCHEMY_BENCH_TYPE));
-	public static final RegistryObject<BlockTransformationUpgradeItem> TINKERING_TABLE_UPGRADE = ModItems.ITEMS.register("chipped/tinkering_table_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.TINKERING_TABLE_TYPE));
+	public static final BlockTransformationUpgradeItem BOTANIST_WORKBENCH_UPGRADE = ModItems.register("chipped/botanist_workbench_upgrade",
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.BOTANIST_WORKBENCH_TYPE));
+	public static final BlockTransformationUpgradeItem GLASSBLOWER_UPGRADE = ModItems.register("chipped/glassblower_upgrade",
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.GLASSBLOWER_TYPE));
+	public static final BlockTransformationUpgradeItem CARPENTERS_TABLE_UPGRADE = ModItems.register("chipped/carpenters_table_upgrade",
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.CARPENTERS_TABLE_TYPE));
+	public static final BlockTransformationUpgradeItem LOOM_TABLE_UPGRADE = ModItems.register("chipped/loom_table_upgrade",
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.LOOM_TABLE_TYPE));
+	public static final BlockTransformationUpgradeItem MASON_TABLE_UPGRADE = ModItems.register("chipped/mason_table_upgrade",
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.MASON_TABLE_TYPE));
+	public static final BlockTransformationUpgradeItem ALCHEMY_BENCH_UPGRADE = ModItems.register("chipped/alchemy_bench_upgrade",
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.ALCHEMY_BENCH_TYPE));
+	public static final BlockTransformationUpgradeItem TINKERING_TABLE_UPGRADE = ModItems.register("chipped/tinkering_table_upgrade",
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.TINKERING_TABLE_TYPE));
 
 	@Override
 	public void init() {
-		IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-		modBus.addListener(this::registerContainers);
-
-		if (ModList.get().isLoaded(CompatModIds.JEI)) {
-			((Supplier<Runnable>) () -> () -> SBPPlugin.setAdditionalCatalystRegistrar(registration -> {
-				registration.addRecipeCatalyst(new ItemStack(BOTANIST_WORKBENCH_UPGRADE.get()), ChippedRecipeCategory.BOTANIST_WORKBENCH_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(GLASSBLOWER_UPGRADE.get()), ChippedRecipeCategory.GLASSBLOWER_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(CARPENTERS_TABLE_UPGRADE.get()), ChippedRecipeCategory.CARPENTERS_TABLE_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(LOOM_TABLE_UPGRADE.get()), ChippedRecipeCategory.LOOM_TABLE_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(MASON_TABLE_UPGRADE.get()), ChippedRecipeCategory.MASON_TABLE_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(ALCHEMY_BENCH_UPGRADE.get()), ChippedRecipeCategory.ALCHEMY_BENCH_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(TINKERING_TABLE_UPGRADE.get()), ChippedRecipeCategory.TINKERING_TABLE_RECIPE);
-			})).get().run();
+		if (FabricLoader.getInstance().isModLoaded(CompatModIds.JEI)) {
+			SBJeiPlugin.setAdditionalCatalystRegistrar(registration -> {
+				registration.addRecipeCatalyst(new ItemStack(BOTANIST_WORKBENCH_UPGRADE), ChippedRecipeCategory.BOTANIST_WORKBENCH_RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(GLASSBLOWER_UPGRADE), ChippedRecipeCategory.GLASSBLOWER_RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(CARPENTERS_TABLE_UPGRADE), ChippedRecipeCategory.CARPENTERS_TABLE_RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(LOOM_TABLE_UPGRADE), ChippedRecipeCategory.LOOM_TABLE_RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(MASON_TABLE_UPGRADE), ChippedRecipeCategory.MASON_TABLE_RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(ALCHEMY_BENCH_UPGRADE), ChippedRecipeCategory.ALCHEMY_BENCH_RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(TINKERING_TABLE_UPGRADE), ChippedRecipeCategory.TINKERING_TABLE_RECIPE);
+			});
 		}
+
+		if (FabricLoader.getInstance().isModLoaded(CompatModIds.REI)) {
+			REIClientCompat.setAdditionalCategories(registration -> {
+				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.BOTANIST_WORKBENCH.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.GLASSBLOWER.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.CARPENTERS_TABLE.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.LOOM_TABLE.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.MASON_TABLE.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.ALCHEMY_BENCH.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.TINKERING_TABLE.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+			});
+		}
+
+/*		if (FabricLoader.getInstance().isModLoaded(CompatModIds.EMI)) {
+			EmiCompat.setAdditionalCategories(registration -> {
+				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("botanist_workbench"), EmiStack.of(ModBlocks.BOTANIST_WORKBENCH.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("glassblower"), EmiStack.of(ModBlocks.GLASSBLOWER.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("carpenters_table"), EmiStack.of(ModBlocks.CARPENTERS_TABLE.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("loom_table"), EmiStack.of(ModBlocks.LOOM_TABLE.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("mason_table"), EmiStack.of(ModBlocks.MASON_TABLE.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("alchemy_bench"), EmiStack.of(ModBlocks.ALCHEMY_BENCH.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("tinkering_table"), EmiStack.of(ModBlocks.TINKERING_TABLE.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
+			});
+		}*/
+
+		registerContainers();
 	}
 
-	public void registerContainers(RegisterEvent event) {
-		if (!event.getRegistryKey().equals(ForgeRegistries.Keys.MENU_TYPES)) {
-			return;
-		}
+	public void registerContainers() {
 		registerUpgradeContainer(BOTANIST_WORKBENCH_UPGRADE);
 		registerUpgradeContainer(GLASSBLOWER_UPGRADE);
 		registerUpgradeContainer(CARPENTERS_TABLE_UPGRADE);
@@ -77,13 +94,16 @@ public class ChippedCompat implements ICompat {
 		registerUpgradeContainer(TINKERING_TABLE_UPGRADE);
 	}
 
-	private void registerUpgradeContainer(RegistryObject<BlockTransformationUpgradeItem> item) {
+	private void registerUpgradeContainer(BlockTransformationUpgradeItem item) {
 		UpgradeContainerType<BlockTransformationUpgradeWrapper, BlockTransformationUpgradeContainer> containerType = new UpgradeContainerType<>(BlockTransformationUpgradeContainer::new);
-		UpgradeContainerRegistry.register(item.getId(), containerType);
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> UpgradeGuiManager.registerTab(containerType, (BlockTransformationUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) -> {
-			String itemName = item.getId().getPath();
-			return new BlockTransformationUpgradeTab(upgradeContainer, position, screen, SBPButtonDefinitions.SHIFT_CLICK_TARGET, itemName.replace('/', '_').substring(0, itemName.length() - "_upgrade".length()));
-		}));
+		ResourceLocation itemId = Registry.ITEM.getKey(item);
+		UpgradeContainerRegistry.register(itemId, containerType);
+		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+			UpgradeGuiManager.registerTab(containerType, (BlockTransformationUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) -> {
+				String itemName = itemId.getPath();
+				return new BlockTransformationUpgradeTab(upgradeContainer, position, screen, SBPButtonDefinitions.SHIFT_CLICK_TARGET, itemName.replace('/', '_').substring(0, itemName.length() - "_upgrade".length()));
+			});
+		}
 	}
 
 	@Override
@@ -91,4 +111,3 @@ public class ChippedCompat implements ICompat {
 		//noop
 	}
 }
-*/

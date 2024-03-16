@@ -22,7 +22,7 @@ public class SBLootEnabledCondition implements LootItemCondition {
 
 	@Override
 	public boolean test(LootContext lootContext) {
-		return Boolean.TRUE.equals(Config.COMMON.chestLootEnabled.get());
+		return Boolean.TRUE.equals(Config.CLIENT.chestLootEnabled.get());
 	}
 
 	public static Builder builder() {

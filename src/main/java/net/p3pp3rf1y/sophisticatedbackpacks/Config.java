@@ -1,15 +1,15 @@
 package net.p3pp3rf1y.sophisticatedbackpacks;
 
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
-import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraftforge.api.ModLoadingContext;
+import net.minecraftforge.api.fml.event.config.ModConfigEvents;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
@@ -46,10 +46,8 @@ public class Config {
 
 	private Config() {}
 
-	public static Server SERVER;
-
-	public static Common COMMON;
-
+	public static Common CLIENT = register(Common::new, ModConfig.Type.CLIENT);
+	public static Server COMMON = register(Server::new, ModConfig.Type.SERVER);
 
 	public static class BaseConfig {
 		public ForgeConfigSpec specification;
@@ -243,7 +241,7 @@ public class Config {
 					String entityRegistryName = entityLoot[0];
 					String lootTableName = entityLoot[1];
 
-					EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(entityRegistryName));
+					EntityType<?> entityType = Registry.ENTITY_TYPE.get(new ResourceLocation(entityRegistryName));
 					if (entityType != null) {
 						entityLootTables.put(entityType, lootTableName.equals("null") ? null : new ResourceLocation(lootTableName));
 					}
@@ -258,7 +256,7 @@ public class Config {
 			}
 
 			private List<String> getDefaultEntityLootTableList() {
-				return getDefaultEntityLootMapping().entrySet().stream().map(e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getKey()) + "|" + e.getValue()).collect(Collectors.toList());
+				return getDefaultEntityLootMapping().entrySet().stream().map(e -> Registry.ENTITY_TYPE.getKey(e.getKey()) + "|" + e.getValue()).collect(Collectors.toList());
 			}
 
 			private Map<EntityType<?>, ResourceLocation> getDefaultEntityLootMapping() {
@@ -320,7 +318,7 @@ public class Config {
 			}
 
 			public boolean isBlockInteractionDisallowed(Block block) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!COMMON.specification.isLoaded()) {
 					return true;
 				}
 				if (!initialized) {
@@ -335,8 +333,8 @@ public class Config {
 
 				for (String disallowedItemName : noInteractionBlocksList.get()) {
 					ResourceLocation registryName = new ResourceLocation(disallowedItemName);
-					if (BuiltInRegistries.BLOCK.containsKey(registryName)) {
-						noInteractionBlocksSet.add(BuiltInRegistries.BLOCK.get(registryName));
+					if (Registry.BLOCK.containsKey(registryName)) {
+						noInteractionBlocksSet.add(Registry.BLOCK.get(registryName));
 					}
 				}
 			}
@@ -353,7 +351,7 @@ public class Config {
 			}
 
 			public boolean isBlockConnectionDisallowed(Block block) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!COMMON.specification.isLoaded()) {
 					return true;
 				}
 				if (!initialized) {
@@ -368,8 +366,8 @@ public class Config {
 
 				for (String disallowedItemName : noConnectionBlocksList.get()) {
 					ResourceLocation registryName = new ResourceLocation(disallowedItemName);
-					if (BuiltInRegistries.BLOCK.containsKey(registryName)) {
-						noConnnectionBlocksSet.add(BuiltInRegistries.BLOCK.get(registryName));
+					if (Registry.BLOCK.containsKey(registryName)) {
+						noConnnectionBlocksSet.add(Registry.BLOCK.get(registryName));
 					}
 				}
 			}
@@ -388,7 +386,7 @@ public class Config {
 			}
 
 			public boolean isItemDisallowed(Item item) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!COMMON.specification.isLoaded()) {
 					return true;
 				}
 
@@ -409,8 +407,8 @@ public class Config {
 
 				for (String disallowedItemName : disallowedItemsList.get()) {
 					ResourceLocation registryName = new ResourceLocation(disallowedItemName);
-					if (BuiltInRegistries.ITEM.containsKey(registryName)) {
-						disallowedItemsSet.add(BuiltInRegistries.ITEM.get(registryName));
+					if (Registry.ITEM.containsKey(registryName)) {
+						disallowedItemsSet.add(Registry.ITEM.get(registryName));
 					}
 				}
 			}
@@ -439,11 +437,11 @@ public class Config {
 	}
 
 	public static void register() {
-		COMMON = register(Common::new, ModConfig.Type.CLIENT);
-		SERVER = register(Server::new, ModConfig.Type.SERVER);
+		CLIENT = register(Common::new, ModConfig.Type.CLIENT);
+		COMMON = register(Server::new, ModConfig.Type.SERVER);
 
 		for (Map.Entry<ModConfig.Type, BaseConfig> pair : CONFIGS.entrySet()) {
-			ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.ID, pair.getKey(), pair.getValue().specification);
+			ModLoadingContext.registerConfig(SophisticatedBackpacks.ID, pair.getKey(), pair.getValue().specification);
 		}
 
 		ModConfigEvents.loading(SophisticatedBackpacks.ID).register(Config::onConfigLoad);

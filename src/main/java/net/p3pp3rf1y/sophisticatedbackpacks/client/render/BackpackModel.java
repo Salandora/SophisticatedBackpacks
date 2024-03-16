@@ -3,7 +3,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -437,8 +437,8 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 	}
 
 	private ModelPart getFluidBar(TextureAtlasSprite still, int fill, boolean left) {
-		int atlasWidth = (int) (still.contents().width() / (still.getU1() - still.getU0()));
-		int atlasHeight = (int) (still.contents().height() / (still.getV1() - still.getV0()));
+		int atlasWidth = (int) (still.getWidth() / (still.getU1() - still.getU0()));
+		int atlasHeight = (int) (still.getHeight() / (still.getV1() - still.getV0()));
 		int u = (int) (still.getU0() * atlasWidth);
 		int v = (int) (still.getV0() * atlasHeight);
 		FluidBarCacheKey key = new FluidBarCacheKey(u, v, fill);
@@ -465,10 +465,10 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 	public <L extends LivingEntity, M extends EntityModel<L>> void translateRotateAndScale(M parentModel, LivingEntity livingEntity, PoseStack matrixStack, boolean wearsArmor) {
 		if (livingEntity.isCrouching()) {
 			matrixStack.translate(0D, 0.2D, 0D);
-			matrixStack.mulPose(Axis.XP.rotationDegrees(90F / (float) Math.PI));
+			matrixStack.mulPose(Vector3f.XP.rotationDegrees(90F / (float) Math.PI));
 		}
 
-		matrixStack.mulPose(Axis.YP.rotationDegrees(180));
+		matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
 		float zOffset = wearsArmor ? -0.35f : -0.3f;
 		float yOffset = -0.75f;
 
@@ -518,7 +518,7 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 
 	private static String getTierPartName(Item backpackItem, String partNamePrefix) {
 		//noinspection ConstantConditions - by this point backpack items are registered
-		return partNamePrefix + BuiltInRegistries.ITEM.getKey(backpackItem).getPath();
+		return partNamePrefix + Registry.ITEM.getKey(backpackItem).getPath();
 	}
 
 	private static void addLeftPouchesClips(PartDefinition partDefinition, Item backpackItem, int yTextureOffset) {

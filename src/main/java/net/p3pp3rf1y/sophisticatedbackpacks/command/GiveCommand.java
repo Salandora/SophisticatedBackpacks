@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -35,7 +35,7 @@ public class GiveCommand {
 
 	private static int giveBackpack(CommandSourceStack source, UUID backpackUuid, Collection<ServerPlayer> players) {
 		BackpackAccessLogger.getBackpackLog(backpackUuid).ifPresent(alr -> {
-			Item item = BuiltInRegistries.ITEM.get(alr.getBackpackItemRegistryName());
+			Item item = Registry.ITEM.get(alr.getBackpackItemRegistryName());
 			ItemStack backpack = new ItemStack(item);
 			if (!backpack.getHoverName().getString().equals(alr.getBackpackName())) {
 				backpack.setHoverName(Component.literal(alr.getBackpackName()));

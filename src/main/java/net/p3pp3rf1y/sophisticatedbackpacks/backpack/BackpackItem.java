@@ -2,7 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
@@ -10,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,8 +25,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -62,7 +62,6 @@ import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -70,7 +69,7 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BackpackItem extends ItemBase implements IStashStorageItem, Equipable {
+public class BackpackItem extends ItemBase implements IStashStorageItem {
 	private final IntSupplier numberOfSlots;
 	private final IntSupplier numberOfUpgradeSlots;
 	private final Supplier<BackpackBlock> blockSupplier;
@@ -80,24 +79,24 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	public BackpackItem(IntSupplier numberOfSlots, IntSupplier numberOfUpgradeSlots, Supplier<BackpackBlock> blockSupplier, UnaryOperator<Properties> updateProperties) {
-		super(updateProperties.apply(new Properties().stacksTo(1)));
+		super(updateProperties.apply(new Properties().stacksTo(1)), ModItems.CREATIVE_TAB);
 		this.numberOfSlots = numberOfSlots;
 		this.numberOfUpgradeSlots = numberOfUpgradeSlots;
 		this.blockSupplier = blockSupplier;
 	}
 
 	@Override
-	public void addCreativeTabItems(Consumer<ItemStack> itemConsumer) {
-		super.addCreativeTabItems(itemConsumer);
+	public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
+		super.fillItemCategory(group, items);
 
-		if (this != ModItems.BACKPACK || !net.p3pp3rf1y.sophisticatedcore.Config.COMMON.enabledItems.isItemEnabled(this)) {
+		if (!allowedIn(group) || this != ModItems.BACKPACK || !net.p3pp3rf1y.sophisticatedcore.Config.COMMON.enabledItems.isItemEnabled(this)) {
 			return;
 		}
 
 		for (DyeColor color : DyeColor.values()) {
 			ItemStack stack = new ItemStack(this);
 			new BackpackWrapper(stack).setColors(ColorHelper.getColor(color.getTextureDiffuseColors()), ColorHelper.getColor(color.getTextureDiffuseColors()));
-			itemConsumer.accept(stack);
+			items.add(stack);
 		}
 
 		int clothColor = ColorHelper.calculateColor(BackpackWrapper.DEFAULT_CLOTH_COLOR, BackpackWrapper.DEFAULT_CLOTH_COLOR, List.of(
@@ -109,7 +108,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 		ItemStack stack = new ItemStack(this);
 		new BackpackWrapper(stack).setColors(clothColor, trimColor);
-		itemConsumer.accept(stack);
+		items.add(stack);
 	}
 
 	@Override
@@ -161,7 +160,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			backpackItemEntity.setPos(itemEntity.getX(), itemEntity.getY(), itemEntity.getZ());
 			backpackItemEntity.setItem(itemstack);
 			backpackItemEntity.setPickUpDelay(itemEntity.pickupDelay);
-			backpackItemEntity.setThrower(itemEntity.getOwner() != null ? itemEntity.getOwner().getUUID() : null);
+			backpackItemEntity.setThrower(itemEntity.getThrower());
 			backpackItemEntity.setDeltaMovement(itemEntity.getDeltaMovement());
 		}
 		return backpackItemEntity;
@@ -258,7 +257,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 	@Override
 	public void onArmorTick(ItemStack stack, Level level, Player player) {
-		if (level.isClientSide || player.isSpectator() || player.isDeadOrDying() || Boolean.FALSE.equals(Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get())) {
+		if (level.isClientSide || player.isSpectator() || player.isDeadOrDying() || Boolean.FALSE.equals(Config.COMMON.nerfsConfig.onlyWornBackpackTriggersUpgrades.get())) {
 			return;
 		}
 		BackpackWrapperLookup.get(stack).ifPresent(
@@ -270,7 +269,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 	@Override
 	public void inventoryTick(ItemStack stack, Level level, Entity entityIn, int itemSlot, boolean isSelected) {
-		if (level.isClientSide || !(entityIn instanceof Player player) || player.isSpectator() || player.isDeadOrDying() || (Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get() && itemSlot > -1)) {
+		if (level.isClientSide || !(entityIn instanceof Player player) || player.isSpectator() || player.isDeadOrDying() || (Config.COMMON.nerfsConfig.onlyWornBackpackTriggersUpgrades.get() && itemSlot > -1)) {
 			return;
 		}
 		BackpackWrapperLookup.get(stack).ifPresent(
@@ -288,8 +287,9 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return numberOfUpgradeSlots.getAsInt();
 	}
 
+	@Nullable
 	@Override
-	public EquipmentSlot getEquipmentSlot() {
+	public EquipmentSlot getEquipmentSlot(ItemStack stack) {
 		return EquipmentSlot.CHEST;
 	}
 
@@ -305,7 +305,10 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 					try (Transaction ctx = Transaction.openOuter()) {
 						long inserted = wrapper.getInventoryForUpgradeProcessing().insert(ItemVariant.of(stack), stack.getCount(), ctx);
 						ctx.commit();
-						return stack.copyWithCount(stack.getCount() - (int) inserted);
+
+						ItemStack result = stack.copy();
+						result.setCount(stack.getCount() - (int) inserted);
+						return result;
 					}
 				}).orElse(stack);
 	}
@@ -313,7 +316,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	@Override
 	public StashResult getItemStashable(ItemStack storageStack, ItemStack stack) {
 		return BackpackWrapperLookup.get(storageStack).map(wrapper -> {
-			if (StorageUtil.simulateInsert(wrapper.getInventoryForUpgradeProcessing(), ItemVariant.of(stack), stack.getCount(), null) == 0) {
+			if (wrapper.getInventoryForUpgradeProcessing().simulateInsert(ItemVariant.of(stack), stack.getCount(), null) == 0) {
 				return StashResult.NO_SPACE;
 			}
 			if (wrapper.getInventoryHandler().getSlotTracker().getItems().contains(stack.getItem()) || wrapper.getSettingsHandler().getTypeCategory(MemorySettingsCategory.class).matchesFilter(stack)) {
@@ -365,6 +368,6 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 	@Override
 	public boolean canFitInsideContainerItems() {
-		return Config.SERVER.canBePlacedInContainerItems.get();
+		return Config.COMMON.canBePlacedInContainerItems.get();
 	}
 }

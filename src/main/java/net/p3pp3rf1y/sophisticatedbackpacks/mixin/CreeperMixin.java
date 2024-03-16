@@ -11,7 +11,7 @@ import net.p3pp3rf1y.sophisticatedcore.util.MixinHelper;
 
 @Mixin(Creeper.class)
 public class CreeperMixin {
-    @Inject(method = "explodeCreeper", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;", shift = At.Shift.BEFORE))
+    @Inject(method = "explodeCreeper", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Explosion$BlockInteraction;)Lnet/minecraft/world/level/Explosion;", shift = At.Shift.BEFORE))
     private void sophisticatedbackpacks$explodeCreeper(CallbackInfo ci) {
         EntityBackpackAdditionHandler.removeBeneficialEffects(MixinHelper.cast(this));
     }

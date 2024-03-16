@@ -22,8 +22,8 @@ public class ClientBackpackContentsTooltip extends ClientStorageContentsTooltipB
 	}
 
 	@Override
-	public void renderImage(Font font, int leftX, int topY, PoseStack poseStack, ItemRenderer itemRenderer) {
-		BackpackWrapperLookup.get(backpack).ifPresent(wrapper -> renderTooltip(wrapper, font, leftX, topY, poseStack, itemRenderer));
+	public void renderImage(Font font, int leftX, int topY, PoseStack poseStack, ItemRenderer itemRenderer, int blitOffset) {
+		BackpackWrapperLookup.get(backpack).ifPresent(wrapper -> renderTooltip(wrapper, font, leftX, topY, poseStack, itemRenderer, blitOffset));
 	}
 
 	public ClientBackpackContentsTooltip(BackpackItem.BackpackContentsTooltip tooltip) {

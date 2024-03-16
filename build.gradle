@@ -22,17 +22,10 @@ repositories {
     mavenLocal()
     mavenCentral()
 
-    exclusiveContent {
+/*    exclusiveContent {
         forRepositories(
             maven {
                 url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
-                credentials {
-                    username = System.getenv("REPO_USERNAME")
-                    password = System.getenv("READ_PACKAGES_TOKEN")
-                }
-            },
-            maven {
-                url = uri("https://maven.pkg.github.com/Salandora/Porting-Lib")
                 credentials {
                     username = System.getenv("REPO_USERNAME")
                     password = System.getenv("READ_PACKAGES_TOKEN")
@@ -41,9 +34,8 @@ repositories {
         )
         filter {
             includeGroup "com.github.salandora"
-            includeGroup "io.github.fabricators_of_create.Porting-Lib"
         }
-    }
+    }*/
 
     maven { url = "https://maven.quiltmc.org/repository/release" } // QM
     maven { url = 'https://maven.parchmentmc.org' } // Parchment
@@ -86,7 +78,7 @@ repositories {
 configurations.configureEach {
     resolutionStrategy.eachDependency {
         if (requested.module.name == "fabric-loader") {
-            useVersion(loader_version)
+            useVersion(project.loader_version)
         }
     }
 }
@@ -103,9 +95,7 @@ def setup(DependencyHandler deps) {
     deps.minecraft("com.mojang:minecraft:$minecraft_version")
     deps.mappings(loom.layered {
         it.mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$qm_version:intermediary-v2")
-        if (parchment_version != "none")
-            it.parchment("org.parchmentmc.data:parchment-$parchment_version@zip")
-        it.officialMojangMappings { nameSyntheticMembers = false }
+        it.officialMojangMappings() { nameSyntheticMembers = false }
     })
     deps.modImplementation("net.fabricmc:fabric-loader:$loader_version")
 
@@ -114,14 +104,7 @@ def setup(DependencyHandler deps) {
 }
 
 def devEnv(DependencyHandler deps) {
-    deps.modLocalRuntime("dev.emi:trinkets:$trinkets_version")
-    deps.modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version")
-    deps.modLocalRuntime("curse.maven:balm-500525:$balm_cf_file_id")
-    deps.modLocalRuntime("curse.maven:craftingtweaks-502516:$crafting_tweaks_cf_file_id")
-    deps.modLocalRuntime("com.terraformersmc:modmenu:$modmenu_version")
-
-    // deps.modLocalRuntime("vazkii.botania:Botania:$botania_version")
-    // deps.modLocalRuntime("vazkii.patchouli:Patchouli:$patchouli_version")
+    deps.modImplementation("maven.modrinth:lazydfu:$lazy_dfu_version")
 }
 
 def dependencies(DependencyHandler deps) {
@@ -141,27 +124,30 @@ def dependencies(DependencyHandler deps) {
         transitive = false
     }
 
-    deps.modApi("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$forge_config_api_port_version")
+    deps.implementation 'com.electronwill.night-config:core:3.6.5'
+    deps.implementation 'com.electronwill.night-config:toml:3.6.5'
+    deps.modApi("net.minecraftforge:forgeconfigapiport-fabric:$forge_config_api_port_version")
     deps.modApi("teamreborn:energy:$energy_version") {
         transitive = false
     }
 }
 
 def compat(DependencyHandler deps) {
-    deps.modCompileOnly("com.terraformersmc:modmenu:$modmenu_version")
+    deps.modImplementation("com.terraformersmc:modmenu:$modmenu_version")
 
     deps.modImplementation("curse.maven:malilib-303119:$malilib_cf_file_id")
     deps.modImplementation("curse.maven:litematica-308892:$litematica_cf_file_id")
 
-    /*compileOnly fg.deobf("curse.maven:chipped-456956:${chipped_cf_file_id}")
-    runtimeOnly fg.deobf("curse.maven:chipped-456956:${chipped_cf_file_id}")
-    compileOnly fg.deobf("curse.maven:athena-841890:${athena_cf_file_id}")
-    runtimeOnly fg.deobf("curse.maven:athena-841890:${athena_cf_file_id}")
-    compileOnly fg.deobf("curse.maven:resourcefullib-570073:${resourcefullib_cf_file_id}")
-    runtimeOnly fg.deobf("curse.maven:resourcefullib-570073:${resourcefullib_cf_file_id}")*/
+    deps.modImplementation("curse.maven:chipped-456956:${chipped_cf_file_id}")
+    deps.modImplementation("curse.maven:resourcefullib-570073:${resourcefullib_cf_file_id}")
+//    deps.modImplementation("curse.maven:ctm-267602:${ctm_cf_file_id}")
 
-//    deps.modCompileOnly("vazkii.botania:Botania:${botania_version}")
-//    deps.modCompileOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
+    // deps.modLocalRuntime("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
+    // deps.modLocalRuntime("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
+    // deps.modLocalRuntime("curse.maven:config-menus-forge-544048:${forge_config_screen_version}")
+
+    deps.modImplementation("vazkii.botania:Botania:${botania_version}")
+    deps.modImplementation("vazkii.patchouli:Patchouli:${patchouli_version}")
 
     deps.modImplementation("dev.emi:trinkets:$trinkets_version")
     deps.modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$cca_version") // for Trinkets
@@ -177,12 +163,17 @@ def recipeViewers(DependencyHandler deps) {
     deps.modCompileOnly("mezz.jei:jei-$minecraft_version-common-api:$jei_version") { transitive = false }
     deps.modCompileOnly("mezz.jei:jei-$minecraft_version-fabric-api:$jei_version") { transitive = false }
     // REI
-    deps.modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")
-    deps.modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
+    deps.modImplementation("me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version")
+    deps.modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version") {
+        exclude(module: "fabric-loader")
+    }
+    deps.modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version") {
+        exclude(module: "fabric-loader")
+    }
 
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "emi": deps.modLocalRuntime("dev.emi:emi-fabric:$emi_version"); break
-        case "jei": deps.modRuntimeOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version"); break
+        case "jei": deps.modLocalRuntime("mezz.jei:jei-$minecraft_version-fabric:$jei_version"); break
         case "rei": deps.modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$rei_version"); break
         case "disabled": break
         default: println("Unknown recipe viewer specified: $recipe_viewer. Must be JEI, REI, EMI, or disabled.")
@@ -264,14 +255,14 @@ loom {
     }
 }
 
-test {
+/*test {
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
     }
 
     workingDir "run/test_client"
-}
+}*/
 test.dependsOn("processResources")
 
 tasks.register("generateResources") {

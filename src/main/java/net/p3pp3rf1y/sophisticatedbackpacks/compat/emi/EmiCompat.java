@@ -21,8 +21,14 @@ import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiSettingsGhostDragDropHandle
 import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiStorageGhostDragDropHandler;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 public class EmiCompat implements EmiPlugin {
+	private static Consumer<EmiRegistry> additionalCategories = registration -> {};
+	public static void setAdditionalCategories(Consumer<EmiRegistry> additionalCategories) {
+		EmiCompat.additionalCategories = additionalCategories;
+	}
+
     @Override
     public void register(EmiRegistry registry) {
         registry.addExclusionArea(BackpackScreen.class, (screen, consumer) -> {
@@ -57,13 +63,14 @@ public class EmiCompat implements EmiPlugin {
 
 		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, EmiStack.of(ModItems.CRAFTING_UPGRADE));
 		registry.addWorkstation(VanillaEmiRecipeCategories.STONECUTTING, EmiStack.of(ModItems.STONECUTTER_UPGRADE));
+		additionalCategories.accept(registry);
     }
 
     private static void registerCraftingRecipes(EmiRegistry registry, Collection<CraftingRecipe> recipes) {
         recipes.forEach(r -> registry.addRecipe(
             new EmiCraftingRecipe(
                 r.getIngredients().stream().map(EmiIngredient::of).toList(),
-                EmiStack.of(r.getResultItem(null)),
+                EmiStack.of(r.getResultItem()),
                 r.getId())
             )
         );

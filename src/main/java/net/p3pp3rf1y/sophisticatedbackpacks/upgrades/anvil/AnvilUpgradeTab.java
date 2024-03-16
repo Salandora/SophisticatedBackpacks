@@ -38,7 +38,7 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 			@Override
 			public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
 				if (isEditable()) {
-					setFocused(true);
+					setFocus(true);
 					screen.setFocused(itemNameTextBox);
 				}
 				return super.mouseClicked(pMouseX, pMouseY, pButton);

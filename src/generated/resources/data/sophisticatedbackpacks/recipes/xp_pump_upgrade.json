@@ -1,12 +1,11 @@
 {
+  "type": "minecraft:crafting_shaped",
   "fabric:load_conditions": [
     {
       "condition": "sophisticatedcore:item_enabled",
       "itemRegistryName": "sophisticatedbackpacks:xp_pump_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "C": {
       "item": "minecraft:experience_bottle"

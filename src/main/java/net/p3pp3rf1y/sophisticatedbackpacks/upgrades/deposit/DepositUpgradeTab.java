@@ -23,7 +23,7 @@ public class DepositUpgradeTab extends UpgradeSettingsTab<DepositUpgradeContaine
 		public Basic(DepositUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) {
 			super(upgradeContainer, position, screen, SBPTranslationHelper.INSTANCE.translUpgrade("deposit"), SBPTranslationHelper.INSTANCE.translUpgradeTooltip("deposit"));
 			filterLogicControl = addHideableChild(new DepositFilterLogicControl.Basic(screen, new Position(x + 3, y + 24), getContainer().getFilterLogicContainer(),
-					Config.SERVER.depositUpgrade.slotsInRow.get()));
+					Config.COMMON.depositUpgrade.slotsInRow.get()));
 		}
 	}
 
@@ -31,7 +31,7 @@ public class DepositUpgradeTab extends UpgradeSettingsTab<DepositUpgradeContaine
 		public Advanced(DepositUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) {
 			super(upgradeContainer, position, screen, SBPTranslationHelper.INSTANCE.translUpgrade("advanced_deposit"), SBPTranslationHelper.INSTANCE.translUpgradeTooltip("advanced_deposit"));
 			filterLogicControl = addHideableChild(new DepositFilterLogicControl.Advanced(screen, new Position(x + 3, y + 24), getContainer().getFilterLogicContainer(),
-					Config.SERVER.advancedDepositUpgrade.slotsInRow.get()));
+					Config.COMMON.advancedDepositUpgrade.slotsInRow.get()));
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
-import com.mojang.math.Axis;
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
@@ -296,10 +295,9 @@ public class BackpackBlock extends BlockBase implements EntityBlock, SimpleWater
 	}
 
 	private static Vector3f getBackpackMiddleFacePoint(BlockPos pos, Direction facing, Vector3f vector) {
-		Vector3f point = new Vector3f(vector);
+		Vector3f point = vector.copy();
 		point.add(0, 0, 0.41f);
-		//point = Axis.YN.rotationDegrees(facing.toYRot()).transform(point);
-		point.rotate(Axis.YN.rotationDegrees(facing.toYRot()));
+		point.transform(Vector3f.YN.rotationDegrees(facing.toYRot()));
 		point.add(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f);
 		return point;
 	}

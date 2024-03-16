@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
-import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
-import io.github.fabricators_of_create.porting_lib.models.geometry.RegisterGeometryLoadersCallback;
+import io.github.fabricators_of_create.porting_lib.event.client.RegisterGeometryLoadersCallback;
+import io.github.fabricators_of_create.porting_lib.model.geometry.IGeometryLoader;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;

@@ -28,7 +28,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 
 	@Override
 	public boolean hideSettingsTab() {
-		return Boolean.FALSE.equals(Config.SERVER.inceptionUpgrade.upgradesUseInventoriesOfBackpacksInBackpack.get());
+		return Boolean.FALSE.equals(Config.COMMON.inceptionUpgrade.upgradesUseInventoriesOfBackpacksInBackpack.get());
 	}
 
 	public InventoryOrder getInventoryOrder() {
@@ -43,7 +43,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 
 	@Override
 	public ITrackedContentsItemHandler wrapInventory(ITrackedContentsItemHandler inventory) {
-		if (Boolean.TRUE.equals(Config.SERVER.inceptionUpgrade.upgradesUseInventoriesOfBackpacksInBackpack.get())) {
+		if (Boolean.TRUE.equals(Config.COMMON.inceptionUpgrade.upgradesUseInventoriesOfBackpacksInBackpack.get())) {
 			initSubBackpacksHandler();
 			return new InceptionInventoryHandler(inventory, getInventoryOrder(), subBackpacksHandler);
 		}
@@ -57,7 +57,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 
 	@Override
 	public IUpgradeWrapperAccessor wrapAccessor(IUpgradeWrapperAccessor upgradeWrapperAccessor) {
-		if (Boolean.TRUE.equals(Config.SERVER.inceptionUpgrade.upgradesInContainedBackpacksAreFunctional.get())) {
+		if (Boolean.TRUE.equals(Config.COMMON.inceptionUpgrade.upgradesInContainedBackpacksAreFunctional.get())) {
 			initSubBackpacksHandler();
 			return new InceptionWrapperAccessor(storageWrapper, subBackpacksHandler);
 		}
@@ -67,7 +67,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 	@Override
 	@Nullable
 	public IStorageFluidHandler wrapHandler(@Nullable IStorageFluidHandler fluidHandler, ItemStack backpack) {
-		if (Boolean.TRUE.equals(Config.SERVER.inceptionUpgrade.upgradesInContainedBackpacksAreFunctional.get())) {
+		if (Boolean.TRUE.equals(Config.COMMON.inceptionUpgrade.upgradesInContainedBackpacksAreFunctional.get())) {
 			initSubBackpacksHandler();
 			return new InceptionFluidHandler(fluidHandler, backpack, getInventoryOrder(), subBackpacksHandler);
 		}
@@ -77,7 +77,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 	@Override
 	@Nullable
 	public EnergyStorage wrapStorage(@Nullable EnergyStorage energyStorage) {
-		if (Boolean.TRUE.equals(Config.SERVER.inceptionUpgrade.upgradesInContainedBackpacksAreFunctional.get())) {
+		if (Boolean.TRUE.equals(Config.COMMON.inceptionUpgrade.upgradesInContainedBackpacksAreFunctional.get())) {
 			initSubBackpacksHandler();
 			return new InceptionEnergyStorage(energyStorage, getInventoryOrder(), subBackpacksHandler);
 		}

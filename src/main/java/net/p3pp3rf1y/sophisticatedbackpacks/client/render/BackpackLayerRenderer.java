@@ -1,19 +1,18 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
@@ -70,8 +69,8 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 			matrixStack.pushPose();
 			matrixStack.translate(0, 0.9, -0.25);
 			matrixStack.scale(0.5f, 0.5f, 0.5f);
-			matrixStack.mulPose(Axis.ZP.rotationDegrees(180f + displayItem.getRotation()));
-			Minecraft.getInstance().getItemRenderer().renderStatic(displayItem.getItem(), ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer, level, 0);
+			matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180f + displayItem.getRotation()));
+			Minecraft.getInstance().getItemRenderer().renderStatic(displayItem.getItem(), ItemTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer, 0);
 			matrixStack.popPose();
 		});
 	}
@@ -84,13 +83,11 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 	}
 
 	private static Vector3f getBackpackMiddleFacePoint(LivingEntity livingEntity, Vector3f vector) {
-		Vector3f point = new Vector3f(vector);
-		//point = Axis.XP.rotationDegrees(livingEntity.isCrouching() ? 25 : 0).transform(point);
-		point.rotate(Axis.XP.rotationDegrees(livingEntity.isCrouching() ? 25 : 0));
+		Vector3f point = vector.copy();
+		point.transform(Vector3f.XP.rotationDegrees(livingEntity.isCrouching() ? 25 : 0));
 		point.add(0, 0.8f, livingEntity.isCrouching() ? 0.9f : 0.7f);
-		//point = Axis.YN.rotationDegrees(livingEntity.yBodyRot - 180).transform(point);
-		point.rotate(Axis.YN.rotationDegrees(livingEntity.yBodyRot - 180));
-		point.add(livingEntity.position().toVector3f());
+		point.transform(Vector3f.YN.rotationDegrees(livingEntity.yBodyRot - 180));
+		point.add(new Vector3f(livingEntity.position()));
 		return point;
 	}
 

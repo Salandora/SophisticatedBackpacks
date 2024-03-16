@@ -1,12 +1,11 @@
 {
+  "type": "sophisticatedbackpacks:basic_backpack",
   "fabric:load_conditions": [
     {
       "condition": "sophisticatedcore:item_enabled",
       "itemRegistryName": "sophisticatedbackpacks:backpack"
     }
   ],
-  "type": "sophisticatedbackpacks:basic_backpack",
-  "category": "misc",
   "key": {
     "C": {
       "tag": "c:wooden_chests"

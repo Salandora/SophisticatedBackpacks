@@ -1,12 +1,11 @@
 {
+  "type": "sophisticatedcore:upgrade_next_tier",
   "fabric:load_conditions": [
     {
       "condition": "sophisticatedcore:item_enabled",
       "itemRegistryName": "sophisticatedbackpacks:battery_upgrade"
     }
   ],
-  "type": "sophisticatedcore:upgrade_next_tier",
-  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"

@@ -6,16 +6,15 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.AtomicDouble;
 
-import io.github.fabricators_of_create.porting_lib.extensions.extensions.IShearable;
-import io.github.fabricators_of_create.porting_lib.tool.ToolAction;
-import io.github.fabricators_of_create.porting_lib.tool.ToolActions;
+import io.github.fabricators_of_create.porting_lib.extensions.IShearable;
+import io.github.fabricators_of_create.porting_lib.util.ToolAction;
+import io.github.fabricators_of_create.porting_lib.util.ToolActions;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -61,12 +60,12 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.AXE_SCRAPE;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.AXE_STRIP;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.AXE_WAX_OFF;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.SHEARS_CARVE;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.SHEARS_HARVEST;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.SHOVEL_FLATTEN;
+import static io.github.fabricators_of_create.porting_lib.util.ToolActions.AXE_SCRAPE;
+import static io.github.fabricators_of_create.porting_lib.util.ToolActions.AXE_STRIP;
+import static io.github.fabricators_of_create.porting_lib.util.ToolActions.AXE_WAX_OFF;
+import static io.github.fabricators_of_create.porting_lib.util.ToolActions.SHEARS_CARVE;
+import static io.github.fabricators_of_create.porting_lib.util.ToolActions.SHEARS_HARVEST;
+import static io.github.fabricators_of_create.porting_lib.util.ToolActions.SHOVEL_FLATTEN;
 
 public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpgradeWrapper, ToolSwapperUpgradeItem>
 		implements IBlockClickResponseUpgrade, IAttackEntityResponseUpgrade, IBlockToolSwapUpgrade, IEntityToolSwapUpgrade {
@@ -89,7 +88,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	protected ToolSwapperUpgradeWrapper(IStorageWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
 		super(backpackWrapper, upgrade, upgradeSaveHandler);
-		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, Config.SERVER.toolSwapperUpgrade.filterSlots.get());
+		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, Config.COMMON.toolSwapperUpgrade.filterSlots.get());
 	}
 
 	@Override
@@ -156,7 +155,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	private boolean hasSpaceInBackpackOrCanPlaceInTheSlotOfSwappedTool(IItemHandlerSimpleInserter backpackInventory, ItemVariant mainHandItem, int mainHandItemCount, ItemStack tool, int selectedSlot) {
-		return (StorageUtil.simulateInsert(backpackInventory, mainHandItem, mainHandItemCount, null) == mainHandItemCount)
+		return (backpackInventory.simulateInsert(mainHandItem, mainHandItemCount, null) == mainHandItemCount)
 				|| (tool.getCount() == 1 && backpackInventory.isItemValid(selectedSlot, mainHandItem));
 	}
 
@@ -315,7 +314,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 			return false;
 		}
 
-		return tryToSwapTool(player, stack -> itemWorksOnEntity(stack, entity), BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()));
+		return tryToSwapTool(player, stack -> itemWorksOnEntity(stack, entity), Registry.ENTITY_TYPE.getKey(entity.getType()));
 	}
 
 	private boolean itemWorksOnEntity(ItemStack stack, Entity entity) {
@@ -331,7 +330,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 			return false;
 		}
 
-		return tryToSwapTool(player, stack -> itemWorksOnBlock(world, pos, blockState, player, stack), BuiltInRegistries.BLOCK.getKey(blockState.getBlock()));
+		return tryToSwapTool(player, stack -> itemWorksOnBlock(world, pos, blockState, player, stack), Registry.BLOCK.getKey(blockState.getBlock()));
 	}
 
 	private boolean tryToSwapTool(Player player, Predicate<ItemStack> isToolValid, @Nullable ResourceLocation targetRegistryName) {

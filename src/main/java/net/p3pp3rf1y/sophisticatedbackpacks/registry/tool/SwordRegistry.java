@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -37,7 +37,7 @@ public class SwordRegistry {
 			return true;
 		}
 
-		ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(stack.getItem());
+		ResourceLocation registryName = Registry.ITEM.getKey(stack.getItem());
 		if (registryName == null) {
 			return false;
 		}
@@ -94,7 +94,7 @@ public class SwordRegistry {
 		}
 
 		private void parseSword(String swordName) {
-			Item sword = BuiltInRegistries.ITEM.get(new ResourceLocation(swordName));
+			Item sword = Registry.ITEM.get(new ResourceLocation(swordName));
 			if (sword != null) {
 				SWORD_ITEMS.add(sword);
 			} else {
