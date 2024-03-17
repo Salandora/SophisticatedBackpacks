@@ -76,8 +76,12 @@ public class SBJeiPlugin implements IModPlugin {
 
 		registration.addGuiContainerHandler(BackpackSettingsScreen.class, new IGuiContainerHandler<>() {
 			@Override
-			public List<Rect2i> getGuiExtraAreas(BackpackSettingsScreen gui) {
-				return new ArrayList<>(gui.getSettingsTabControl().getTabRectangles());
+			public List<Rect2i> getGuiExtraAreas(BackpackSettingsScreen screen) {
+				if (screen == null || screen.getSettingsTabControl() == null) {
+					return List.of();
+				}
+
+				return new ArrayList<>(screen.getSettingsTabControl().getTabRectangles());
 			}
 		});
 

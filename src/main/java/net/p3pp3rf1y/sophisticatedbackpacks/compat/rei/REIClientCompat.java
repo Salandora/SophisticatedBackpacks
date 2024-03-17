@@ -44,7 +44,13 @@ public class REIClientCompat implements REIClientPlugin {
             return ret.stream().map(r -> new Rectangle(r.getX(), r.getY(), r.getWidth(), r.getHeight())).toList();
         });
 
-        zones.register(BackpackSettingsScreen.class, screen -> screen.getSettingsTabControl().getTabRectangles().stream().map(r -> new Rectangle(r.getX(), r.getY(), r.getWidth(), r.getHeight())).toList());
+        zones.register(BackpackSettingsScreen.class, screen -> {
+			if (screen == null || screen.getSettingsTabControl() == null) {
+				return List.of();
+			}
+
+			return screen.getSettingsTabControl().getTabRectangles().stream().map(r -> new Rectangle(r.getX(), r.getY(), r.getWidth(), r.getHeight())).toList();
+		});
     }
 
 	@Override
