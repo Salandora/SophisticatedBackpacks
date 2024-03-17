@@ -38,7 +38,6 @@ public class EmiCompat implements EmiPlugin {
         });
 
         registry.addExclusionArea(BackpackSettingsScreen.class, (screen, consumer) -> {
-            //noinspection ConstantValue
             if (screen == null || screen.getSettingsTabControl() == null) { // Due to how Emi collects the exclusion area this can be null
                 return;
             }
