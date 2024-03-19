@@ -55,7 +55,6 @@ import net.p3pp3rf1y.sophisticatedcore.renderdata.IUpgradeRenderData;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.UpgradeRenderDataType;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
-import net.p3pp3rf1y.sophisticatedcore.util.BlockBase;
 import net.p3pp3rf1y.sophisticatedcore.util.FluidHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
@@ -65,7 +64,7 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BackpackBlock extends BlockBase implements EntityBlock, SimpleWaterloggedBlock, BlockInterfaceHelper {
+public class BackpackBlock extends Block implements EntityBlock, SimpleWaterloggedBlock, BlockInterfaceHelper {
 	public static final BooleanProperty LEFT_TANK = BooleanProperty.create("left_tank");
 	public static final BooleanProperty RIGHT_TANK = BooleanProperty.create("right_tank");
 	public static final BooleanProperty BATTERY = BooleanProperty.create("battery");
