@@ -1,5 +1,5 @@
 {
-    "itemGroup.sophisticatedbackpacks": "정교한 배낭",
+    "itemGroup.sophisticatedbackpacks.item_group": "정교한 배낭",
     "item.sophisticatedbackpacks.backpack": "배낭",
     "block.sophisticatedbackpacks.backpack": "배낭",
     "item.sophisticatedbackpacks.iron_backpack": "철 배낭",

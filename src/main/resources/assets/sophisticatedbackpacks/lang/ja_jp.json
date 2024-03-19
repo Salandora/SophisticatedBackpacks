@@ -3,7 +3,7 @@
   "_mod_ver": "3.18.40.779",
   "_author": "Yamada Megane @YamadaMeganeOre",
 
-  "itemGroup.sophisticatedbackpacks": "Sophisticated Backpacks",
+  "itemGroup.sophisticatedbackpacks.item_group": "Sophisticated Backpacks",
   "item.sophisticatedbackpacks.backpack": "革のリュック",
   "block.sophisticatedbackpacks.backpack": "革のリュック",
   "item.sophisticatedbackpacks.iron_backpack": "鉄のリュック",

@@ -1,5 +1,5 @@
 {
-    "itemGroup.sophisticatedbackpacks": "Sophisticated Backpacks",
+    "itemGroup.sophisticatedbackpacks.item_group": "Sophisticated Backpacks",
     "item.sophisticatedbackpacks.backpack": "Rucksack",
     "block.sophisticatedbackpacks.backpack": "Rucksack",
     "item.sophisticatedbackpacks.iron_backpack": "Eiserner Rucksack",

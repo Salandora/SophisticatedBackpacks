@@ -1,5 +1,5 @@
 {
-    "itemGroup.sophisticatedbackpacks": "Mochilas Sofisticadas",
+    "itemGroup.sophisticatedbackpacks.item_group": "Mochilas Sofisticadas",
     "item.sophisticatedbackpacks.backpack": "Mochila",
     "block.sophisticatedbackpacks.backpack": "Mochila",
     "item.sophisticatedbackpacks.iron_backpack": "Mochila de ferro",
