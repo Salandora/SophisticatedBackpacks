@@ -12,6 +12,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPButtonDefinitions;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.emi.EmiCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBJeiPlugin;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REIClientCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
@@ -59,27 +60,27 @@ public class ChippedCompat implements ICompat {
 
 		if (FabricLoader.getInstance().isModLoaded(CompatModIds.REI)) {
 			REIClientCompat.setAdditionalCategories(registration -> {
-				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.BOTANIST_WORKBENCH.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.GLASSBLOWER.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.CARPENTERS_TABLE.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.LOOM_TABLE.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.MASON_TABLE.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.ALCHEMY_BENCH.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstations(CategoryIdentifier.of(Registry.BLOCK.getKey(ModBlocks.TINKERING_TABLE.get())), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(ModBlocks.BOTANIST_WORKBENCH.getId()), EntryStacks.of(BOTANIST_WORKBENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(ModBlocks.GLASSBLOWER.getId()), EntryStacks.of(GLASSBLOWER_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(ModBlocks.CARPENTERS_TABLE.getId()), EntryStacks.of(CARPENTERS_TABLE_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(ModBlocks.LOOM_TABLE.getId()), EntryStacks.of(LOOM_TABLE_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(ModBlocks.MASON_TABLE.getId()), EntryStacks.of(MASON_TABLE_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(ModBlocks.ALCHEMY_BENCH.getId()), EntryStacks.of(ALCHEMY_BENCH_UPGRADE));
+				registration.addWorkstations(CategoryIdentifier.of(ModBlocks.TINKERING_TABLE.getId()), EntryStacks.of(TINKERING_TABLE_UPGRADE));
 			});
 		}
 
-/*		if (FabricLoader.getInstance().isModLoaded(CompatModIds.EMI)) {
-			EmiCompat.setAdditionalCategories(registration -> {
-				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("botanist_workbench"), EmiStack.of(ModBlocks.BOTANIST_WORKBENCH.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("glassblower"), EmiStack.of(ModBlocks.GLASSBLOWER.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("carpenters_table"), EmiStack.of(ModBlocks.CARPENTERS_TABLE.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("loom_table"), EmiStack.of(ModBlocks.LOOM_TABLE.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("mason_table"), EmiStack.of(ModBlocks.MASON_TABLE.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("alchemy_bench"), EmiStack.of(ModBlocks.ALCHEMY_BENCH.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
-				registration.addWorkstation(new EmiRecipeCategory(new ResourceLocation("tinkering_table"), EmiStack.of(ModBlocks.TINKERING_TABLE.get())), EmiStack.of(BOTANIST_WORKBENCH_UPGRADE));
-			});
-		}*/
+		if (FabricLoader.getInstance().isModLoaded(CompatModIds.EMI)) {
+			EmiCompat.WORKSTATIONS.register((consumer -> {
+				consumer.accept(new EmiCompat.WorkstationEntry(new ResourceLocation("botanist_workbench"), ModBlocks.BOTANIST_WORKBENCH.get(), BOTANIST_WORKBENCH_UPGRADE));
+				consumer.accept(new EmiCompat.WorkstationEntry(new ResourceLocation("glassblower"), ModBlocks.GLASSBLOWER.get(), GLASSBLOWER_UPGRADE));
+				consumer.accept(new EmiCompat.WorkstationEntry(new ResourceLocation("carpenters_table"), ModBlocks.CARPENTERS_TABLE.get(), CARPENTERS_TABLE_UPGRADE));
+				consumer.accept(new EmiCompat.WorkstationEntry(new ResourceLocation("loom_table"), ModBlocks.LOOM_TABLE.get(), LOOM_TABLE_UPGRADE));
+				consumer.accept(new EmiCompat.WorkstationEntry(new ResourceLocation("mason_table"), ModBlocks.MASON_TABLE.get(), MASON_TABLE_UPGRADE));
+				consumer.accept(new EmiCompat.WorkstationEntry(new ResourceLocation("alchemy_bench"), ModBlocks.ALCHEMY_BENCH.get(), ALCHEMY_BENCH_UPGRADE));
+				consumer.accept(new EmiCompat.WorkstationEntry(new ResourceLocation("tinkering_table"), ModBlocks.TINKERING_TABLE.get(), TINKERING_TABLE_UPGRADE));
+			}));
+		}
 
 		registerContainers();
 	}

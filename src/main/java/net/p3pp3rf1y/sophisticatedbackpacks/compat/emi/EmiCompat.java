@@ -3,13 +3,19 @@ package net.p3pp3rf1y.sophisticatedbackpacks.compat.emi;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
+import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.Bounds;
 
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.level.block.Block;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
@@ -20,13 +26,22 @@ import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiGridMenuInfo;
 import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiSettingsGhostDragDropHandler;
 import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiStorageGhostDragDropHandler;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class EmiCompat implements EmiPlugin {
-	private static Consumer<EmiRegistry> additionalCategories = registration -> {};
-	public static void setAdditionalCategories(Consumer<EmiRegistry> additionalCategories) {
-		EmiCompat.additionalCategories = additionalCategories;
+	public static Event<WorkstationCallback> WORKSTATIONS = EventFactory.createArrayBacked(WorkstationCallback.class, (listeners) -> (consumer) -> {
+		for (WorkstationCallback listener : listeners) {
+			listener.additionalWorkstations(consumer);
+		}
+	});
+	
+	public record WorkstationEntry(ResourceLocation id, Block icon, Item workstation) {}
+
+	public interface WorkstationCallback {
+		void additionalWorkstations(Consumer<WorkstationEntry> consumer);
 	}
 
     @Override
@@ -62,7 +77,12 @@ public class EmiCompat implements EmiPlugin {
 
 		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, EmiStack.of(ModItems.CRAFTING_UPGRADE));
 		registry.addWorkstation(VanillaEmiRecipeCategories.STONECUTTING, EmiStack.of(ModItems.STONECUTTER_UPGRADE));
-		additionalCategories.accept(registry);
+
+		List<WorkstationEntry> entries = new ArrayList<>();
+		WORKSTATIONS.invoker().additionalWorkstations(entries::add);
+		for (WorkstationEntry entry : entries) {
+			registry.addWorkstation(new EmiRecipeCategory(entry.id, EmiStack.of(entry.icon)), EmiStack.of(entry.workstation));
+		}
     }
 
     private static void registerCraftingRecipes(EmiRegistry registry, Collection<CraftingRecipe> recipes) {
