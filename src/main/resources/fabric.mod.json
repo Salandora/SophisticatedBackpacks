@@ -42,6 +42,8 @@
     },
     "mixins": [
         "sophisticatedbackpacks.mixins.json",
+        "porting_lib/shearable.mixins.json",
+        "porting_lib/tool_actions.mixins.json",
         "compat/sophisticatedbackpacks.litematica.mixins.json"
     ],
     "accessWidener": "sophisticatedbackpacks.accesswidener",
@@ -54,6 +56,7 @@
         "forgeconfigapiport": ">=${forge_config_version}",
         "team_reborn_energy": ">=${energy_version}",
         "porting_lib_common": ">=${port_lib_version}",
+        "porting_lib_extensions": ">=${port_lib_version}",
         "porting_lib_fake_players": ">=${port_lib_version}",
         "porting_lib_loot": ">=${port_lib_version}",
         "porting_lib_model_loader": ">=${port_lib_version}",

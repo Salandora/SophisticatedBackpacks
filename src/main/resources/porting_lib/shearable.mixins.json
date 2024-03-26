@@ -1,0 +1,21 @@
+{
+    "required": true,
+    "priority": 1100,
+    "minVersion": "0.8",
+    "package": "net.p3pp3rf1y.porting_lib.shearable.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "common.DeadBushBlockMixin",
+        "common.LeavesBlockMixin",
+        "common.MushroomCowMixin",
+        "common.SeagrassBlockMixin",
+        "common.SheepMixin",
+        "common.SnowGolemMixin",
+        "common.TallGrassBlockMixin",
+        "common.VineBlockMixin",
+        "common.WebBlockMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
