@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 public class EverlastingBackpackItemEntity extends ItemEntity {
 	private boolean wasFloatingUp = false;
 
-	// Add an age property here so we can use the unlimited Lifetime and have the item rotation work normally
+	// Add an age property here, so we can use the unlimited Lifetime and have the item rotation work normally
 	private int age;
 
 	public EverlastingBackpackItemEntity(EntityType<? extends ItemEntity> type, Level world) {
