@@ -80,8 +80,8 @@ public class CommonEventHandler {
 		UseEntityCallback.EVENT.register(this::interactWithEntity);
 
 		EntityEvents.ON_JOIN_WORLD.register((entity, world, loadedFromDisk) -> {
-			if (entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() instanceof BackpackItem backpack) {
-				Entity newEntity = backpack.createCustomEntity(world, entity, itemEntity.getItem());
+			if (entity.getClass().equals(ItemEntity.class) && ((ItemEntity)entity).getItem().getItem() instanceof BackpackItem backpack) {
+				Entity newEntity = backpack.createCustomEntity(world, entity, ((ItemEntity)entity).getItem());
 				if (newEntity != null) {
 					entity.discard();
 					world.addFreshEntity(newEntity);
