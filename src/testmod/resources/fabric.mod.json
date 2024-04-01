@@ -1,0 +1,15 @@
+{
+    "schemaVersion": 1,
+    "id": "sophisticatedbackpacks-testmod",
+    "name": "SophisticatedBackpacks Test Mod",
+    "version": "1.0.0",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "net.salandora.sophisticatedbackpacks.unittests.UnitTestsInitializer"
+        ],
+        "fabric-gametest": [
+            "net.salandora.sophisticatedbackpacks.gametests.GameTests"
+        ]
+    }
+}
