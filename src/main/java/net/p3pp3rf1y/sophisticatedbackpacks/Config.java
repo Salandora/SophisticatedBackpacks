@@ -165,6 +165,7 @@ public class Config {
 
 			builder.pop();
 		}
+
 		public static class NerfsConfig {
 			public final ForgeConfigSpec.BooleanValue tooManyBackpacksSlowness;
 			public final ForgeConfigSpec.IntValue maxNumberOfBackpacks;

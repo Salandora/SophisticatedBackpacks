@@ -3,6 +3,7 @@
     "priority": 1100,
     "minVersion": "0.8",
     "package": "net.p3pp3rf1y.porting_lib.shearable.mixin",
+    "plugin": "net.p3pp3rf1y.porting_lib.shearable.PortingLibMixinPlugin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "common.DeadBushBlockMixin",
