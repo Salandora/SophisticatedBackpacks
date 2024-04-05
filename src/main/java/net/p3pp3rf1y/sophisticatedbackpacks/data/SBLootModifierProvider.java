@@ -63,7 +63,7 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
 		@Override
 		protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-			LootTable table = context.getLootTable(lootTable);
+			LootTable table = context.getResolver().getLootTable(lootTable);
 			table.getRandomItemsRaw(context, generatedLoot::add);
 			return generatedLoot;
 		}

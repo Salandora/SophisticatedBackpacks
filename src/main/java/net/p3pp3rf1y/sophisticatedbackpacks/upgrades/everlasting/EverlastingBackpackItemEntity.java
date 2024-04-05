@@ -25,11 +25,11 @@ public class EverlastingBackpackItemEntity extends ItemEntity {
 
 	@Override
 	public void tick() {
-		if (!getLevel().isClientSide) {
+		if (!level().isClientSide) {
 			double d0 = getX() + 0.5F - random.nextFloat();
 			double d1 = getY() + random.nextFloat() * 0.5F;
 			double d2 = getZ() + 0.5F - random.nextFloat();
-			ServerLevel serverWorld = (ServerLevel) getLevel();
+			ServerLevel serverWorld = (ServerLevel) level();
 			if (random.nextInt(20) == 0) {
 				serverWorld.sendParticles(ParticleTypes.HAPPY_VILLAGER, d0, d1, d2, 0, 0, 0.1D, 0, 1f);
 			}
@@ -49,7 +49,7 @@ public class EverlastingBackpackItemEntity extends ItemEntity {
 
 	@Override
 	public boolean isInWater() {
-		return getY() < getLevel().getMinBuildHeight() + 1 || super.isInWater();
+		return getY() < level().getMinBuildHeight() + 1 || super.isInWater();
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class EverlastingBackpackItemEntity extends ItemEntity {
 	}
 
 	@Override
-	protected void outOfWorld() {
+	protected void onBelowWorld() {
 		//do nothing as the only thing that vanilla does here is remove entity from world, but it can't for this
 	}
 

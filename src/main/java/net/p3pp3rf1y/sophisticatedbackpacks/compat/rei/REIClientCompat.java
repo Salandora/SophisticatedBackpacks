@@ -26,9 +26,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class REIClientCompat implements REIClientPlugin {
-    @Override
+	private static Consumer<CategoryRegistry> additionalCategories = registration -> {};
+	public static void setAdditionalCategories(Consumer<CategoryRegistry> additionalCategories) {
+		REIClientCompat.additionalCategories = additionalCategories;
+	}
+
+	@Override
     public void registerExclusionZones(ExclusionZones zones) {
         zones.register(BackpackScreen.class, screen -> {
             List<Rect2i> ret = new ArrayList<>();
@@ -45,6 +51,7 @@ public class REIClientCompat implements REIClientPlugin {
 	public void registerCategories(CategoryRegistry registry) {
 		registry.addWorkstations(BuiltinPlugin.CRAFTING, EntryStacks.of(ModItems.CRAFTING_UPGRADE));
 		registry.addWorkstations(BuiltinPlugin.STONE_CUTTING, EntryStacks.of(ModItems.STONECUTTER_UPGRADE));
+		additionalCategories.accept(registry);
 	}
 
     @Override

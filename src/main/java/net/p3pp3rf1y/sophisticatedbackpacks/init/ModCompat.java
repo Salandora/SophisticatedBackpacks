@@ -3,6 +3,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.init;
 import net.fabricmc.loader.api.FabricLoader;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.chipped.ChippedCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.trinkets.TrinketsCompat;
 import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
 
@@ -20,7 +21,7 @@ public class ModCompat {
 	static {
 		compatFactories.put(CompatModIds.TRINKETS, () -> TrinketsCompat::new);
 		//compatFactories.put(CompatModIds.BOTANIA, () -> BotaniaCompat::new); // TODO readd Botania compat
-		//compatFactories.put(CompatModIds.CHIPPED, () -> ChippedCompat::new);
+		compatFactories.put(CompatModIds.CHIPPED, () -> ChippedCompat::new);
 	}
 
 	public static void compatsSetup() {

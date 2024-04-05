@@ -2,19 +2,25 @@ package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.fabricmc.fabric.api.resource.conditions.v1.DefaultResourceConditions;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.LegacyUpgradeRecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.chipped.ChippedCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.api.Tags;
+import net.p3pp3rf1y.sophisticatedcore.compat.CompatModIds;
+import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.crafting.ShapeBasedRecipeBuilder;
 import net.p3pp3rf1y.sophisticatedcore.init.ModRecipes;
 import net.p3pp3rf1y.sophisticatedcore.util.RegistryHelper;
@@ -31,7 +37,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 
 	@Override
 	public void buildRecipes(Consumer<FinishedRecipe> consumer) {
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.BACKPACK, ModItems.BASIC_BACKPACK_RECIPE_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.BACKPACK, ModItems.BASIC_BACKPACK_RECIPE_SERIALIZER)
 				.pattern("SLS")
 				.pattern("SCS")
 				.pattern("LLL")
@@ -43,7 +49,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 
 		SpecialRecipeBuilder.special(ModItems.BACKPACK_DYE_RECIPE_SERIALIZER).save(consumer, SophisticatedBackpacks.getRegistryName("backpack_dye"));
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DIAMOND_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.DIAMOND_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
 				.pattern("DDD")
 				.pattern("DBD")
 				.pattern("DDD")
@@ -52,7 +58,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_gold_backpack", has(ModItems.GOLD_BACKPACK))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.GOLD_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.GOLD_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
 				.pattern("GGG")
 				.pattern("GBG")
 				.pattern("GGG")
@@ -61,7 +67,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_iron_backpack", has(ModItems.IRON_BACKPACK))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.IRON_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.IRON_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
 				.pattern("III")
 				.pattern("IBI")
 				.pattern("III")
@@ -70,7 +76,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_backpack", has(ModItems.BACKPACK))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PICKUP_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.PICKUP_UPGRADE)
 				.pattern(" P ")
 				.pattern("SBS")
 				.pattern("RRR")
@@ -81,7 +87,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.UPGRADE_BASE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.UPGRADE_BASE)
 				.pattern("SIS")
 				.pattern("ILI")
 				.pattern("SIS")
@@ -91,7 +97,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_leather", hasLeather())
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_PICKUP_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_PICKUP_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GPG")
 				.pattern("RRR")
@@ -102,7 +108,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_pickup_upgrade", has(ModItems.PICKUP_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.FILTER_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.FILTER_UPGRADE)
 				.pattern("RSR")
 				.pattern("SBS")
 				.pattern("RSR")
@@ -112,7 +118,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_FILTER_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_FILTER_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("GPG")
 				.pattern("RRR")
 				.define('G', ConventionalItemTags.GOLD_INGOTS)
@@ -121,7 +127,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_filter_upgrade", has(ModItems.FILTER_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.MAGNET_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.MAGNET_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("EIE")
 				.pattern("IPI")
 				.pattern("R L")
@@ -133,7 +139,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_pickup_upgrade", has(ModItems.PICKUP_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_MAGNET_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_MAGNET_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("EIE")
 				.pattern("IPI")
 				.pattern("R L")
@@ -145,7 +151,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_advanced_pickup_upgrade", has(ModItems.ADVANCED_PICKUP_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_MAGNET_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_MAGNET_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GMG")
 				.pattern("RRR")
@@ -156,7 +162,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_magnet_upgrade", has(ModItems.MAGNET_UPGRADE))
 				.save(consumer, new ResourceLocation(SophisticatedBackpacks.getRegistryName("advanced_magnet_upgrade_from_basic")));
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.FEEDING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.FEEDING_UPGRADE)
 				.pattern(" C ")
 				.pattern("ABM")
 				.pattern(" E ")
@@ -168,7 +174,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.COMPACTING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.COMPACTING_UPGRADE)
 				.pattern("IPI")
 				.pattern("PBP")
 				.pattern("RPR")
@@ -179,7 +185,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_COMPACTING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_COMPACTING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GCG")
 				.pattern("RRR")
@@ -190,7 +196,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_compacting_upgrade", has(ModItems.COMPACTING_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.VOID_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.VOID_UPGRADE)
 				.pattern(" E ")
 				.pattern("OBO")
 				.pattern("ROR")
@@ -201,7 +207,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_VOID_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_VOID_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GVG")
 				.pattern("RRR")
@@ -212,7 +218,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_void_upgrade", has(ModItems.VOID_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.RESTOCK_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.RESTOCK_UPGRADE)
 				.pattern(" P ")
 				.pattern("IBI")
 				.pattern("RCR")
@@ -224,7 +230,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_RESTOCK_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_RESTOCK_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GVG")
 				.pattern("RRR")
@@ -235,7 +241,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_restock_upgrade", has(ModItems.RESTOCK_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DEPOSIT_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.DEPOSIT_UPGRADE)
 				.pattern(" P ")
 				.pattern("IBI")
 				.pattern("RCR")
@@ -247,7 +253,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_DEPOSIT_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_DEPOSIT_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GVG")
 				.pattern("RRR")
@@ -258,7 +264,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_deposit_upgrade", has(ModItems.DEPOSIT_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.REFILL_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.REFILL_UPGRADE)
 				.pattern(" E ")
 				.pattern("IBI")
 				.pattern("RCR")
@@ -270,7 +276,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_REFILL_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_REFILL_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GFG")
 				.pattern("RRR")
@@ -281,7 +287,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_refill_upgrade", has(ModItems.REFILL_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.INCEPTION_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.INCEPTION_UPGRADE)
 				.pattern("ESE")
 				.pattern("DBD")
 				.pattern("EDE")
@@ -292,7 +298,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.EVERLASTING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.EVERLASTING_UPGRADE)
 				.pattern("CSC")
 				.pattern("SBS")
 				.pattern("CSC")
@@ -302,7 +308,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SMELTING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.SMELTING_UPGRADE)
 				.pattern("RIR")
 				.pattern("IBI")
 				.pattern("RFR")
@@ -313,7 +319,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AUTO_SMELTING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.AUTO_SMELTING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("DHD")
 				.pattern("RSH")
 				.pattern("GHG")
@@ -325,7 +331,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_SMELTING_UPGRADE, has(ModItems.SMELTING_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CRAFTING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.CRAFTING_UPGRADE)
 				.pattern(" T ")
 				.pattern("IBI")
 				.pattern(" C ")
@@ -336,7 +342,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.STONECUTTER_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.STONECUTTER_UPGRADE)
 				.pattern(" S ")
 				.pattern("IBI")
 				.pattern(" R ")
@@ -347,7 +353,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.STACK_UPGRADE_TIER_1)
+		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_1)
 				.pattern("III")
 				.pattern("IBI")
 				.pattern("III")
@@ -356,7 +362,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.STACK_UPGRADE_TIER_2)
+		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_2)
 				.pattern("GGG")
 				.pattern("GSG")
 				.pattern("GGG")
@@ -365,7 +371,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_1))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.STACK_UPGRADE_TIER_3)
+		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_3)
 				.pattern("DDD")
 				.pattern("DSD")
 				.pattern("DDD")
@@ -374,7 +380,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_2))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.STACK_UPGRADE_TIER_4)
+		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_4)
 				.pattern("NNN")
 				.pattern("NSN")
 				.pattern("NNN")
@@ -383,7 +389,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_3))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.JUKEBOX_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.JUKEBOX_UPGRADE)
 				.pattern(" J ")
 				.pattern("IBI")
 				.pattern(" R ")
@@ -394,7 +400,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TOOL_SWAPPER_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.TOOL_SWAPPER_UPGRADE)
 				.pattern("RWR")
 				.pattern("PBA")
 				.pattern("ISI")
@@ -408,7 +414,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_TOOL_SWAPPER_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_TOOL_SWAPPER_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GVG")
 				.pattern("RRR")
@@ -419,7 +425,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_tool_swapper_upgrade", has(ModItems.TOOL_SWAPPER_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TANK_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.TANK_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("GGG")
 				.pattern("GBG")
 				.pattern("GGG")
@@ -428,7 +434,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_FEEDING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_FEEDING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern(" D ")
 				.pattern("GVG")
 				.pattern("RRR")
@@ -439,7 +445,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_feeding_upgrade", has(ModItems.FEEDING_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.BATTERY_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.BATTERY_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("GRG")
 				.pattern("RBR")
 				.pattern("GRG")
@@ -449,7 +455,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PUMP_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.PUMP_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("GUG")
 				.pattern("PBS")
 				.pattern("GUG")
@@ -461,7 +467,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ADVANCED_PUMP_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_PUMP_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("DID")
 				.pattern("GPG")
 				.pattern("RRR")
@@ -473,7 +479,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_pump_upgrade", has(ModItems.PUMP_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.XP_PUMP_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.XP_PUMP_UPGRADE)
 				.pattern("RER")
 				.pattern("CPC")
 				.pattern("RER")
@@ -484,7 +490,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_advanced_pump_upgrade", has(ModItems.ADVANCED_PUMP_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SMOKING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.SMOKING_UPGRADE)
 				.pattern("RIR")
 				.pattern("IBI")
 				.pattern("RSR")
@@ -495,7 +501,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SMOKING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.SMOKING_UPGRADE)
 				.pattern(" L ")
 				.pattern("LSL")
 				.pattern(" L ")
@@ -504,7 +510,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_SMELTING_UPGRADE, has(ModItems.SMELTING_UPGRADE))
 				.save(consumer, SophisticatedBackpacks.getRL("smoking_upgrade_from_smelting_upgrade"));
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AUTO_SMOKING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.AUTO_SMOKING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("DHD")
 				.pattern("RSH")
 				.pattern("GHG")
@@ -516,7 +522,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_smoking_upgrade", has(ModItems.SMOKING_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AUTO_SMOKING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.AUTO_SMOKING_UPGRADE)
 				.pattern(" L ")
 				.pattern("LSL")
 				.pattern(" L ")
@@ -525,7 +531,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_auto_smelting_upgrade", has(ModItems.AUTO_SMELTING_UPGRADE))
 				.save(consumer, SophisticatedBackpacks.getRL("auto_smoking_upgrade_from_auto_smelting_upgrade"));
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.BLASTING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.BLASTING_UPGRADE)
 				.pattern("RIR")
 				.pattern("IBI")
 				.pattern("RFR")
@@ -536,7 +542,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.BLASTING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.BLASTING_UPGRADE)
 				.pattern("III")
 				.pattern("ISI")
 				.pattern("TTT")
@@ -546,7 +552,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_SMELTING_UPGRADE, has(ModItems.SMELTING_UPGRADE))
 				.save(consumer, SophisticatedBackpacks.getRL("blasting_upgrade_from_smelting_upgrade"));
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AUTO_BLASTING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
+		ShapeBasedRecipeBuilder.shaped(ModItems.AUTO_BLASTING_UPGRADE, ModRecipes.UPGRADE_NEXT_TIER_SERIALIZER)
 				.pattern("DHD")
 				.pattern("RSH")
 				.pattern("GHG")
@@ -558,7 +564,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_blasting_upgrade", has(ModItems.BLASTING_UPGRADE))
 				.save(consumer);
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AUTO_BLASTING_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.AUTO_BLASTING_UPGRADE)
 				.pattern("III")
 				.pattern("ISI")
 				.pattern("TTT")
@@ -568,7 +574,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_auto_smelting_upgrade", has(ModItems.AUTO_SMELTING_UPGRADE))
 				.save(consumer, SophisticatedBackpacks.getRL("auto_blasting_upgrade_from_auto_smelting_upgrade"));
 
-		ShapeBasedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ANVIL_UPGRADE)
+		ShapeBasedRecipeBuilder.shaped(ModItems.ANVIL_UPGRADE)
 				.pattern("ADA")
 				.pattern("IBI")
 				.pattern(" C ")
@@ -580,22 +586,22 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
-		new LegacyUpgradeRecipeBuilder(ModItems.SMITHING_BACKPACK_UPGRADE_RECIPE_SERIALIZER, Ingredient.of(ModItems.DIAMOND_BACKPACK),
+		new SmithingTransformRecipeBuilder(ModItems.SMITHING_BACKPACK_UPGRADE_RECIPE_SERIALIZER, Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(ModItems.DIAMOND_BACKPACK),
 				Ingredient.of(net.minecraft.world.item.Items.NETHERITE_INGOT), RecipeCategory.MISC, ModItems.NETHERITE_BACKPACK)
 				.unlocks("has_diamond_backpack", has(ModItems.DIAMOND_BACKPACK))
 				.save(consumer, RegistryHelper.getItemKey(ModItems.NETHERITE_BACKPACK));
 
-		// addChippedUpgradeRecipes(consumer);
+		addChippedUpgradeRecipes(consumer);
 	}
 
-	/*private static void addChippedUpgradeRecipes(Consumer<FinishedRecipe> consumer) {
-		addChippedUpgradeRecipe(consumer, ChippedCompat.BOTANIST_WORKBENCH_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.BOTANIST_WORKBENCH.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.GLASSBLOWER_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.GLASSBLOWER.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.CARPENTERS_TABLE_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.CARPENTERS_TABLE.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.LOOM_TABLE_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.LOOM_TABLE.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.MASON_TABLE_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.MASON_TABLE.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.ALCHEMY_BENCH_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.ALCHEMY_BENCH.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.TINKERING_TABLE_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.TINKERING_TABLE.get());
+	private static void addChippedUpgradeRecipes(Consumer<FinishedRecipe> consumer) {
+		addChippedUpgradeRecipe(consumer, ChippedCompat.BOTANIST_WORKBENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.BOTANIST_WORKBENCH.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.GLASSBLOWER_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.GLASSBLOWER.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.CARPENTERS_TABLE_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.CARPENTERS_TABLE.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.LOOM_TABLE_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.LOOM_TABLE.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.MASON_TABLE_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.MASON_TABLE.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.ALCHEMY_BENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.ALCHEMY_BENCH.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.TINKERING_TABLE_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.TINKERING_TABLE.get());
 	}
 
 	private static void addChippedUpgradeRecipe(Consumer<FinishedRecipe> consumer, BlockTransformationUpgradeItem upgrade, Block workbench) {
@@ -603,14 +609,14 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern(" W ")
 				.pattern("IBI")
 				.pattern(" R ")
-				.define('B', ModItems.UPGRADE_BASE.get())
+				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('W', workbench)
-				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE.get()))
-				.condition(new ModLoadedCondition(CompatModIds.CHIPPED))
+				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
+				.condition(DefaultResourceConditions.allModsLoaded(CompatModIds.CHIPPED))
 				.save(consumer);
-	}*/
+	}
 
 	private static InventoryChangeTrigger.TriggerInstance hasLeather() {
 		return inventoryTrigger(ItemPredicate.Builder.item().of(net.minecraft.world.item.Items.LEATHER).build());

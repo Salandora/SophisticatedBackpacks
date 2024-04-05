@@ -13,6 +13,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategor
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
+import net.p3pp3rf1y.sophisticatedcore.settings.main.MainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
 
 public class AnotherPlayerBackpackOpenMessage extends SimplePacketBase {
@@ -37,7 +38,7 @@ public class AnotherPlayerBackpackOpenMessage extends SimplePacketBase {
 				return;
 			}
 
-			if (player.getLevel().getEntity(anotherPlayerId) instanceof Player anotherPlayer) {
+			if (player.level().getEntity(anotherPlayerId) instanceof Player anotherPlayer) {
 				PlayerInventoryProvider.get().runOnBackpacks(anotherPlayer, (backpack, inventoryName, identifier, slot) -> {
 					if (canAnotherPlayerOpenBackpack(anotherPlayer, backpack)) {
 
@@ -55,7 +56,7 @@ public class AnotherPlayerBackpackOpenMessage extends SimplePacketBase {
 
 	private static boolean canAnotherPlayerOpenBackpack(Player anotherPlayer, ItemStack backpack) {
 		return BackpackWrapperLookup.get(backpack).map(wrapper -> {
-			var category = wrapper.getSettingsHandler().getGlobalSettingsCategory();
+			MainSettingsCategory<?> category = wrapper.getSettingsHandler().getGlobalSettingsCategory();
 			return SettingsManager.getSettingValue(anotherPlayer, category.getPlayerSettingsTagName(), category, BackpackMainSettingsCategory.ANOTHER_PLAYER_CAN_OPEN);
 		}).orElse(false);
 	}

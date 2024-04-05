@@ -263,7 +263,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		}
 		BackpackWrapperLookup.get(stack).ifPresent(
 				wrapper -> wrapper.getUpgradeHandler().getWrappersThatImplement(ITickableUpgrade.class)
-						.forEach(upgrade -> upgrade.tick(player, player.getLevel(), player.blockPosition()))
+						.forEach(upgrade -> upgrade.tick(player, player.level(), player.blockPosition()))
 		);
 		super.onArmorTick(stack, level, player);
 	}
@@ -275,7 +275,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		}
 		BackpackWrapperLookup.get(stack).ifPresent(
 				wrapper -> wrapper.getUpgradeHandler().getWrappersThatImplement(ITickableUpgrade.class)
-						.forEach(upgrade -> upgrade.tick(player, player.getLevel(), player.blockPosition()))
+						.forEach(upgrade -> upgrade.tick(player, player.level(), player.blockPosition()))
 		);
 		super.inventoryTick(stack, level, entityIn, itemSlot, isSelected);
 	}
@@ -288,6 +288,13 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return numberOfUpgradeSlots.getAsInt();
 	}
 
+	// TODO: Is this implemented?
+/*	@Override
+	public boolean onDroppedByPlayer(ItemStack item, Player player) {
+		return !(player.containerMenu instanceof BackpackContainer backpackContainer && backpackContainer.getVisibleStorageItem().map(visibleStorageItem -> visibleStorageItem == item).orElse(false));
+	}*/
+
+	@Nullable
 	@Override
 	public EquipmentSlot getEquipmentSlot() {
 		return EquipmentSlot.CHEST;

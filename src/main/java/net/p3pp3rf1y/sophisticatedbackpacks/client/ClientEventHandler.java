@@ -118,7 +118,7 @@ public class ClientEventHandler {
 		if (player.isCreative() || result.getType() != HitResult.Type.BLOCK) {
 			return stack;
 		}
-		Level level = player.getLevel();
+		Level level = player.level();
 		BlockPos pos = ((BlockHitResult)result).getBlockPos();
 		BlockState state = level.getBlockState(pos);
 

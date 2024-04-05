@@ -104,7 +104,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 			return false;
 		}
 
-		BlockState state = player.getLevel().getBlockState(pos);
+		BlockState state = player.level().getBlockState(pos);
 		Block block = state.getBlock();
 
 		double mainToolSpeed = 0;
@@ -347,7 +347,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		boolean itemInHandIsValid = isToolValid.test(mainHandStack);
 
 		IItemHandlerSimpleInserter backpackInventory = storageWrapper.getInventoryForUpgradeProcessing();
-		if (itemInHandIsValid && toolCache.stream().noneMatch(st -> ItemStack.isSame(st, mainHandStack))) {
+		if (itemInHandIsValid && toolCache.stream().noneMatch(st -> ItemStack.isSameItem(st, mainHandStack))) {
 			toolCache.offer(mainHandStack);
 		}
 		ItemStack tool = findToolToSwap(backpackInventory, isToolValid);
@@ -400,7 +400,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private boolean hasEquivalentItem(Collection<ItemStack> alreadyGivenBefore, ItemStack stack) {
 		for (ItemStack givenTool : alreadyGivenBefore) {
-			if (ItemStack.isSame(givenTool, stack)) {
+			if (ItemStack.isSameItem(givenTool, stack)) {
 				return true;
 			}
 		}
@@ -434,7 +434,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	private boolean isShearableEntity(Entity entity, ItemStack stack) {
-		return entity instanceof IShearable shearable && shearable.isShearable(stack, entity.getLevel(), entity.blockPosition());
+		return entity instanceof IShearable shearable && shearable.isShearable(stack, entity.level(), entity.blockPosition());
 	}
 
 	@Override

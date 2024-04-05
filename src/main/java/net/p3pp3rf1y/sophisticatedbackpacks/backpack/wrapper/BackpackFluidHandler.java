@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
-import io.github.fabricators_of_create.porting_lib.util.FluidStack;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedStorage;
@@ -14,6 +14,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.tank.TankUpgradeWrapper;
 
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public class BackpackFluidHandler implements IStorageFluidHandler {
 	private final IStorageWrapper backpackWrapper;
@@ -22,6 +23,7 @@ public class BackpackFluidHandler implements IStorageFluidHandler {
 		this.backpackWrapper = backpackWrapper;
 	}
 
+	@Nonnull
 	private List<TankUpgradeWrapper> getAllTanks() {
 		return backpackWrapper.getUpgradeHandler().getTypeWrappers(TankUpgradeItem.TYPE);
 	}
@@ -120,5 +122,4 @@ public class BackpackFluidHandler implements IStorageFluidHandler {
 	public Iterator<StorageView<FluidVariant>> iterator() {
 		return new CombinedStorage<>(getAllTanks()).iterator();
 	}
-
 }

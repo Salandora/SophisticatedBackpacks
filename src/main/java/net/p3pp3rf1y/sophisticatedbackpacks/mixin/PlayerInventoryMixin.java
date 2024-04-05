@@ -21,6 +21,6 @@ public class PlayerInventoryMixin {
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void sophisticatedbackpacks$tick(CallbackInfo ci) {
-        armor.forEach(a -> a.onArmorTick(player.level, player));
+        armor.forEach(a -> a.onArmorTick(player.level(), player));
     }
 }

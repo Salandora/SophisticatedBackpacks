@@ -34,8 +34,8 @@ public class EntityToolSwapMessage extends SimplePacketBase {
 				return;
 			}
 
-			Level world = sender.getLevel();
-			Entity entity = world.getEntity(entityId);
+			Level level = sender.level();
+			Entity entity = level.getEntity(entityId);
 
 			if (entity == null) {
 				return;
@@ -52,7 +52,7 @@ public class EntityToolSwapMessage extends SimplePacketBase {
 											}
 											anyUpgradeCanInteract.set(true);
 
-											result.set(upgrade.onEntityInteract(world, entity, sender));
+											result.set(upgrade.onEntityInteract(level, entity, sender));
 										});
 								return result.get();
 							}

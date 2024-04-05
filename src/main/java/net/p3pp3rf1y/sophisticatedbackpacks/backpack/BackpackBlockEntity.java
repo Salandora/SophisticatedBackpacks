@@ -98,6 +98,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 
 	@Override
 	public void onLoad() {
+		super.onLoad();
 		registerWithControllerOnLoad();
 	}
 
@@ -201,6 +202,9 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	public static void serverTick(Level level, BlockPos blockPos, BackpackBlockEntity backpackBlockEntity) {
+		if (level.isClientSide) {
+			return;
+		}
 		backpackBlockEntity.backpackWrapper.getUpgradeHandler().getWrappersThatImplement(ITickableUpgrade.class).forEach(upgrade -> upgrade.tick(null, level, blockPos));
 	}
 

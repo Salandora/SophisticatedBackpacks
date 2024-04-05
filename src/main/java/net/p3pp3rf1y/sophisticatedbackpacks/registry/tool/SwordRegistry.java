@@ -94,9 +94,9 @@ public class SwordRegistry {
 		}
 
 		private void parseSword(String swordName) {
-			Item sword = BuiltInRegistries.ITEM.get(new ResourceLocation(swordName));
-			if (sword != null) {
-				SWORD_ITEMS.add(sword);
+			ResourceLocation location = new ResourceLocation(swordName);
+			if (BuiltInRegistries.ITEM.containsKey(location)) {
+				SWORD_ITEMS.add(BuiltInRegistries.ITEM.get(location));
 			} else {
 				String modId = swordName.split(":")[0];
 				if (!FabricLoader.getInstance().isModLoaded(modId)) {

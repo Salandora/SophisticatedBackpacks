@@ -44,7 +44,7 @@ public class BlockToolSwapMessage extends SimplePacketBase {
 											}
 											anyUpgradeCanInteract.set(true);
 
-											result.set(upgrade.onBlockInteract(sender.getLevel(), pos, sender.getLevel().getBlockState(pos), sender));
+											result.set(upgrade.onBlockInteract(sender.level(), pos, sender.level().getBlockState(pos), sender));
 										});
 								return result.get();
 							}

@@ -8,5 +8,8 @@
   },
   "result": {
     "item": "sophisticatedbackpacks:netherite_backpack"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
   }
 }

@@ -36,7 +36,7 @@ public class InventoryInteractionHelper {
 
 		Storage<ItemVariant> storage = ItemStorage.SIDED.find(world, pos, null);
 		if (storage instanceof SlottedStorage<ItemVariant> invStorage) {
-			return player.level.isClientSide || BackpackWrapperLookup.get(backpack)
+			return player.level().isClientSide || BackpackWrapperLookup.get(backpack)
 					.map(wrapper -> tryRunningInteractionWrappers(invStorage, wrapper, player))
 					.orElse(false);
 		}

@@ -6,7 +6,6 @@
     }
   ],
   "type": "sophisticatedcore:upgrade_next_tier",
-  "category": "misc",
   "key": {
     "E": {
       "item": "minecraft:ender_pearl"

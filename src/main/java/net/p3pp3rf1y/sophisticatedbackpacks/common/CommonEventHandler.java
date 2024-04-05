@@ -111,7 +111,7 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 
-		if (targetPlayer.getLevel().isClientSide) {
+		if (targetPlayer.level().isClientSide) {
 			SBPPacketHandler.sendToServer(new AnotherPlayerBackpackOpenMessage(targetPlayer.getId()));
 			return InteractionResult.SUCCESS;
 		}
@@ -230,7 +230,7 @@ public class CommonEventHandler {
 		if (!(trackedEntity instanceof Monster monster)) {
 			return;
 		}
-		EntityBackpackAdditionHandler.removeBackpackUuid(monster, player.getLevel());
+		EntityBackpackAdditionHandler.removeBackpackUuid(monster, player.level());
 	}
 
 	private InteractionResult onItemPickup(Player player, ItemEntity itemEntity, ItemStack stack) {

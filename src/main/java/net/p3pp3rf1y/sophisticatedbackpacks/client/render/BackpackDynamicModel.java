@@ -10,9 +10,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
 import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
 import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
-import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
@@ -80,7 +80,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 
 	private final Map<ModelPart, UnbakedModel> modelParts;
 
-	private BackpackDynamicModel(Map<ModelPart, UnbakedModel> modelParts) {
+	public BackpackDynamicModel(Map<ModelPart, UnbakedModel> modelParts) {
 		this.modelParts = modelParts;
 	}
 
@@ -92,9 +92,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			if (bakedModel != null) {
 				builder.put(part, bakedModel);
 			}
-
 		});
-
 		return new BackpackBakedModel(builder.build(), modelTransform);
 	}
 
@@ -103,7 +101,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		modelParts.values().forEach(model -> model.resolveParents(modelGetter));
 	}
 
-	public static final class BackpackBakedModel implements BakedModel {
+	private static final class BackpackBakedModel implements BakedModel {
 		private static final ItemTransforms ITEM_TRANSFORMS = createItemTransforms();
 		private static final ResourceLocation BACKPACK_MODULES_TEXTURE = new ResourceLocation("sophisticatedbackpacks:block/backpack_modules");
 
@@ -158,7 +156,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		@Nullable
 		private IRenderedBatteryUpgrade.BatteryRenderInfo batteryRenderInfo = null;
 
-		private BackpackBakedModel(Map<ModelPart, BakedModel> models, ModelState modelTransform) {
+		public BackpackBakedModel(Map<ModelPart, BakedModel> models, ModelState modelTransform) {
 			this.models = models;
 			this.modelTransform = modelTransform;
 		}

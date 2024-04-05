@@ -22,7 +22,7 @@ public abstract class WitherBossMixin extends Entity {
 	@ModifyExpressionValue(method = "customServerAiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/wither/WitherBoss;canDestroy(Lnet/minecraft/world/level/block/state/BlockState;)Z"))
 	public boolean sophisticatedBackpacks$checkWalls(boolean original, @Local BlockPos blockPos, @Local BlockState blockState) {
 		if (blockState.getBlock() instanceof BlockInterfaceHelper bih) {
-			return !bih.canEntityDestroy(blockState, this.level, blockPos, this);
+			return !bih.canEntityDestroy(blockState, this.level(), blockPos, this);
 		}
 
 		return original;

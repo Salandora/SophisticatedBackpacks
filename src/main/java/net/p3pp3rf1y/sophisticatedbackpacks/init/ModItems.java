@@ -198,7 +198,7 @@ public class ModItems {
 	public static final ItemBase UPGRADE_BASE = register("upgrade_base", () -> new ItemBase(new Item.Properties().stacksTo(16)));
 
 	@SuppressWarnings("unused")
-	public static final CreativeModeTab CREATIVE_TAB = FabricItemGroup.builder(SophisticatedBackpacks.getRL("item_group"))
+	public static final CreativeModeTab CREATIVE_TAB = FabricItemGroup.builder()
 			.title(Component.translatable("itemGroup.sophisticatedbackpacks"))
 			.icon(() -> new ItemStack(ModItems.BACKPACK))
 			.displayItems((featureFlags, output) -> ITEMS.stream().filter(i -> i instanceof ItemBase).forEach(i -> ((ItemBase) i).addCreativeTabItems(output::accept)))
@@ -267,10 +267,12 @@ public class ModItems {
 		return Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, SophisticatedBackpacks.getRL(id), supplier.get());
 	}
 	public static <T extends Codec<? extends IGlobalLootModifier>> T registerLootModifier(String id, Supplier<T> supplier) {
-		return Registry.register(PortingLibLoot.GLOBAL_LOOT_MODIFIER_SERIALIZERS, SophisticatedBackpacks.getRL(id), supplier.get());
+		return Registry.register(PortingLibLoot.GLOBAL_LOOT_MODIFIER_SERIALIZERS.get(), SophisticatedBackpacks.getRL(id), supplier.get());
 	}
 
 	public static void register() {
+		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, SophisticatedBackpacks.getRL("item_group"), CREATIVE_TAB);
+
 		registerDispenseBehavior();
 		registerCauldronInteractions();
 

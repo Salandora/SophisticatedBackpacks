@@ -10,9 +10,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.GuiHelper;
-
-import java.util.Optional;
 
 public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 	public static BackpackScreen constructScreen(BackpackContainer screenContainer, Inventory inv, Component title) {
@@ -43,8 +40,8 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 	}
 
 	private boolean mouseNotOverBackpack() {
-		Optional<Slot> selectedSlot = GuiHelper.getSlotUnderMouse(this);
-		return selectedSlot.isEmpty() || !(selectedSlot.get().getItem().getItem() instanceof BackpackItem);
+		Slot selectedSlot = this.hoveredSlot;
+		return selectedSlot == null || !(selectedSlot.getItem().getItem() instanceof BackpackItem);
 	}
 
 	@Override

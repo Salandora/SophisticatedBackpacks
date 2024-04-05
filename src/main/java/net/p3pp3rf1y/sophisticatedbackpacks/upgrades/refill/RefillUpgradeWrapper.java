@@ -26,7 +26,6 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.IFilteredUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.ItemStackHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
 import java.util.HashMap;
@@ -109,7 +108,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 			return;
 		}
 		int missingCount = targetSlot.missingCountGetter.getMissingCount(player, playerInvHandler, filter);
-		if (ItemStackHelper.canItemStacksStack(player.containerMenu.getCarried(), filter)) {
+		if (ItemStack.isSameItemSameTags(player.containerMenu.getCarried(), filter)) {
 			missingCount -= Math.min(missingCount, player.containerMenu.getCarried().getCount());
 		}
 		if (missingCount == 0) {
@@ -148,7 +147,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		ITrackedContentsItemHandler inventoryHandler = storageWrapper.getInventoryForUpgradeProcessing();
 		for (int slot = 0; slot < inventoryHandler.getSlotCount(); slot++) {
 			ItemStack stack = inventoryHandler.getStackInSlot(slot);
-			if (ItemStackHelper.canItemStacksStack(stack, filter)) {
+			if (ItemStack.isSameItemSameTags(stack, filter)) {
 				hasItemInBackpack = true;
 				if (stack.getCount() <= stack.getMaxStackSize()) {
 					stashSlot = slot;
@@ -204,7 +203,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 			ItemStack slotStack = player.getInventory().getItem(slot);
 			if (slotStack.isEmpty()) {
 				return true;
-			} else if (ItemStackHelper.canItemStacksStack(slotStack, player.getMainHandItem())) {
+			} else if (ItemStack.isSameItemSameTags(slotStack, player.getMainHandItem())) {
 				countToAdd -= (slotStack.getMaxStackSize() - slotStack.getCount());
 				if (countToAdd <= 0) {
 					return true;
@@ -329,7 +328,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		}
 
 		private static int getMissingCount(ItemStack stack, ItemStack filter) {
-			if (ItemStackHelper.canItemStacksStack(stack, filter)) {
+			if (ItemStack.isSameItemSameTags(stack, filter)) {
 				return filter.getMaxStackSize() - stack.getCount();
 			}
 			return filter.getMaxStackSize();
@@ -341,7 +340,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 				setSlotContents.accept(stackToAdd);
 				return ItemStack.EMPTY;
 			}
-			if (ItemStackHelper.canItemStacksStack(contents, stackToAdd)) {
+			if (ItemStack.isSameItemSameTags(contents, stackToAdd)) {
 				contents.grow(stackToAdd.getCount());
 				return ItemStack.EMPTY;
 			}

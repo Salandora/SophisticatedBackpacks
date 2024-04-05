@@ -18,7 +18,7 @@ public class BackpackTrinket implements Trinket, TrinketRenderer {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         // slotIndex needs to be > -1 to indicate that it is equipped
-        stack.inventoryTick(entity.level, entity, slot.index(), true);
+        stack.inventoryTick(entity.level(), entity, slot.index(), true);
     }
 
     @Override

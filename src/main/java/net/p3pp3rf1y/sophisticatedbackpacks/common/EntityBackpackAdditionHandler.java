@@ -272,7 +272,7 @@ public class EntityBackpackAdditionHandler {
 			ItemStack backpack = target.getItemBySlot(EquipmentSlot.CHEST);
 			Config.Server.EntityBackpackAdditionsConfig additionsConfig = Config.SERVER.entityBackpackAdditions;
 			if (shouldDropBackpack(source, additionsConfig, target, backpack, lootingLevel)) {
-				ItemEntity backpackEntity = new ItemEntity(target.getLevel(), target.getX(), target.getY(), target.getZ(), backpack);
+				ItemEntity backpackEntity = new ItemEntity(target.level(), target.getX(), target.getY(), target.getZ(), backpack);
 				drops.add(backpackEntity);
 				target.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
 				target.getTags().remove(SPAWNED_WITH_BACKPACK);
@@ -291,7 +291,7 @@ public class EntityBackpackAdditionHandler {
 			return false;
 		}
 		float lootingChanceMultiplier = dropChanceMultiplier.getOrDefault(backpack.getItem(), 1F);
-		return mob.getLevel().random.nextFloat() < (additionsConfig.backpackDropChance.get() + lootingLevel * additionsConfig.lootingChanceIncreasePerLevel.get()) * lootingChanceMultiplier;
+		return mob.level().random.nextFloat() < (additionsConfig.backpackDropChance.get() + lootingLevel * additionsConfig.lootingChanceIncreasePerLevel.get()) * lootingChanceMultiplier;
 	}
 
 	public static void removeBeneficialEffects(Creeper creeper) {
@@ -320,7 +320,7 @@ public class EntityBackpackAdditionHandler {
 		BackpackWrapperLookup.get(entity.getItemBySlot(EquipmentSlot.CHEST))
 				.ifPresent(backpackWrapper -> backpackWrapper.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).forEach(wrapper -> {
 					if (wrapper.isPlaying()) {
-						wrapper.tick(entity, entity.getLevel(), entity.blockPosition());
+						wrapper.tick(entity, entity.level(), entity.blockPosition());
 					} else {
 						wrapper.play(entity);
 					}

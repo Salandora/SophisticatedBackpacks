@@ -49,9 +49,9 @@ public class GiveCommand {
 			players.forEach(p -> giveBackpackToPlayer(backpack, p));
 
 			if (players.size() == 1) {
-				source.sendSuccess(Component.translatable("commands.sophisticatedbackpacks.give.success", players.iterator().next().getDisplayName()), true);
+				source.sendSuccess(() -> Component.translatable("commands.sophisticatedbackpacks.give.success", players.iterator().next().getDisplayName()), true);
 			} else {
-				source.sendSuccess(Component.translatable("commands.sophisticatedbackpacks.give.success", players.size()), true);
+				source.sendSuccess(() -> Component.translatable("commands.sophisticatedbackpacks.give.success", players.size()), true);
 			}
 		});
 		return 0;
@@ -66,7 +66,7 @@ public class GiveCommand {
 				itemEntity.makeFakeItem();
 			}
 
-			p.getLevel().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, (RandHelper.getRandomMinusOneToOne(p.getRandom()) * 0.7F + 1.0F) * 2.0F);
+			p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, (RandHelper.getRandomMinusOneToOne(p.getRandom()) * 0.7F + 1.0F) * 2.0F);
 			p.inventoryMenu.broadcastChanges();
 		} else {
 			ItemEntity itementity = p.drop(backpack, false);

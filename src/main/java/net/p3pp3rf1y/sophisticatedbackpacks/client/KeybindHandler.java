@@ -40,7 +40,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.network.InventoryInteractionMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.UpgradeToggleMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.GuiHelper;
 import net.p3pp3rf1y.sophisticatedcore.event.client.ClientRawInputEvent;
 
 import java.util.Map;
@@ -218,27 +217,26 @@ public class KeybindHandler {
 	}
 
 	private static boolean sendBackpackOpenOrCloseMessage() {
-		if (Minecraft.getInstance().screen == null) {
+		if (!GUI.isActive()) {
 			SBPPacketHandler.sendToServer(new BackpackOpenMessage());
 			return false;
 		}
 
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-			return GuiHelper.getSlotUnderMouse(containerScreen).map(slot -> {
-				if (slot.container instanceof Inventory || isTrinket(slot.container)) {
-					Optional<PlayerInventoryReturn> ret = getPlayerInventory(slot);
-					if (ret.isPresent() && slot.getItem().getItem() instanceof BackpackItem) {
-						SBPPacketHandler.sendToServer(new BackpackOpenMessage(slot.getContainerSlot(), ret.get().identifier(), ret.get().handlerName()));
-						return true;
-					}
-				}
-				if (screen instanceof BackpackScreen && slot.getItem().getItem() instanceof BackpackItem && slot.getItem().getCount() == 1) {
-					SBPPacketHandler.sendToServer(new BackpackOpenMessage(slot.getContainerSlot()));
+			Slot slot = containerScreen.hoveredSlot;
+			if (slot != null && (slot.container instanceof Inventory || isTrinket(slot.container))) {
+				Optional<PlayerInventoryReturn> ret = getPlayerInventory(slot);
+
+				if (ret.isPresent() && slot.getItem().getItem() instanceof BackpackItem) {
+					SBPPacketHandler.sendToServer(new BackpackOpenMessage(slot.getContainerSlot(), ret.get().identifier(), ret.get().handlerName()));
 					return true;
 				}
-				return false;
-			}).orElse(false);
+			}
+			if (screen instanceof BackpackScreen && slot != null && slot.getItem().getItem() instanceof BackpackItem && slot.getItem().getCount() == 1) {
+				SBPPacketHandler.sendToServer(new BackpackOpenMessage(slot.getContainerSlot()));
+				return true;
+			}
 		}
 		return false;
 	}

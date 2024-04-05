@@ -61,7 +61,7 @@ public class PlayerInventoryProvider {
 			if (invHandler == null) {
 				return Optional.empty();
 			}
-			for (String identifier : invHandler.getIdentifiers(player, player.getLevel().getGameTime())) {
+			for (String identifier : invHandler.getIdentifiers(player, player.level().getGameTime())) {
 				for (int slot = 0; slot < invHandler.getSlotCount(player, identifier); slot++) {
 					ItemStack slotStack = invHandler.getStackInSlot(player, identifier, slot);
 					if (slotStack.getItem() instanceof BackpackItem) {
@@ -106,7 +106,7 @@ public class PlayerInventoryProvider {
 			return false;
 		}
 
-		for (String identifier : invHandler.getIdentifiers(player, player.getLevel().getGameTime())) {
+		for (String identifier : invHandler.getIdentifiers(player, player.level().getGameTime())) {
 			for (int slot = 0; slot < invHandler.getSlotCount(player, identifier); slot++) {
 				ItemStack slotStack = invHandler.getStackInSlot(player, identifier, slot);
 				if (slotStack.getItem() instanceof BackpackItem && backpackInventorySlotConsumer.accept(slotStack, invIdentifier, identifier, slot)) {

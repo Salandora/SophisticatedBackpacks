@@ -61,7 +61,7 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 			int borderColor = wrapper.getAccentColor();
 			model.render(parentModel, livingEntity, matrixStack, buffer, packedLight, clothColor, borderColor, backpack.getItem(), wrapper.getRenderInfo());
 			renderUpgrades(livingEntity, wrapper.getRenderInfo());
-			renderItemShown(matrixStack, buffer, packedLight, wrapper.getRenderInfo(), livingEntity.getLevel());
+			renderItemShown(matrixStack, buffer, packedLight, wrapper.getRenderInfo(), livingEntity.level());
 		});
 	}
 
@@ -77,7 +77,7 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 	}
 
 	private static void renderUpgrades(LivingEntity livingEntity, RenderInfo renderInfo) {
-		if (Minecraft.getInstance().isPaused() || livingEntity.getLevel().random.nextInt(32) != 0) {
+		if (Minecraft.getInstance().isPaused() || livingEntity.level().random.nextInt(32) != 0) {
 			return;
 		}
 		renderInfo.getUpgradeRenderData().forEach((type, data) -> UpgradeRenderRegistry.getUpgradeRenderer(type).ifPresent(renderer -> renderUpgrade(renderer, livingEntity, type, data)));
@@ -85,10 +85,8 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 
 	private static Vector3f getBackpackMiddleFacePoint(LivingEntity livingEntity, Vector3f vector) {
 		Vector3f point = new Vector3f(vector);
-		//point = Axis.XP.rotationDegrees(livingEntity.isCrouching() ? 25 : 0).transform(point);
 		point.rotate(Axis.XP.rotationDegrees(livingEntity.isCrouching() ? 25 : 0));
 		point.add(0, 0.8f, livingEntity.isCrouching() ? 0.9f : 0.7f);
-		//point = Axis.YN.rotationDegrees(livingEntity.yBodyRot - 180).transform(point);
 		point.rotate(Axis.YN.rotationDegrees(livingEntity.yBodyRot - 180));
 		point.add(livingEntity.position().toVector3f());
 		return point;
@@ -96,6 +94,6 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 
 	private static <T extends IUpgradeRenderData> void renderUpgrade(IUpgradeRenderer<T> renderer, LivingEntity livingEntity, UpgradeRenderDataType<?> type, IUpgradeRenderData data) {
 		//noinspection unchecked
-		type.cast(data).ifPresent(renderData -> renderer.render(livingEntity.getLevel(), livingEntity.getLevel().random, vector3d -> getBackpackMiddleFacePoint(livingEntity, vector3d), (T) renderData));
+		type.cast(data).ifPresent(renderData -> renderer.render(livingEntity.level(), livingEntity.level().random, vector3d -> getBackpackMiddleFacePoint(livingEntity, vector3d), (T) renderData));
 	}
 }

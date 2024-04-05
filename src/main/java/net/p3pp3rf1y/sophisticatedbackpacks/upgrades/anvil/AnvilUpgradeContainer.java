@@ -86,7 +86,7 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		private final AnvilUpgradeWrapper wrapper;
 		private boolean initializing = true;
 		public PersistableAnvilMenu(Inventory playerInventory, AnvilUpgradeWrapper wrapper) {
-			super(0, playerInventory, ContainerLevelAccess.create(playerInventory.player.level, playerInventory.player.blockPosition()));
+			super(0, playerInventory, ContainerLevelAccess.create(playerInventory.player.level(), playerInventory.player.blockPosition()));
 			this.wrapper = wrapper;
 			inputSlots.setItem(0, wrapper.getInventory().getStackInSlot(0));
 			inputSlots.setItem(1, wrapper.getInventory().getStackInSlot(1));

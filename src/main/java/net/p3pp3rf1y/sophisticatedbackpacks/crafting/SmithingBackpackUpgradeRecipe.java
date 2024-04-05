@@ -4,8 +4,8 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.LegacyUpgradeRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
@@ -17,13 +17,12 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
-@SuppressWarnings("removal")
-public class SmithingBackpackUpgradeRecipe extends LegacyUpgradeRecipe implements IWrapperRecipe<LegacyUpgradeRecipe> {
+public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe implements IWrapperRecipe<SmithingTransformRecipe> {
 	public static final Set<ResourceLocation> REGISTERED_RECIPES = new LinkedHashSet<>();
-	private final LegacyUpgradeRecipe compose;
+	private final SmithingTransformRecipe compose;
 
-	public SmithingBackpackUpgradeRecipe(LegacyUpgradeRecipe compose) {
-		super(compose.getId(), compose.base, compose.addition, compose.result);
+	public SmithingBackpackUpgradeRecipe(SmithingTransformRecipe compose) {
+		super(compose.getId(), compose.template, compose.base, compose.addition, compose.result);
 		this.compose = compose;
 		REGISTERED_RECIPES.add(compose.getId());
 	}
@@ -48,7 +47,7 @@ public class SmithingBackpackUpgradeRecipe extends LegacyUpgradeRecipe implement
 	}
 
 	private Optional<ItemStack> getBackpack(Container inv) {
-		ItemStack slotStack = inv.getItem(0);
+		ItemStack slotStack = inv.getItem(1);
 		if (slotStack.getItem() instanceof BackpackItem) {
 			return Optional.of(slotStack);
 		}
@@ -61,13 +60,13 @@ public class SmithingBackpackUpgradeRecipe extends LegacyUpgradeRecipe implement
 	}
 
 	@Override
-	public LegacyUpgradeRecipe getCompose() {
+	public SmithingTransformRecipe getCompose() {
 		return compose;
 	}
 
-	public static class Serializer extends RecipeWrapperSerializer<LegacyUpgradeRecipe, SmithingBackpackUpgradeRecipe> {
+	public static class Serializer extends RecipeWrapperSerializer<SmithingTransformRecipe, SmithingBackpackUpgradeRecipe> {
 		public Serializer() {
-			super(SmithingBackpackUpgradeRecipe::new, RecipeSerializer.SMITHING);
+			super(SmithingBackpackUpgradeRecipe::new, RecipeSerializer.SMITHING_TRANSFORM);
 		}
 	}
 }

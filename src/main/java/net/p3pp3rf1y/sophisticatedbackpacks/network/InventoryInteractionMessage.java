@@ -35,7 +35,7 @@ public class InventoryInteractionMessage extends SimplePacketBase {
 			}
 
 			PlayerInventoryProvider.get().runOnBackpacks(sender, (backpack, inventoryName, identifier, slot) -> {
-				InventoryInteractionHelper.tryInventoryInteraction(pos, sender.getLevel(), backpack, face, sender);
+				InventoryInteractionHelper.tryInventoryInteraction(pos, sender.level(), backpack, face, sender);
 				sender.swing(InteractionHand.MAIN_HAND, true);
 				return true;
 			});

@@ -9,7 +9,7 @@ public class RefillUpgradeItem extends UpgradeItemBase<RefillUpgradeWrapper> {
 	private static final UpgradeType<RefillUpgradeWrapper> TYPE = new UpgradeType<>(RefillUpgradeWrapper::new);
 	private final IntSupplier filterSlotCount;
 	private final boolean targetSlotSelection;
-	private final boolean supportsBlockPick;
+	private boolean supportsBlockPick;
 
 	public RefillUpgradeItem(IntSupplier filterSlotCount, boolean targetSlotSelection, boolean supportsBlockPick) {
 		super();
