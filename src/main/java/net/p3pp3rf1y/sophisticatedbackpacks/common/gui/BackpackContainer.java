@@ -134,6 +134,6 @@ public class BackpackContainer extends StorageContainerMenuBase<IBackpackWrapper
 	@Override
 	protected boolean shouldSlotItemBeDroppedFromStorage(Slot slot) {
 		return slot.getItem().getItem() instanceof BackpackItem &&
-				!storageWrapper.getInventoryHandler().isItemValid(0, slot.getItemVariant());
+				!storageWrapper.getInventoryHandler().isItemValid(0, slot.getItemVariant(), slot.getItem().getCount());
 	}
 }

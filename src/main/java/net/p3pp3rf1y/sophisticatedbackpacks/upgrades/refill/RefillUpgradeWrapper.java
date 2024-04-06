@@ -161,7 +161,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 
 		ItemVariant filterResource = ItemVariant.of(filter);
 		if (hasItemInBackpack && StorageUtil.simulateExtract(inventoryHandler, filterResource, filter.getMaxStackSize(), null) > 0) {
-			if ((inventoryHandler.getStackInSlot(stashSlot).getCount() > filter.getMaxStackSize()	|| !inventoryHandler.isItemValid(stashSlot, mainHandResource))
+			if ((inventoryHandler.getStackInSlot(stashSlot).getCount() > filter.getMaxStackSize() || !inventoryHandler.isItemValid(stashSlot, mainHandResource, mainHandItem.getCount()))
 					&& StorageUtil.simulateInsert(inventoryHandler, mainHandResource, mainHandItem.getCount(), null) > 0) {
 				if (canMoveMainHandToInventory(player)) {
 					try (Transaction ctx = Transaction.openOuter()) {

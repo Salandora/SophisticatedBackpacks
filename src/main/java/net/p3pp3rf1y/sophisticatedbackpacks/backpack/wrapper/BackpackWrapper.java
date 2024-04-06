@@ -237,9 +237,9 @@ public class BackpackWrapper implements IBackpackWrapper {
 					upgradeCachesInvalidatedHandler.run();
 				}) {
 					@Override
-					public boolean isItemValid(int slot, ItemVariant resource) {
+					public boolean isItemValid(int slot, ItemVariant resource, int count) {
 						//noinspection ConstantConditions - by this time the upgrade has registryName, so it can't be null
-						return super.isItemValid(slot, resource) && (SophisticatedBackpacks.ID.equals(BuiltInRegistries.ITEM.getKey(resource.getItem()).getNamespace()) || resource.toStack().is(ModItems.BACKPACK_UPGRADE_TAG));
+						return super.isItemValid(slot, resource, count) && (SophisticatedBackpacks.ID.equals(BuiltInRegistries.ITEM.getKey(resource.getItem()).getNamespace()) || resource.toStack(count).is(ModItems.BACKPACK_UPGRADE_TAG));
 					}
 				};
 			} else {

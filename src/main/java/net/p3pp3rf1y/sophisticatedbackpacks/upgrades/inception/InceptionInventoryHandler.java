@@ -89,8 +89,8 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 	}
 
 	@Override
-	public boolean isItemValid(int slot, ItemVariant resource) {
-		return combinedInventories.isItemValid(slot, resource);
+	public boolean isItemValid(int slot, ItemVariant resource, int count) {
+		return combinedInventories.isItemValid(slot, resource, count);
 	}
 
 	@Override

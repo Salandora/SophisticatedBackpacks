@@ -157,7 +157,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private boolean hasSpaceInBackpackOrCanPlaceInTheSlotOfSwappedTool(IItemHandlerSimpleInserter backpackInventory, ItemVariant mainHandItem, int mainHandItemCount, ItemStack tool, int selectedSlot) {
 		return (StorageUtil.simulateInsert(backpackInventory, mainHandItem, mainHandItemCount, null) == mainHandItemCount)
-				|| (tool.getCount() == 1 && backpackInventory.isItemValid(selectedSlot, mainHandItem));
+				|| (tool.getCount() == 1 && backpackInventory.isItemValid(selectedSlot, mainHandItem, mainHandItemCount));
 	}
 
 	private boolean isAllowedAndGoodAtBreakingBlock(BlockState state, ItemStack stack) {

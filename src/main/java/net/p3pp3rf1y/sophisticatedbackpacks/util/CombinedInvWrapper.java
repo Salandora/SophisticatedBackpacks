@@ -103,14 +103,14 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
     }
 
     @Override
-    public boolean isItemValid(int slot, ItemVariant resource) {
+    public boolean isItemValid(int slot, ItemVariant resource, int count) {
         int index = getIndexForSlot(slot);
         Optional<SlottedStackStorage> handler = getHandlerFromIndex(index);
         if (handler.isEmpty()) {
             return false;
         }
         int localSlot = getSlotFromIndex(slot, index);
-        return handler.get().isItemValid(localSlot, resource);
+        return handler.get().isItemValid(localSlot, resource, count);
     }
 
     @Override
