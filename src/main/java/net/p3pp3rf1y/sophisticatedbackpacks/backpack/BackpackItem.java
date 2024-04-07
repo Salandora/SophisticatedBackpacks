@@ -45,6 +45,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.ItemEntityAccessor;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.everlasting.EverlastingBackpackItemEntity;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.everlasting.EverlastingUpgradeItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.InventoryInteractionHelper;
@@ -160,7 +161,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		if (backpackItemEntity != null) {
 			backpackItemEntity.setPos(itemEntity.getX(), itemEntity.getY(), itemEntity.getZ());
 			backpackItemEntity.setItem(itemstack);
-			backpackItemEntity.setPickUpDelay(itemEntity.pickupDelay);
+			backpackItemEntity.setPickUpDelay(((ItemEntityAccessor) itemEntity).getPickupDelay());
 			backpackItemEntity.setThrower(itemEntity.getOwner() != null ? itemEntity.getOwner().getUUID() : null);
 			backpackItemEntity.setDeltaMovement(itemEntity.getDeltaMovement());
 		}

@@ -5,12 +5,24 @@
     "package": "net.p3pp3rf1y.sophisticatedbackpacks.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "CreeperMixin", "EnderDragonMixin", "ExplosionDamageCalculatorMixin", "PiglinAiMixin", "PlayerInventoryMixin", "WitherBossMixin",
-        "WitherSkullMixin"
+        "common.CreeperMixin",
+        "common.EnderDragonMixin",
+        "common.ExplosionDamageCalculatorMixin",
+        "common.PiglinAiMixin",
+        "common.PlayerInventoryMixin",
+        "common.WitherBossMixin",
+        "common.WitherSkullMixin",
+        "common.accessor.AnvilMenuAccessor",
+        "common.accessor.ItemAccessor",
+        "common.accessor.ItemEntityAccessor",
+        "common.accessor.RecordItemAccessor",
+        "common.accessor.ShapedRecipeAccessor",
+        "common.accessor.SmithingTransformRecipeAccessor"
     ],
     "client": [
-        "CreativeModeInventoryScreenSlotWrapperMixin",
-        "ItemInHandRendererMixin"
+        "client.CreativeModeInventoryScreenSlotWrapperMixin",
+        "client.ItemInHandRendererMixin",
+        "client.accessor.ItemRendererAccessor", "client.accessor.VertexFormatAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -25,7 +25,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.context.UseOnContext;
@@ -42,6 +41,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockToolSwapUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEntityToolSwapUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.ItemAccessor;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.tool.SwordRegistry;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.tool.ToolRegistry;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
@@ -213,7 +213,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 		AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
 		if (!stack.isEmpty() && stack.canPerformAction(ToolActions.SWORD_SWEEP)) {
-			return attackDamage != null && attackDamage.getModifier(Item.BASE_ATTACK_DAMAGE_UUID) != null;
+			return attackDamage != null && attackDamage.getModifier(ItemAccessor.getBaseAttackDamageUUID()) != null;
 		}
 		return false;
 	}

@@ -42,6 +42,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.client.accessor.VertexFormatAccessor;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedBatteryUpgrade;
@@ -70,7 +71,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 	private static int findOffset(VertexFormatElement element) {
 		// Divide by 4 because we want the int offset
 		var index = DefaultVertexFormat.BLOCK.getElements().indexOf(element);
-		return index < 0 ? -1 : DefaultVertexFormat.BLOCK.offsets.getInt(index) / 4;
+		return index < 0 ? -1 : ((VertexFormatAccessor) DefaultVertexFormat.BLOCK).getOffsets().getInt(index) / 4;
 	}
 
 	private final Map<ModelPart, UnbakedModel> modelParts;

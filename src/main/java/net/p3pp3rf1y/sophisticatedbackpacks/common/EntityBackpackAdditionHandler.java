@@ -15,7 +15,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -37,6 +36,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.RecordItemAccessor;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
@@ -181,7 +181,7 @@ public class EntityBackpackAdditionHandler {
 
 	private static List<RecordItem> getMusicDiscs() {
 		if (musicDiscs == null) {
-			Map<SoundEvent, RecordItem> records = RecordItem.BY_NAME;
+			Map<SoundEvent, RecordItem> records = RecordItemAccessor.getByName();
 			if (records == null) {
 				musicDiscs = new ArrayList<>();
 			} else {
@@ -214,8 +214,7 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static Optional<SpawnEggItem> getSpawnEgg(EntityType<?> entityType) {
-		Map<EntityType<? extends Mob>, SpawnEggItem> eggs = SpawnEggItem.BY_ID;
-		return eggs == null ? Optional.empty() : Optional.ofNullable(eggs.get(entityType));
+		return Optional.ofNullable(SpawnEggItem.byId(entityType));
 	}
 
 	private static int getPrimaryColor(SpawnEggItem egg) {

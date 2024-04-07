@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.AnvilMenuAccessor;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerBase;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
@@ -96,7 +97,7 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		}
 
 		public String getItemName() {
-			return itemName;
+			return ((AnvilMenuAccessor) this).getItemName();
 		}
 
 		@Override

@@ -1,4 +1,4 @@
-package net.p3pp3rf1y.sophisticatedbackpacks.mixin;
+package net.p3pp3rf1y.sophisticatedbackpacks.mixin.common;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;

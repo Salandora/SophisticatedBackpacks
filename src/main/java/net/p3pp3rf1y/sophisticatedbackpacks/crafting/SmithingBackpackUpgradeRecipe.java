@@ -9,6 +9,7 @@ import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.SmithingTransformRecipeAccessor;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.crafting.IWrapperRecipe;
 import net.p3pp3rf1y.sophisticatedcore.crafting.RecipeWrapperSerializer;
@@ -22,7 +23,7 @@ public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe imple
 	private final SmithingTransformRecipe compose;
 
 	public SmithingBackpackUpgradeRecipe(SmithingTransformRecipe compose) {
-		super(compose.getId(), compose.template, compose.base, compose.addition, compose.result);
+		super(compose.getId(), ((SmithingTransformRecipeAccessor) compose).getTemplate(), ((SmithingTransformRecipeAccessor) compose).getBase(), ((SmithingTransformRecipeAccessor) compose).getAddition(), ((SmithingTransformRecipeAccessor) compose).getResult());
 		this.compose = compose;
 		REGISTERED_RECIPES.add(compose.getId());
 	}
@@ -34,7 +35,7 @@ public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe imple
 
 	@Override
 	public ItemStack assemble(Container inventory, RegistryAccess registryManager) {
-		ItemStack upgradedBackpack = result.copy();
+		ItemStack upgradedBackpack = ((SmithingTransformRecipeAccessor) this).getResult().copy();
 		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
 			getBackpack(inventory).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
 			BackpackWrapperLookup.get(upgradedBackpack)

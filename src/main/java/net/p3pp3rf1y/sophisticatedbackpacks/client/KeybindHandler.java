@@ -41,6 +41,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.UpgradeToggleMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.event.client.ClientRawInputEvent;
+import net.p3pp3rf1y.sophisticatedcore.mixin.client.accessor.AbstractContainerScreenAccessor;
 
 import java.util.Map;
 import java.util.Optional;
@@ -224,7 +225,7 @@ public class KeybindHandler {
 
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-			Slot slot = containerScreen.hoveredSlot;
+			Slot slot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
 			if (slot != null && (slot.container instanceof Inventory || isTrinket(slot.container))) {
 				Optional<PlayerInventoryReturn> ret = getPlayerInventory(slot);
 

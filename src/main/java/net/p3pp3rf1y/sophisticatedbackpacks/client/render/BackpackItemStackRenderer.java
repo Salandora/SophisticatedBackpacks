@@ -14,6 +14,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.client.accessor.ItemRendererAccessor;
 
 public class BackpackItemStackRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
 	private final Minecraft minecraft = Minecraft.getInstance();
@@ -35,7 +36,7 @@ public class BackpackItemStackRenderer implements BuiltinItemRendererRegistry.Dy
 
 		RenderType rendertype = ItemBlockRenderTypes.getRenderType(stack, true);
 		VertexConsumer ivertexbuilder = ItemRenderer.getFoilBufferDirect(vertexConsumers, rendertype, true, stack.hasFoil());
-		itemRenderer.renderModelLists(model, stack, light, overlay, poseStack, ivertexbuilder);
+		((ItemRendererAccessor) itemRenderer).callRenderModelLists(model, stack, light, overlay, poseStack, ivertexbuilder);
 		BackpackWrapperLookup.get(stack).flatMap(backpackWrapper -> backpackWrapper.getRenderInfo().getItemDisplayRenderInfo().getDisplayItem()).ifPresent(displayItem -> {
 			poseStack.pushPose();
 			poseStack.translate(0.5, 0.6, 0.25);

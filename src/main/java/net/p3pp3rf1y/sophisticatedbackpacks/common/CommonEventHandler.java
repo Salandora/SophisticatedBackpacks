@@ -234,7 +234,7 @@ public class CommonEventHandler {
 	}
 
 	private InteractionResult onItemPickup(Player player, ItemEntity itemEntity, ItemStack stack) {
-		if (itemEntity.pickupDelay != 0 || (itemEntity.target != null && !itemEntity.target.equals(player.getUUID())) || stack.isEmpty()) {
+		if (itemEntity.hasPickUpDelay() || stack.isEmpty()) {
 			return InteractionResult.PASS;
 		}
 

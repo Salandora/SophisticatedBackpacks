@@ -8,6 +8,7 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.ShapedRecipeAccessor;
 import net.p3pp3rf1y.sophisticatedcore.crafting.IWrapperRecipe;
 import net.p3pp3rf1y.sophisticatedcore.crafting.RecipeWrapperSerializer;
 
@@ -15,7 +16,7 @@ public class BasicBackpackRecipe extends ShapedRecipe implements IWrapperRecipe<
 	private final ShapedRecipe compose;
 
 	public BasicBackpackRecipe(ShapedRecipe compose) {
-		super(compose.getId(), compose.getGroup(), compose.category(), compose.getWidth(), compose.getHeight(), compose.getIngredients(), compose.result);
+		super(compose.getId(), compose.getGroup(), compose.category(), compose.getWidth(), compose.getHeight(), compose.getIngredients(), ((ShapedRecipeAccessor) compose).getResult());
 		this.compose = compose;
 	}
 
