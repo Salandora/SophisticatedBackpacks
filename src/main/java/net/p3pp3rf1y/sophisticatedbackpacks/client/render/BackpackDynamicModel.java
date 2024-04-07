@@ -15,7 +15,6 @@ import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoad
 import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.Minecraft;
@@ -31,7 +30,6 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +38,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
@@ -56,7 +53,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.BATTERY;
@@ -71,8 +67,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 	public static int UV0 = findOffset(DefaultVertexFormat.ELEMENT_UV0);
 	public static int NORMAL = findOffset(DefaultVertexFormat.ELEMENT_NORMAL);
 
-	private static int findOffset(VertexFormatElement element)
-	{
+	private static int findOffset(VertexFormatElement element) {
 		// Divide by 4 because we want the int offset
 		var index = DefaultVertexFormat.BLOCK.getElements().indexOf(element);
 		return index < 0 ? -1 : DefaultVertexFormat.BLOCK.offsets.getInt(index) / 4;
@@ -80,7 +75,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 
 	private final Map<ModelPart, UnbakedModel> modelParts;
 
-	public BackpackDynamicModel(Map<ModelPart, UnbakedModel> modelParts) {
+	private BackpackDynamicModel(Map<ModelPart, UnbakedModel> modelParts) {
 		this.modelParts = modelParts;
 	}
 
@@ -162,27 +157,12 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		}
 
 		@Override
-		public boolean isVanillaAdapter() {
-			return false;
-		}
-
-		@Override
-		public void emitBlockQuads(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext context) {
-			context.bakedModelConsumer().accept(this, state);
-		}
-
-		@Override
-		public void emitItemQuads(ItemStack stack, Supplier<RandomSource> randomSupplier, RenderContext context) {
-			context.bakedModelConsumer().accept(this, null);
-		}
-
-		@Override
 		public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
 			List<BakedQuad> ret = new ArrayList<>(models.get(ModelPart.BASE).getQuads(state, side, rand));
 			if (state == null) {
-				addLeftSide(state, side, rand, ret, tankLeft);
-				addRightSide(state, side, rand, ret, tankRight);
-				addFront(state, side, rand, ret, battery);
+				addLeftSide(null, side, rand, ret, tankLeft);
+				addRightSide(null, side, rand, ret, tankRight);
+				addFront(null, side, rand, ret, battery);
 			} else {
 				addLeftSide(state, side, rand, ret, state.getValue(LEFT_TANK));
 				addRightSide(state, side, rand, ret, state.getValue(RIGHT_TANK));
