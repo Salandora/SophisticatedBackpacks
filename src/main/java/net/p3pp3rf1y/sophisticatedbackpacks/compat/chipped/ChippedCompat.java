@@ -46,6 +46,12 @@ public class ChippedCompat implements ICompat {
 
 	@Override
 	public void init() {
+		registerContainers();
+
+		if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+			return;
+		}
+
 		if (FabricLoader.getInstance().isModLoaded(CompatModIds.JEI)) {
 			SBJeiPlugin.setAdditionalCatalystRegistrar(registration -> {
 				registration.addRecipeCatalyst(new ItemStack(BOTANIST_WORKBENCH_UPGRADE), ChippedRecipeCategory.BOTANIST_WORKBENCH_RECIPE);
@@ -81,8 +87,6 @@ public class ChippedCompat implements ICompat {
 				consumer.accept(new EmiCompat.WorkstationEntry(new ResourceLocation("tinkering_table"), ModBlocks.TINKERING_TABLE.get(), TINKERING_TABLE_UPGRADE));
 			}));
 		}
-
-		registerContainers();
 	}
 
 	public void registerContainers() {
