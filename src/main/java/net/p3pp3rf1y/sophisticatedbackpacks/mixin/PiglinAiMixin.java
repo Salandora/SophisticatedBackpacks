@@ -23,7 +23,7 @@ import java.util.List;
 @Mixin(PiglinAi.class)
 public class PiglinAiMixin {
 	@Redirect(method = "isWearingGold", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getArmorSlots()Ljava/lang/Iterable;"))
-	private static Iterable<ItemStack> sophisticatedbackpacks$isWeraingGold$getArmorSlots(LivingEntity instance) {
+	private static Iterable<ItemStack> sophisticatedbackpacks$isWearingGold$getArmorSlots(LivingEntity instance) {
 		if (instance instanceof Player player) {
 			List<ItemStack> trinkets = Lists.newArrayList();
 			PlayerInventoryProvider.get().runOnBackpacks(player, CompatModIds.TRINKETS, (backpack, inventoryHandlerName, identifier, slot) -> trinkets.add(backpack));
