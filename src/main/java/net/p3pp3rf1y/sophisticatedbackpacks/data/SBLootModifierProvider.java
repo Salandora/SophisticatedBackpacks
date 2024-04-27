@@ -13,10 +13,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
@@ -49,6 +55,7 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 		).apply(inst, InjectLootModifier::new));
 		private final ResourceLocation lootTable;
 		private final ResourceLocation lootTableToInjectInto;
+		private BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
 
 		protected InjectLootModifier(LootItemCondition[] conditions, ResourceLocation lootTable, ResourceLocation lootTableToInjectInto) {
 			super(conditions);
@@ -64,8 +71,27 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 		@Override
 		protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
 			LootTable table = context.getResolver().getLootTable(lootTable);
-			table.getRandomItemsRaw(context, generatedLoot::add);
+			getRandomItemsRaw(table, context, generatedLoot::add);
 			return generatedLoot;
+		}
+
+		public void getRandomItemsRaw(LootTable table, LootContext context, Consumer<ItemStack> lootConsumer) {
+			if (compositeFunction == null) {
+				compositeFunction = LootItemFunctions.compose(table.functions);
+			}
+
+			LootContext.VisitedEntry<?> visitedEntry = LootContext.createVisitedEntry(table);
+			if (context.pushVisitedElement(visitedEntry)) {
+				Consumer<ItemStack> consumer = LootItemFunction.decorate(compositeFunction, lootConsumer, context);
+				for (LootPool lootPool : table.pools) {
+					lootPool.addRandomItems(consumer, context);
+				}
+
+				context.popVisitedElement(visitedEntry);
+			} else {
+				LOGGER.warn("Detected infinite loop in loot tables");
+			}
+
 		}
 
 		@Override
