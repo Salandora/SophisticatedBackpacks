@@ -49,7 +49,7 @@ public class TrinketsCompat implements ICompat {
 		return "";
 	}
 
-	private Set<String> backpackTrinketIdentifiers = new HashSet<>();
+	private final Set<String> backpackTrinketIdentifiers = new HashSet<>();
 	private long lastTagsRefresh = -1;
 
     public TrinketsCompat() {
@@ -79,7 +79,7 @@ public class TrinketsCompat implements ICompat {
 		if (lastTagsRefresh + TAGS_REFRESH_COOLDOWN < gameTime) {
 			lastTagsRefresh = gameTime;
 
-			backpackTrinketIdentifiers = new HashSet<>();
+			backpackTrinketIdentifiers.clear();
 			TrinketsApi.getTrinketComponent(player).ifPresent(comp -> {
 				for (Map.Entry<String, Map<String, TrinketInventory>> group : comp.getInventory().entrySet()) {
 					for (Map.Entry<String, TrinketInventory> inventory : group.getValue().entrySet()) {
