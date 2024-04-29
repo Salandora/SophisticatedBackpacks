@@ -8,10 +8,12 @@ import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class PlayerInventoryProvider {
 	public static final String MAIN_INVENTORY = "main";
@@ -61,7 +63,9 @@ public class PlayerInventoryProvider {
 			if (invHandler == null) {
 				return Optional.empty();
 			}
-			for (String identifier : invHandler.getIdentifiers(player, player.getLevel().getGameTime())) {
+
+			Set<String> identifiers = new HashSet<>(invHandler.getIdentifiers(player, player.getLevel().getGameTime()));
+			for (String identifier : identifiers) {
 				for (int slot = 0; slot < invHandler.getSlotCount(player, identifier); slot++) {
 					ItemStack slotStack = invHandler.getStackInSlot(player, identifier, slot);
 					if (slotStack.getItem() instanceof BackpackItem) {
@@ -106,7 +110,8 @@ public class PlayerInventoryProvider {
 			return false;
 		}
 
-		for (String identifier : invHandler.getIdentifiers(player, player.getLevel().getGameTime())) {
+		Set<String> identifiers = new HashSet<>(invHandler.getIdentifiers(player, player.getLevel().getGameTime()));
+		for (String identifier : identifiers) {
 			for (int slot = 0; slot < invHandler.getSlotCount(player, identifier); slot++) {
 				ItemStack slotStack = invHandler.getStackInSlot(player, identifier, slot);
 				if (slotStack.getItem() instanceof BackpackItem && backpackInventorySlotConsumer.accept(slotStack, invIdentifier, identifier, slot)) {
