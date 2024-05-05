@@ -1,53 +1,38 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica.mixin;
 
-import fi.dy.masa.litematica.materials.MaterialCache;
-import fi.dy.masa.litematica.materials.MaterialListEntry;
+import com.google.common.collect.Lists;
+import dev.emi.trinkets.api.TrinketsApi;
 import fi.dy.masa.litematica.materials.MaterialListUtils;
-import fi.dy.masa.malilib.util.ItemType;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
+import net.minecraft.world.CompoundContainer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
-import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 
 import java.util.List;
 
 @Mixin(MaterialListUtils.class)
 public class MaterialListUtilsMixin {
-	@Inject(method = "getMaterialList", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/Object2IntOpenHashMap;keySet()Lit/unimi/dsi/fastutil/objects/ObjectSet;", remap = false), locals = LocalCapture.CAPTURE_FAILHARD)
-	private static void sophisticatedBackpacks$injectTrinketBackpacks(Object2IntOpenHashMap<BlockState> countsTotal, Object2IntOpenHashMap<BlockState> countsMissing, Object2IntOpenHashMap<BlockState> countsMismatch, Player player, CallbackInfoReturnable<List<MaterialListEntry>> cir,
-			List<MaterialListEntry> list, MaterialCache cache, Object2IntOpenHashMap<ItemType> itemTypesTotal, Object2IntOpenHashMap<ItemType> itemTypesMissing, Object2IntOpenHashMap<ItemType> itemTypesMismatch, Object2IntOpenHashMap<ItemType> playerInvItems) {
-		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
-			sophisticatedBackpacks$processBackpack(playerInvItems, backpack);
-			return false; // Return false here, we want to run over all backpacks
-		});
-	}
+	@ModifyVariable(method = "getInventoryItemCounts", at = @At("HEAD"), argsOnly = true)
+	private static Container sophisticatedBackpacks$wrapContainer(Container inv) {
+		if (!(inv instanceof Inventory playerInv))
+			return inv;
 
-	@Inject(method = "updateAvailableCounts", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private static void sophisticatedBackpacks$injectTrinketBackpacks(List<MaterialListEntry> list, Player player, CallbackInfo ci, Object2IntOpenHashMap<ItemType> playerInvItems) {
-		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
-			sophisticatedBackpacks$processBackpack(playerInvItems, backpack);
-			return false; // Return false here, we want to run over all backpacks
-		});
+		Container trinketInventory = sophisticatedBackpacks$getTrinketInventories(playerInv.player);
+		return new CompoundContainer(inv, trinketInventory);
 	}
 
 	@Unique
-	private static void sophisticatedBackpacks$processBackpack(Object2IntOpenHashMap<ItemType> map, ItemStack backpack) {
-		BackpackWrapperLookup.get(backpack).ifPresent(wrapper -> {
-			for (StorageView<ItemVariant> view : wrapper.getInventoryHandler().nonEmptyViews()) {
-				map.addTo(new ItemType(view.getResource().toStack((int) view.getAmount()), true, false), (int)view.getAmount());
-			}
-		});
+	private static Container sophisticatedBackpacks$getTrinketInventories(Player player) {
+		List<ItemStack> stacks = Lists.newArrayList();
+		TrinketsApi.getTrinketComponent(player).ifPresent(trinket -> trinket.getEquipped(stack -> stack.getItem() instanceof BackpackItem).forEach(t -> stacks.add(t.getB())));
+		return new SimpleContainer(stacks.toArray(new ItemStack[0]));
 	}
 }
