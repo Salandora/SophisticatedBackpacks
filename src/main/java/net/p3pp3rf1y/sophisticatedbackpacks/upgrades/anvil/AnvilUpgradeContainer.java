@@ -97,7 +97,7 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		}
 
 		public String getItemName() {
-			return ((AnvilMenuAccessor) this).getItemName();
+			return ((AnvilMenuAccessor) this).itemName();
 		}
 
 		@Override

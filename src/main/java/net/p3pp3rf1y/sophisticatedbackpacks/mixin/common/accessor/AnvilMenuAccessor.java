@@ -7,6 +7,6 @@ import net.minecraft.world.inventory.AnvilMenu;
 
 @Mixin(AnvilMenu.class)
 public interface AnvilMenuAccessor {
-	@Accessor
-	String getItemName();
+	@Accessor("itemName")
+	String itemName();
 }
