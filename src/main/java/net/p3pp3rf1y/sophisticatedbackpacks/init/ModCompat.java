@@ -2,7 +2,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
-import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica.LitematicaCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.trinkets.TrinketsCompat;
 import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
 
@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
+import static net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds.TRINKETS;
+import static net.p3pp3rf1y.sophisticatedcore.compat.CompatModIds.LITEMATICA;
+
 public class ModCompat {
 	private ModCompat() {}
 
@@ -18,9 +21,10 @@ public class ModCompat {
 	private static final Map<String, ICompat> loadedCompats = new HashMap<>();
 
 	static {
-		compatFactories.put(CompatModIds.TRINKETS, () -> TrinketsCompat::new);
-		//compatFactories.put(CompatModIds.BOTANIA, () -> BotaniaCompat::new); // TODO readd Botania compat
-		//compatFactories.put(CompatModIds.CHIPPED, () -> ChippedCompat::new);
+		compatFactories.put(TRINKETS, () -> TrinketsCompat::new);
+		//compatFactories.put(BOTANIA, () -> BotaniaCompat::new); // TODO readd Botania compat
+		//compatFactories.put(CHIPPED, () -> ChippedCompat::new);
+		compatFactories.put(LITEMATICA, () -> LitematicaCompat::new);
 	}
 
 	public static void compatsSetup() {

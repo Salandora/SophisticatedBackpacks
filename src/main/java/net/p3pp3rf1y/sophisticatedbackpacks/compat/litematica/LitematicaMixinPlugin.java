@@ -13,7 +13,7 @@ import java.util.Set;
 public class LitematicaMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return FabricLoader.getInstance().isModLoaded("litematica") && FabricLoader.getInstance().isModLoaded(CompatModIds.TRINKETS);
+		return FabricLoader.getInstance().isModLoaded(net.p3pp3rf1y.sophisticatedcore.compat.CompatModIds.LITEMATICA) && FabricLoader.getInstance().isModLoaded(CompatModIds.TRINKETS);
 	}
 
 	@Override

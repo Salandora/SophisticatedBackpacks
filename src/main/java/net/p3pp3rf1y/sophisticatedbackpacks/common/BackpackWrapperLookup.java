@@ -24,8 +24,17 @@ public class BackpackWrapperLookup {
         return CapabilityWrapper.get(provider, IBackpackWrapper.class);
     }
 
+	public static void invalidateCache() {
+		WRAPPERS.clear();
+	}
+
     static {
-        STORAGE_WRAPPER_CAPABILITY.registerForItems((itemStack, context) -> WRAPPERS.computeIfAbsent(itemStack, BackpackWrapper::new), BACKPACKS);
+        STORAGE_WRAPPER_CAPABILITY.registerForItems((itemStack, context) -> {
+			if (itemStack.getCount() == 1) {
+				return WRAPPERS.computeIfAbsent(itemStack, BackpackWrapper::new);
+			}
+			return null;
+		}, BACKPACKS);
 
         ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(ItemStorage.SIDED, direction), ModBlocks.BACKPACK_TILE_TYPE);
         FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(FluidStorage.SIDED, direction), ModBlocks.BACKPACK_TILE_TYPE);
