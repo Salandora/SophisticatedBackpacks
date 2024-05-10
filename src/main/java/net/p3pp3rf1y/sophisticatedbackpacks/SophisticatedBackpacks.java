@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.p3pp3rf1y.sophisticatedbackpacks.command.SBPCommand;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.CommonEventHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica.LitematicaCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.RegistryLoader;
@@ -30,6 +31,7 @@ public class SophisticatedBackpacks implements ModInitializer {
 		commonEventHandler.registerHandlers();
 
 		ModCompat.initCompats();
+		LitematicaCompat.alwaysInit();
 
 		SBPCommand.init();
 		SBPPacketHandler.init();
