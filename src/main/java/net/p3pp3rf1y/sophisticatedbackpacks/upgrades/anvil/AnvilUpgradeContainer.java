@@ -14,6 +14,8 @@ import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerBase;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
+import javax.annotation.Nullable;
+
 public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrapper, AnvilUpgradeContainer> {
 	private static final String DATA_SHIFT_CLICK_INTO_STORAGE = "shiftClickIntoStorage";
 	private final Slot resultSlot;
@@ -78,6 +80,7 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		return anvilMenuDelegate.getCost();
 	}
 
+	@Nullable
 	public String getItemName() {
 		return anvilMenuDelegate.getItemName();
 	}
@@ -96,6 +99,7 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 			initializing = false;
 		}
 
+		@Nullable
 		public String getItemName() {
 			return ((AnvilMenuAccessor) this).itemName();
 		}

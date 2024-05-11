@@ -8,7 +8,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "D": {
-      "item": "minecraft:diamond_block"
+      "tag": "c:diamond_blocks"
     },
     "S": {
       "item": "sophisticatedbackpacks:stack_upgrade_tier_2"

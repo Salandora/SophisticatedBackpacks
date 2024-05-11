@@ -30,17 +30,18 @@ public class SBInjectLootSubProvider implements LootTableSubProvider {
 
 	@Override
 	public void generate(BiConsumer<ResourceLocation, LootTable.Builder> tables) {
-		tables.accept(SIMPLE_DUNGEON, getLootTable(92,
-				getItemLootEntry(ModItems.BACKPACK, 4),
-				getItemLootEntry(ModItems.IRON_BACKPACK, 2),
-				getItemLootEntry(ModItems.PICKUP_UPGRADE, 2)));
-		tables.accept(ABANDONED_MINESHAFT, getLootTable(89,
+		tables.accept(SIMPLE_DUNGEON, getLootTable(90,
 				getItemLootEntry(ModItems.BACKPACK, 5),
+				getItemLootEntry(ModItems.COPPER_BACKPACK, 3),
+				getItemLootEntry(ModItems.PICKUP_UPGRADE, 2)));
+		tables.accept(ABANDONED_MINESHAFT, getLootTable(84,
+				getItemLootEntry(ModItems.BACKPACK, 7),
+				getItemLootEntry(ModItems.COPPER_BACKPACK, 5),
 				getItemLootEntry(ModItems.IRON_BACKPACK, 3),
 				getItemLootEntry(ModItems.GOLD_BACKPACK, 1),
 				getItemLootEntry(ModItems.MAGNET_UPGRADE, 2)));
 		tables.accept(DESERT_PYRAMID, getLootTable(89,
-				getItemLootEntry(ModItems.BACKPACK, 5),
+				getItemLootEntry(ModItems.COPPER_BACKPACK, 5),
 				getItemLootEntry(ModItems.IRON_BACKPACK, 3),
 				getItemLootEntry(ModItems.GOLD_BACKPACK, 1),
 				getItemLootEntry(ModItems.MAGNET_UPGRADE, 2)));

@@ -84,6 +84,7 @@ public class EntityBackpackAdditionHandler {
 
 	private static final Map<Item, Float> dropChanceMultiplier = Map.of(
 			ModItems.BACKPACK, 1F,
+			ModItems.COPPER_BACKPACK, 1.25F,
 			ModItems.IRON_BACKPACK, 1.5F,
 			ModItems.GOLD_BACKPACK, 3F,
 			ModItems.DIAMOND_BACKPACK, 4.5F,
@@ -99,6 +100,8 @@ public class EntityBackpackAdditionHandler {
 					HELMET_CHANCES.subList(1, 3), LEGGINGS_CHANCES.subList(1, 3), BOOTS_CHANCES.subList(1, 3))),
 			new WeightedElement<>(125, new BackpackAddition(ModItems.IRON_BACKPACK, 1,
 					HELMET_CHANCES.subList(2, 4), LEGGINGS_CHANCES.subList(2, 4), BOOTS_CHANCES.subList(2, 4))),
+			new WeightedElement<>(250, new BackpackAddition(ModItems.COPPER_BACKPACK, 1,
+					HELMET_CHANCES.subList(2, 4), LEGGINGS_CHANCES.subList(3, 5), BOOTS_CHANCES.subList(3, 5))),
 			new WeightedElement<>(625, new BackpackAddition(ModItems.BACKPACK, 0,
 					HELMET_CHANCES.subList(3, 5), LEGGINGS_CHANCES.subList(3, 5), BOOTS_CHANCES.subList(3, 5)))
 	);

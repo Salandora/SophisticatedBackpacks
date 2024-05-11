@@ -1,43 +1,34 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
-import com.google.common.collect.MapMaker;
 import team.reborn.energy.api.EnergyStorage;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.world.item.ItemStack;
-import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
+import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.common.CapabilityWrapper;
-
-import java.util.Map;
-import java.util.Optional;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACKS;
 import static net.p3pp3rf1y.sophisticatedcore.common.CapabilityWrapper.STORAGE_WRAPPER_CAPABILITY;
 
+@SuppressWarnings("DataFlowIssue")
 public class BackpackWrapperLookup {
-	private static final Map<ItemStack, BackpackWrapper> WRAPPERS = new MapMaker().weakKeys().weakValues().makeMap();
-
-    public static Optional<IBackpackWrapper> get(ItemStack provider) {
-        return CapabilityWrapper.get(provider, IBackpackWrapper.class);
+    public static LazyOptional<IBackpackWrapper> get(ItemStack provider) {
+        return CapabilityWrapper.get(provider).cast();
     }
 
-	public static void invalidateCache() {
-		WRAPPERS.clear();
-	}
-
     static {
-        STORAGE_WRAPPER_CAPABILITY.registerForItems((itemStack, context) -> {
-			if (itemStack.getCount() == 1) {
-				return WRAPPERS.computeIfAbsent(itemStack, BackpackWrapper::new);
-			}
-			return null;
-		}, BACKPACKS);
+        STORAGE_WRAPPER_CAPABILITY.registerForItems(BackpackItem.initCapabilities(), BACKPACKS);
 
-        ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(ItemStorage.SIDED, direction), ModBlocks.BACKPACK_TILE_TYPE);
-        FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(FluidStorage.SIDED, direction), ModBlocks.BACKPACK_TILE_TYPE);
-        EnergyStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(EnergyStorage.SIDED, direction), ModBlocks.BACKPACK_TILE_TYPE);
+		FluidStorage.ITEM.registerForItems((stack, ctx) -> get(stack).flatMap(IStorageWrapper::getFluidHandler).orElse(null), BACKPACKS);
+		EnergyStorage.ITEM.registerForItems((stack, ctx) -> get(stack).flatMap(IStorageWrapper::getEnergyStorage).orElse(null), BACKPACKS);
+
+        ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(ItemStorage.SIDED, direction).getValueUnsafer(), ModBlocks.BACKPACK_TILE_TYPE);
+        FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(FluidStorage.SIDED, direction).getValueUnsafer(), ModBlocks.BACKPACK_TILE_TYPE);
+        EnergyStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(EnergyStorage.SIDED, direction).getValueUnsafer(), ModBlocks.BACKPACK_TILE_TYPE);
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
@@ -46,11 +47,11 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	private boolean chunkBeingUnloaded = false;
 
 	@Nullable
-	private SlottedStackStorage itemHandlerCap;
+	private LazyOptional<SlottedStackStorage> itemHandlerCap;
 	@Nullable
-	private IStorageFluidHandler fluidHandlerCap;
+	private LazyOptional<IStorageFluidHandler> fluidHandlerCap;
 	@Nullable
-	private EnergyStorage energyStorageCap;
+	private LazyOptional<EnergyStorage> energyStorageCap;
 
 	public BackpackBlockEntity(BlockPos pos, BlockState state) {
 		super(BACKPACK_TILE_TYPE, pos, state);
@@ -139,31 +140,28 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Nullable
-	public <T> T getCapability(BlockApiLookup<T, Direction> cap, @Nullable Direction opt) {
+	public <T> LazyOptional<T> getCapability(BlockApiLookup<T, Direction> cap, @Nullable Direction opt) {
 		if (opt != null && level != null && Config.SERVER.noConnectionBlocks.isBlockConnectionDisallowed(level.getBlockState(getBlockPos().relative(opt)).getBlock())) {
-			return null;
+			return LazyOptional.empty();
 		}
 
 		if (cap == ItemStorage.SIDED) {
 			if (itemHandlerCap == null) {
-				itemHandlerCap = new CachedFailedInsertInventoryHandler(getBackpackWrapper().getInventoryForInputOutput(), () -> level != null ? level.getGameTime() : 0);
+				itemHandlerCap = LazyOptional.of(() -> new CachedFailedInsertInventoryHandler(() -> getBackpackWrapper().getInventoryForInputOutput(), () -> level != null ? level.getGameTime() : 0));
 			}
-			//noinspection unchecked
-			return (T) itemHandlerCap;
+			return itemHandlerCap.cast();
 		} else if (cap == FluidStorage.SIDED) {
 			if (fluidHandlerCap == null) {
-				fluidHandlerCap = getBackpackWrapper().getFluidHandler().orElse(null);
+				fluidHandlerCap = LazyOptional.of(() -> getBackpackWrapper().getFluidHandler().orElse(null));
 			}
-			//noinspection unchecked
-			return (T) fluidHandlerCap;
+			return fluidHandlerCap.cast();
 		} else if (cap == EnergyStorage.SIDED) {
 			if (energyStorageCap == null) {
-				energyStorageCap = getBackpackWrapper().getEnergyStorage().orElse(null);
+				energyStorageCap = LazyOptional.of(() -> getBackpackWrapper().getEnergyStorage().orElse(null));
 			}
-			//noinspection unchecked
-			return (T) energyStorageCap;
+			return energyStorageCap.cast();
 		}
-		return null;
+		return LazyOptional.empty();
 	}
 
 	public void invalidateCaps() {
@@ -172,13 +170,19 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 
 	private void invalidateBackpackCaps() {
 		if (itemHandlerCap != null) {
+			LazyOptional<SlottedStackStorage> tempItemHandlerCap = itemHandlerCap;
 			itemHandlerCap = null;
+			tempItemHandlerCap.invalidate();
 		}
 		if (fluidHandlerCap != null) {
+			LazyOptional<IStorageFluidHandler> tempFluidHandlerCap = fluidHandlerCap;
 			fluidHandlerCap = null;
+			tempFluidHandlerCap.invalidate();
 		}
 		if (energyStorageCap != null) {
+			LazyOptional<EnergyStorage> tempEnergyStorageCap = energyStorageCap;
 			energyStorageCap = null;
+			tempEnergyStorageCap.invalidate();
 		}
 	}
 

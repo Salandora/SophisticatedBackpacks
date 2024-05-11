@@ -41,6 +41,7 @@ import java.util.Map;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.BACKPACK;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.BACKPACK_TILE_TYPE;
+import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.COPPER_BACKPACK;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.DIAMOND_BACKPACK;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.GOLD_BACKPACK;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.IRON_BACKPACK;
@@ -75,7 +76,7 @@ public class ClientEventHandler {
 		EntityRendererRegistry.register(EVERLASTING_BACKPACK_ITEM_ENTITY, ItemEntityRenderer::new);
 
 		BlockEntityRenderers.register(BACKPACK_TILE_TYPE, context -> new BackpackBlockEntityRenderer());
-		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(), BACKPACK, IRON_BACKPACK, GOLD_BACKPACK, DIAMOND_BACKPACK, NETHERITE_BACKPACK);
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(), BACKPACK, COPPER_BACKPACK, IRON_BACKPACK, GOLD_BACKPACK, DIAMOND_BACKPACK, NETHERITE_BACKPACK);
 
 		for (var item : BACKPACKS) {
 			BuiltinItemRendererRegistry.INSTANCE.register(item, new BackpackItemStackRenderer());

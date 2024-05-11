@@ -8,7 +8,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "N": {
-      "item": "minecraft:netherite_block"
+      "tag": "c:netherite_blocks"
     },
     "S": {
       "item": "sophisticatedbackpacks:stack_upgrade_tier_3"

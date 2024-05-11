@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -364,6 +365,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 			case COUNT -> InventorySorter.BY_COUNT;
 			case TAGS -> InventorySorter.BY_TAGS;
 			case NAME -> InventorySorter.BY_NAME;
+			case MOD -> InventorySorter.BY_MOD;
 		};
 	}
 
@@ -533,5 +535,15 @@ public class BackpackWrapper implements IBackpackWrapper {
 	@Override
 	public ItemStack getWrappedStorageStack() {
 		return getBackpack();
+	}
+
+	@Override
+	public String getStorageType() {
+		return "backpack";
+	}
+
+	@Override
+	public Component getDisplayName() {
+		return getBackpack().getHoverName();
 	}
 }

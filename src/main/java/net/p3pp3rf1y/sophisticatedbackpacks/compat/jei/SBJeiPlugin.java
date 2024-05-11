@@ -55,6 +55,7 @@ public class SBJeiPlugin implements IModPlugin {
 				.map(wrapper -> "{clothColor:" + wrapper.getMainColor() + ",borderColor:" + wrapper.getAccentColor() + "}")
 				.orElse(IIngredientSubtypeInterpreter.NONE);
 		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.BACKPACK, backpackNbtInterpreter);
+		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.COPPER_BACKPACK, backpackNbtInterpreter);
 		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.IRON_BACKPACK, backpackNbtInterpreter);
 		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.GOLD_BACKPACK, backpackNbtInterpreter);
 		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.DIAMOND_BACKPACK, backpackNbtInterpreter);

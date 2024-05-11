@@ -11,7 +11,6 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedcore.compat.litematica.LitematicaHelper;
 
 import java.util.Map;
@@ -41,7 +40,7 @@ public class BackpackContentsMessage implements S2CPacket {
 			}
 
 			this.backpackContents.forEach(BackpackStorage.get()::setBackpackContents);
-			BackpackWrapperLookup.invalidateCache();
+			//BackpackWrapperLookup.invalidateCache();
 			LitematicaHelper.incrementReceived(this.backpackContents.size());
 		});
 	}

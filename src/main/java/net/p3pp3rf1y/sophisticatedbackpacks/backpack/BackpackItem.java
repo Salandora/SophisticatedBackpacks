@@ -1,6 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
@@ -38,6 +39,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
@@ -255,6 +257,28 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackContainer(w, pl, context), context, stack.getHoverName()));
 		}
 		return InteractionResultHolder.success(stack);
+	}
+
+	public static ItemApiLookup.ItemApiProvider<LazyOptional<IStorageWrapper>, Void> initCapabilities() {
+		return new ItemApiLookup.ItemApiProvider<>() {
+			private IStorageWrapper wrapper = null;
+
+			@Override
+			public LazyOptional<IStorageWrapper> find(ItemStack stack, Void context) {
+				if (stack.getCount() > 1) {
+					return LazyOptional.empty();
+				}
+
+				initWrapper(stack);
+				return LazyOptional.of(() -> wrapper).cast();
+			}
+
+			private void initWrapper(ItemStack stack) {
+				if (wrapper == null) {
+					wrapper = new BackpackWrapper(stack);
+				}
+			}
+		};
 	}
 
 	@Override
