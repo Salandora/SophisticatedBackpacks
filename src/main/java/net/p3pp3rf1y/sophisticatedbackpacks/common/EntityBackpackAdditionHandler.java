@@ -109,14 +109,13 @@ public class EntityBackpackAdditionHandler {
 			2, BACKPACK_CHANCES.subList(2, 5)
 	);
 
-	static void addBackpack(Monster monster, LevelAccessor level) {
+	static void addBackpack(Monster monster, LevelAccessor level, float localDifficulty) {
 		RandomSource rnd = level.getRandom();
 		if (!Config.COMMON.entityBackpackAdditions.canWearBackpack(monster.getType())
 				|| rnd.nextInt((int) (1 / Config.COMMON.entityBackpackAdditions.chance.get())) != 0 || (monster instanceof Raider raider && raider.getCurrentRaid() != null)) {
 			return;
 		}
 
-		float localDifficulty = level.getCurrentDifficultyAt(monster.blockPosition()).getEffectiveDifficulty();
 		//noinspection UnstableApiUsage
 		int index = Ints.constrainToRange((int) Math.floor(DIFFICULTY_BACKPACK_CHANCES.size() / MAX_LOCAL_DIFFICULTY * localDifficulty - 0.1f), 0, DIFFICULTY_BACKPACK_CHANCES.size());
 
