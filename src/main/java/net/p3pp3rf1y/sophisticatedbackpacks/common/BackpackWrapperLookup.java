@@ -14,6 +14,8 @@ import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACKS;
 
@@ -25,8 +27,9 @@ public class BackpackWrapperLookup {
         return Optional.ofNullable(ITEM.find(provider, null));
     }
 
-	public static void invalidateCache() {
-		WRAPPERS.clear();
+	public static void invalidateCache(UUID uuid) {
+		Set<Map.Entry<ItemStack, BackpackWrapper>> entries = WRAPPERS.entrySet();
+		entries.stream().filter(entry -> entry.getValue().getContentsUuid().isPresent() && entry.getValue().getContentsUuid().get() == uuid).forEach(entries::remove);
 	}
 
     static {
