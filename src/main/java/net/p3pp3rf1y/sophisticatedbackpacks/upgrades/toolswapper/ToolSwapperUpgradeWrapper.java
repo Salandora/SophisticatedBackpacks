@@ -142,11 +142,14 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 		ItemVariant mainHandItemResource = ItemVariant.of(mainHandItem);
 		if (!selectedTool.isEmpty() && hasSpaceInBackpackOrCanPlaceInTheSlotOfSwappedTool(backpackInventory, mainHandItemResource, mainHandItem.getCount(), selectedTool, selectedSlot)) {
-			try (Transaction nested = Transaction.openOuter()) {
+			try (Transaction ctx = Transaction.openOuter()) {
 				ItemVariant resource = ItemVariant.of(selectedTool);
-				player.setItemInHand(InteractionHand.MAIN_HAND, resource.toStack((int) backpackInventory.extractSlot(selectedSlot, resource, 1, nested)));
-				backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), nested);
-				nested.commit();
+				player.setItemInHand(InteractionHand.MAIN_HAND, resource.toStack((int) backpackInventory.extractSlot(selectedSlot, resource, 1, ctx)));
+				ctx.commit();
+			}
+			try (Transaction ctx = Transaction.openOuter()) {
+				backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), ctx);
+				ctx.commit();
 			}
 			return true;
 		}
