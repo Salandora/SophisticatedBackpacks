@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "chipped"
+      ]
+    },
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:chipped/philosopher_workbench_upgrade"
+    }
+  ],
+  "key": {
+    "B": {
+      "item": "sophisticatedbackpacks:upgrade_base"
+    },
+    "I": {
+      "tag": "c:iron_ingots"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    },
+    "W": {
+      "item": "chipped:alchemy_bench"
+    }
+  },
+  "pattern": [
+    " W ",
+    "IBI",
+    " R "
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:chipped/philosopher_workbench_upgrade"
+  }
+}

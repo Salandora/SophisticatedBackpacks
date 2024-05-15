@@ -139,7 +139,6 @@ public class ModItems {
 	public static final CreativeModeTab CREATIVE_TAB = FabricItemGroupBuilder.build(
 			SophisticatedBackpacks.getRL("item_group"),
 			() -> new ItemStack(ModItems.BACKPACK));
-	//.title(Component.translatable("itemGroup.sophisticatedbackpacks"))
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

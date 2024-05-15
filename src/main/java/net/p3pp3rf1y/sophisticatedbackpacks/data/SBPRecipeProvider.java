@@ -2,6 +2,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.fabricmc.fabric.api.resource.conditions.v1.DefaultResourceConditions;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -11,10 +12,14 @@ import net.minecraft.data.recipes.UpgradeRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.chipped.ChippedCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.api.Tags;
+import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.crafting.ShapeBasedRecipeBuilder;
 import net.p3pp3rf1y.sophisticatedcore.init.ModRecipes;
 import net.p3pp3rf1y.sophisticatedcore.util.RegistryHelper;
@@ -585,17 +590,17 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlocks("has_diamond_backpack", has(ModItems.DIAMOND_BACKPACK))
 				.save(consumer, RegistryHelper.getItemKey(ModItems.NETHERITE_BACKPACK));
 
-		// addChippedUpgradeRecipes(consumer);
+		addChippedUpgradeRecipes(consumer);
 	}
 
-	/*private static void addChippedUpgradeRecipes(Consumer<FinishedRecipe> consumer) {
-		addChippedUpgradeRecipe(consumer, ChippedCompat.BOTANIST_WORKBENCH_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.BOTANIST_WORKBENCH.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.GLASSBLOWER_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.GLASSBLOWER.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.CARPENTERS_TABLE_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.CARPENTERS_TABLE.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.LOOM_TABLE_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.LOOM_TABLE.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.MASON_TABLE_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.MASON_TABLE.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.ALCHEMY_BENCH_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.ALCHEMY_BENCH.get());
-		addChippedUpgradeRecipe(consumer, ChippedCompat.TINKERING_TABLE_UPGRADE.get(), earth.terrarium.chipped.common.registry.ModBlocks.TINKERING_TABLE.get());
+	private static void addChippedUpgradeRecipes(Consumer<FinishedRecipe> consumer) {
+		addChippedUpgradeRecipe(consumer, ChippedCompat.BOTANIST_WORKBENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.BOTANIST_WORKBENCH.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.GLASSBLOWER_WORKBENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.GLASSBLOWER.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.CARPENTER_WORKBENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.CARPENTERS_TABLE.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.SHEPHERD_WORKBENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.LOOM_TABLE.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.MASON_WORKBENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.MASON_TABLE.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.PHILOSOPHER_WORKBENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.ALCHEMY_BENCH.get());
+		addChippedUpgradeRecipe(consumer, ChippedCompat.TINKERER_WORKBENCH_UPGRADE, earth.terrarium.chipped.common.registry.ModBlocks.TINKERING_TABLE.get());
 	}
 
 	private static void addChippedUpgradeRecipe(Consumer<FinishedRecipe> consumer, BlockTransformationUpgradeItem upgrade, Block workbench) {
@@ -603,14 +608,14 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern(" W ")
 				.pattern("IBI")
 				.pattern(" R ")
-				.define('B', ModItems.UPGRADE_BASE.get())
+				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('W', workbench)
-				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE.get()))
-				.condition(new ModLoadedCondition(CompatModIds.CHIPPED))
+				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
+				.condition(DefaultResourceConditions.allModsLoaded(CompatModIds.CHIPPED))
 				.save(consumer);
-	}*/
+	}
 
 	private static InventoryChangeTrigger.TriggerInstance hasLeather() {
 		return inventoryTrigger(ItemPredicate.Builder.item().of(Items.LEATHER).build());
