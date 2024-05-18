@@ -13,22 +13,24 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedcore.compat.litematica.LitematicaHelper;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class BackpackContentsMessage implements S2CPacket {
-	private final Map<UUID, CompoundTag> backpackContents;
+	private final UUID backpackUuid;
+	private final CompoundTag backpackContents;
 
-	public BackpackContentsMessage(Map<UUID, CompoundTag> backpackContents) {
+	public BackpackContentsMessage(UUID backpackUuid, CompoundTag backpackContents) {
+		this.backpackUuid = backpackUuid;
 		this.backpackContents = backpackContents;
 	}
 	public BackpackContentsMessage(FriendlyByteBuf buffer) {
-		this(buffer.readMap(FriendlyByteBuf::readUUID, FriendlyByteBuf::readNbt));
+		this(buffer.readUUID(), buffer.readNbt());
 	}
 
 	@Override
 	public void encode(FriendlyByteBuf buffer) {
-		buffer.writeMap(this.backpackContents, FriendlyByteBuf::writeUUID, FriendlyByteBuf::writeNbt);
+		buffer.writeUUID(this.backpackUuid);
+		buffer.writeNbt(this.backpackContents);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -39,9 +41,9 @@ public class BackpackContentsMessage implements S2CPacket {
 				return;
 			}
 
-			this.backpackContents.forEach(BackpackStorage.get()::setBackpackContents);
-			//BackpackWrapperLookup.invalidateCache();
-			LitematicaHelper.incrementReceived(this.backpackContents.size());
+			BackpackStorage.get().setBackpackContents(this.backpackUuid, this.backpackContents);
+			// TODO: BackpackWrapperLookup.invalidateCache(this.backpackUuid);
+			LitematicaHelper.incrementReceived(1);
 		});
 	}
 }

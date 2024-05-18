@@ -1,5 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
+import com.google.common.collect.MapMaker;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
@@ -64,6 +66,7 @@ import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
@@ -259,24 +262,21 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return InteractionResultHolder.success(stack);
 	}
 
-	public static ItemApiLookup.ItemApiProvider<LazyOptional<IStorageWrapper>, Void> initCapabilities() {
+	public static ItemApiLookup.ItemApiProvider<LazyOptional<IBackpackWrapper>, Void> initCapabilities() {
 		return new ItemApiLookup.ItemApiProvider<>() {
-			private IStorageWrapper wrapper = null;
+			final Map<ItemStack, IBackpackWrapper> wrapperMap = new MapMaker().weakKeys().weakValues().makeMap();
 
 			@Override
-			public LazyOptional<IStorageWrapper> find(ItemStack stack, Void context) {
-				if (stack.getCount() > 1) {
-					return LazyOptional.empty();
+			public LazyOptional<IBackpackWrapper> find(ItemStack stack, Void context) {
+				if (stack.getCount() == 1) {
+					return LazyOptional.of(() -> wrapperMap.computeIfAbsent(stack, this::initWrapper)).cast();
 				}
 
-				initWrapper(stack);
-				return LazyOptional.of(() -> wrapper).cast();
+				return LazyOptional.empty();
 			}
 
-			private void initWrapper(ItemStack stack) {
-				if (wrapper == null) {
-					wrapper = new BackpackWrapper(stack);
-				}
+			private IBackpackWrapper initWrapper(ItemStack stack) {
+				return new BackpackWrapper(stack);
 			}
 		};
 	}

@@ -2,27 +2,33 @@ package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import team.reborn.energy.api.EnergyStorage;
 
+import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
+import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
-import net.p3pp3rf1y.sophisticatedcore.common.CapabilityWrapper;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACKS;
-import static net.p3pp3rf1y.sophisticatedcore.common.CapabilityWrapper.STORAGE_WRAPPER_CAPABILITY;
 
 @SuppressWarnings("DataFlowIssue")
 public class BackpackWrapperLookup {
-    public static LazyOptional<IBackpackWrapper> get(ItemStack provider) {
-        return CapabilityWrapper.get(provider).cast();
+	public static final ItemApiLookup<LazyOptional<IBackpackWrapper>, Void> ITEM = ItemApiLookup.get(SophisticatedBackpacks.getRL("item_backpack_wrapper"), (Class<LazyOptional<IBackpackWrapper>>) (Class<?>) LazyOptional.class, Void.class);
+
+	public static LazyOptional<IBackpackWrapper> get(ItemStack provider) {
+		LazyOptional<IBackpackWrapper> wrapper = ITEM.find(provider, null);
+		if (wrapper != null) {
+			return wrapper;
+		}
+		return LazyOptional.empty();
     }
 
     static {
-        STORAGE_WRAPPER_CAPABILITY.registerForItems(BackpackItem.initCapabilities(), BACKPACKS);
+		ITEM.registerForItems(BackpackItem.initCapabilities(), BACKPACKS);
 
 		FluidStorage.ITEM.registerForItems((stack, ctx) -> get(stack).flatMap(IStorageWrapper::getFluidHandler).orElse(null), BACKPACKS);
 		EnergyStorage.ITEM.registerForItems((stack, ctx) -> get(stack).flatMap(IStorageWrapper::getEnergyStorage).orElse(null), BACKPACKS);
