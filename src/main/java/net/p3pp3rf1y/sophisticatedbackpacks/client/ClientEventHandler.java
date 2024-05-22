@@ -33,25 +33,23 @@ import net.p3pp3rf1y.sophisticatedbackpacks.client.render.BackpackItemStackRende
 import net.p3pp3rf1y.sophisticatedbackpacks.client.render.BackpackLayerRenderer;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.render.BackpackModel;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.render.ClientBackpackContentsTooltip;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockPickMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedcore.event.client.ClientLifecycleEvent;
 
+import java.util.Arrays;
 import java.util.Map;
 
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.BACKPACK;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.BACKPACK_TILE_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.COPPER_BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.DIAMOND_BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.GOLD_BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.IRON_BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.NETHERITE_BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACKS;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.EVERLASTING_BACKPACK_ITEM_ENTITY;
 
 public class ClientEventHandler {
+	private ClientEventHandler() {}
+
 	private static final String BACKPACK_REG_NAME = "backpack";
-	public static final ModelLayerLocation BACKPACK_LAYER = new ModelLayerLocation(SophisticatedBackpacks.getRL(BACKPACK_REG_NAME), "main");
+	public static final ModelLayerLocation BACKPACK_LAYER = new ModelLayerLocation(new ResourceLocation(SophisticatedBackpacks.MOD_ID, BACKPACK_REG_NAME), "main");
 
 	public static void registerHandlers() {
 		ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register((client, world) -> ClientBackpackContentsTooltip.onWorldLoad());
@@ -76,18 +74,14 @@ public class ClientEventHandler {
 		EntityRendererRegistry.register(EVERLASTING_BACKPACK_ITEM_ENTITY, ItemEntityRenderer::new);
 
 		BlockEntityRenderers.register(BACKPACK_TILE_TYPE, context -> new BackpackBlockEntityRenderer());
-		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(), BACKPACK, COPPER_BACKPACK, IRON_BACKPACK, GOLD_BACKPACK, DIAMOND_BACKPACK, NETHERITE_BACKPACK);
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(), ModBlocks.BACKPACKS);
 
-		for (var item : BACKPACKS) {
-			BuiltinItemRendererRegistry.INSTANCE.register(item, new BackpackItemStackRenderer());
-		}
+		Arrays.stream(ModItems.BACKPACKS).forEach(backpack -> BuiltinItemRendererRegistry.INSTANCE.register(backpack, new BackpackItemStackRenderer()));
 	}
 
 	public static void registerLayer() {
 		EntityModelLayerRegistry.registerModelLayer(BACKPACK_LAYER, BackpackModel::createBodyLayer);
 	}
-
-
 
 	private static void registerBackpackLayer(EntityType<? extends LivingEntity> entityType, LivingEntityRenderer<?, ?> livingEntityRenderer, LivingEntityFeatureRendererRegistrationCallback.RegistrationHelper registrationHelper, EntityRendererProvider.Context context) {
 		registrationHelper.register(new BackpackLayerRenderer<>(livingEntityRenderer));

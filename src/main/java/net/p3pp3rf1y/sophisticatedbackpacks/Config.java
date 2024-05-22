@@ -51,12 +51,11 @@ public class Config {
 	private static final String REGISTRY_NAME_MATCHER = "([a-z0-9_.-]+:[a-z0-9_/.-]+)";
 	private static final String MAX_UPGRADES_MATCHER = "([a-z0-9_/.-]+\\|\\d+)";
 
-	private Config() {}
-
-	public static Server SERVER;
+	private Config() {
+	}
 
 	public static Common COMMON;
-
+	public static Server SERVER;
 
 	public static class BaseConfig {
 		public ForgeConfigSpec specification;
@@ -117,6 +116,15 @@ public class Config {
 
 		@Override
 		public void onConfigReload() {
+			clearCache();
+		}
+
+		@Override
+		public void onConfigLoad() {
+			clearCache();
+		}
+
+		private void clearCache() {
 			disallowedItems.initialized = false;
 			stackUpgrade.clearNonStackableItems();
 			maxUpgradesPerStorage.clearCache();
@@ -517,11 +525,11 @@ public class Config {
 		SERVER = register(Server::new, ModConfig.Type.SERVER);
 
 		for (Map.Entry<ModConfig.Type, BaseConfig> pair : CONFIGS.entrySet()) {
-			ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.ID, pair.getKey(), pair.getValue().specification);
+			ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.MOD_ID, pair.getKey(), pair.getValue().specification);
 		}
 
-		ModConfigEvents.loading(SophisticatedBackpacks.ID).register(Config::onConfigLoad);
-		ModConfigEvents.reloading(SophisticatedBackpacks.ID).register(Config::onConfigReload);
+		ModConfigEvents.loading(SophisticatedBackpacks.MOD_ID).register(Config::onConfigLoad);
+		ModConfigEvents.reloading(SophisticatedBackpacks.MOD_ID).register(Config::onConfigReload);
 	}
 
 	public static void onConfigLoad(ModConfig modConfig) {

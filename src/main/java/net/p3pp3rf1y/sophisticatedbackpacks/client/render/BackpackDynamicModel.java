@@ -76,7 +76,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 
 	private final Map<ModelPart, UnbakedModel> modelParts;
 
-	private BackpackDynamicModel(Map<ModelPart, UnbakedModel> modelParts) {
+	public BackpackDynamicModel(Map<ModelPart, UnbakedModel> modelParts) {
 		this.modelParts = modelParts;
 	}
 

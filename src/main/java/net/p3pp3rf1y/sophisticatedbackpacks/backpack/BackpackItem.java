@@ -121,7 +121,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		super.appendHoverText(stack, worldIn, tooltip, flagIn);
-		if (flagIn == TooltipFlag.Default.ADVANCED) {
+		if (flagIn == TooltipFlag.ADVANCED) {
 			BackpackWrapperLookup.get(stack)
 					.flatMap(IStorageWrapper::getContentsUuid)
 					.ifPresent(uuid -> tooltip.add(Component.literal("UUID: " + uuid).withStyle(ChatFormatting.DARK_GRAY)));
@@ -157,6 +157,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		}
 
 		UUIDDeduplicator.dedupeBackpackItemEntityInArea(itemEntity);
+
 		return hasEverlastingUpgrade(itemstack) ? createEverlastingBackpack(world, (ItemEntity) entity, itemstack) : null;
 	}
 
@@ -231,7 +232,8 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 	private static void stopBackpackSounds(ItemStack backpack, Level world, BlockPos pos) {
 		BackpackWrapperLookup.get(backpack).flatMap(IStorageWrapper::getContentsUuid).ifPresent(uuid ->
-				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid));
+				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid)
+		);
 	}
 
 	private ItemStack getBackpackCopy(@Nullable Player player, ItemStack backpack) {
@@ -245,19 +247,18 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	protected boolean canPlace(BlockPlaceContext context, BlockState state) {
 		Player playerentity = context.getPlayer();
 		CollisionContext iselectioncontext = playerentity == null ? CollisionContext.empty() : CollisionContext.of(playerentity);
-		return state.canSurvive(context.getLevel(), context.getClickedPos()) && context.getLevel().isUnobstructed(state, context.getClickedPos(), iselectioncontext);
+		return (state.canSurvive(context.getLevel(), context.getClickedPos())) && context.getLevel().isUnobstructed(state, context.getClickedPos(), iselectioncontext);
 	}
 
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 
-		if (!world.isClientSide && player instanceof ServerPlayer) {
+		if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
 			String handlerName = hand == InteractionHand.MAIN_HAND ? PlayerInventoryProvider.MAIN_INVENTORY : PlayerInventoryProvider.OFFHAND_INVENTORY;
 			int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 0;
 			BackpackContext.Item context = new BackpackContext.Item(handlerName, slot);
-
-			player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackContainer(w, pl, context), context, stack.getHoverName()));
+			serverPlayer.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), context, stack.getHoverName()));
 		}
 		return InteractionResultHolder.success(stack);
 	}

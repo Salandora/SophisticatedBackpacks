@@ -22,9 +22,11 @@ public class ModBlocks {
 	public static final BackpackBlock DIAMOND_BACKPACK = register("diamond_backpack", BackpackBlock::new);
 	public static final BackpackBlock NETHERITE_BACKPACK = register("netherite_backpack", () -> new BackpackBlock(1200));
 
+	public static BackpackBlock[] BACKPACKS = new BackpackBlock[] { BACKPACK, COPPER_BACKPACK, IRON_BACKPACK, GOLD_BACKPACK, DIAMOND_BACKPACK, NETHERITE_BACKPACK };
+
 	@SuppressWarnings("ConstantConditions") //no datafixer type needed
 	public static final BlockEntityType<BackpackBlockEntity> BACKPACK_TILE_TYPE = registerEntityType("backpack", () ->
-			BlockEntityType.Builder.of(BackpackBlockEntity::new, BACKPACK, COPPER_BACKPACK, IRON_BACKPACK, GOLD_BACKPACK, DIAMOND_BACKPACK, NETHERITE_BACKPACK)
+			BlockEntityType.Builder.of(BackpackBlockEntity::new, BACKPACKS)
 					.build(null));
 
 	public static <T extends Block> T register(String id, Supplier<T> supplier) {

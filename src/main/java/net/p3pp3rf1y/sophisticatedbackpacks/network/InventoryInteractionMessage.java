@@ -42,5 +42,4 @@ public class InventoryInteractionMessage extends SimplePacketBase {
 		});
 		return true;
 	}
-
 }

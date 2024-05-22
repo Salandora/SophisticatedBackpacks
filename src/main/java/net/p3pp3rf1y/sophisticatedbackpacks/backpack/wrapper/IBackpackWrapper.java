@@ -54,7 +54,8 @@ public interface IBackpackWrapper extends IStorageWrapper {
 		public static final Noop INSTANCE = new Noop();
 
 		private final ItemStack backpack = new ItemStack(ModItems.BACKPACK);
-		private final BackpackSettingsHandler settingsHandler = new BackpackSettingsHandler(this, new CompoundTag(), () -> {});
+		private final BackpackSettingsHandler settingsHandler = new BackpackSettingsHandler(this, new CompoundTag(), () -> {
+		});
 
 		@Override
 		public BackpackSettingsHandler getSettingsHandler() {

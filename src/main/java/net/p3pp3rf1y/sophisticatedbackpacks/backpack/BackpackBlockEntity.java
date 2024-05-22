@@ -24,6 +24,7 @@ import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.controller.ControllerBlockEntityBase;
 import net.p3pp3rf1y.sophisticatedcore.controller.IControllableStorage;
+import net.p3pp3rf1y.sophisticatedcore.fluid.EmptyFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.CachedFailedInsertInventoryHandler;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
@@ -44,6 +45,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	private BlockPos controllerPos = null;
 	private IBackpackWrapper backpackWrapper = IBackpackWrapper.Noop.INSTANCE;
 	private boolean updateBlockRender = true;
+
 	private boolean chunkBeingUnloaded = false;
 
 	@Nullable
@@ -152,12 +154,12 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 			return itemHandlerCap.cast();
 		} else if (cap == FluidStorage.SIDED) {
 			if (fluidHandlerCap == null) {
-				fluidHandlerCap = LazyOptional.of(() -> getBackpackWrapper().getFluidHandler().orElse(null));
+				fluidHandlerCap = LazyOptional.of(() -> getBackpackWrapper().getFluidHandler().map(IStorageFluidHandler.class::cast).orElse(EmptyFluidHandler.INSTANCE));
 			}
 			return fluidHandlerCap.cast();
 		} else if (cap == EnergyStorage.SIDED) {
 			if (energyStorageCap == null) {
-				energyStorageCap = LazyOptional.of(() -> getBackpackWrapper().getEnergyStorage().orElse(null));
+				energyStorageCap = LazyOptional.of(() -> getBackpackWrapper().getEnergyStorage().map(EnergyStorage.class::cast).orElse(EnergyStorage.EMPTY));
 			}
 			return energyStorageCap.cast();
 		}

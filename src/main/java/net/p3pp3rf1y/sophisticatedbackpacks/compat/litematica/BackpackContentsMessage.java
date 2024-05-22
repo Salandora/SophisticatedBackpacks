@@ -42,7 +42,6 @@ public class BackpackContentsMessage implements S2CPacket {
 			}
 
 			BackpackStorage.get().setBackpackContents(this.backpackUuid, this.backpackContents);
-			// TODO: BackpackWrapperLookup.invalidateCache(this.backpackUuid);
 			LitematicaHelper.incrementReceived(1);
 		});
 	}

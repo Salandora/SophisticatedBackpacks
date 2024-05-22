@@ -87,7 +87,6 @@ public class InceptionEnergyStorage implements EnergyStorage {
 		return totalMaxEnergy;
 	}
 
-
 	@Override
 	public boolean supportsExtraction() {
 		return energyStorages.length > 0;

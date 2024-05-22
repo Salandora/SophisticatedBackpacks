@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SophisticatedBackpacks implements ModInitializer {
-	public static final String ID = "sophisticatedbackpacks";
-	public static final Logger LOGGER = LoggerFactory.getLogger(ID);
+	public static final String MOD_ID = "sophisticatedbackpacks";
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private final RegistryLoader registryLoader = new RegistryLoader();
 	public final CommonEventHandler commonEventHandler = new CommonEventHandler();
@@ -47,7 +47,6 @@ public class SophisticatedBackpacks implements ModInitializer {
 	}
 
 	public static String getRegistryName(String regName) {
-		return ID + ":" + regName;
+		return MOD_ID + ":" + regName;
 	}
-
 }

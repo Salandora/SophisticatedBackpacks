@@ -31,7 +31,7 @@
             "net.p3pp3rf1y.sophisticatedbackpacks.compat.emi.EmiCompat"
         ],
         "jei_mod_plugin": [
-            "net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBJeiPlugin"
+            "net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBPPlugin"
         ],
         "rei_common": [
             "net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REICompat"

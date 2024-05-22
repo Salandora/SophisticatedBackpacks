@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public class BackpackModel extends AgeableListModel<LivingEntity> implements IBackpackModel {
 	private static final Map<EntityType<?>, Vec3> entityTranslations;
@@ -54,8 +55,8 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 		entityTranslations.put(EntityType.ENDERMAN, new Vec3(0, -0.8, 0));
 	}
 
-	private static final ResourceLocation BACKPACK_ENTITY_TEXTURE = new ResourceLocation(SophisticatedBackpacks.ID, "textures/entity/backpack.png");
-	private static final ResourceLocation TANK_GLASS_TEXTURE = new ResourceLocation(SophisticatedBackpacks.ID, "textures/entity/tank_glass.png");
+	private static final ResourceLocation BACKPACK_ENTITY_TEXTURE = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "textures/entity/backpack.png");
+	private static final ResourceLocation TANK_GLASS_TEXTURE = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "textures/entity/tank_glass.png");
 	public static final float CHILD_Y_OFFSET = 0.3F;
 	public static final float CHILD_Z_OFFSET = 0.1F;
 	public static final float CHILD_SCALE = 0.55F;
@@ -167,6 +168,7 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 		rightTankGlass = modelPart.getChild(RIGHT_TANK_GLASS_PART);
 	}
 
+	@Nonnull
 	private ModelPart getGlassModelPart() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partDefinition = meshdefinition.getRoot();

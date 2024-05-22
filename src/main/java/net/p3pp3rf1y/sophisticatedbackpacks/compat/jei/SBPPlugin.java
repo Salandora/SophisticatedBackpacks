@@ -38,15 +38,15 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 @JeiPlugin
-public class SBJeiPlugin implements IModPlugin {
+public class SBPPlugin implements IModPlugin {
 	private static Consumer<IRecipeCatalystRegistration> additionalCatalystRegistrar = registration -> {};
 	public static void setAdditionalCatalystRegistrar(Consumer<IRecipeCatalystRegistration> additionalCatalystRegistrar) {
-		SBJeiPlugin.additionalCatalystRegistrar = additionalCatalystRegistrar;
+		SBPPlugin.additionalCatalystRegistrar = additionalCatalystRegistrar;
 	}
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return SophisticatedBackpacks.getRL("default");
+		return new ResourceLocation(SophisticatedBackpacks.MOD_ID, "default");
 	}
 
 	@Override
@@ -116,4 +116,3 @@ public class SBJeiPlugin implements IModPlugin {
 	}
 
 }
-

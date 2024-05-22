@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPButtonDefinitions;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.emi.EmiCompat;
-import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBJeiPlugin;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBPPlugin;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REIClientCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
@@ -54,7 +54,7 @@ public class ChippedCompat implements ICompat {
 		}
 
 		if (FabricLoader.getInstance().isModLoaded(CompatModIds.JEI)) {
-			SBJeiPlugin.setAdditionalCatalystRegistrar(registration -> {
+			SBPPlugin.setAdditionalCatalystRegistrar(registration -> {
 				registration.addRecipeCatalyst(new ItemStack(BOTANIST_WORKBENCH_UPGRADE), ChippedRecipeCategory.BOTANIST_WORKBENCH_RECIPE);
 				registration.addRecipeCatalyst(new ItemStack(GLASSBLOWER_UPGRADE), ChippedRecipeCategory.GLASSBLOWER_RECIPE);
 				registration.addRecipeCatalyst(new ItemStack(CARPENTERS_TABLE_UPGRADE), ChippedRecipeCategory.CARPENTERS_TABLE_RECIPE);

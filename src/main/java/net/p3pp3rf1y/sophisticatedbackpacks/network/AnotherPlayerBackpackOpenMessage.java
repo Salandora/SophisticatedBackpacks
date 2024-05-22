@@ -43,7 +43,7 @@ public class AnotherPlayerBackpackOpenMessage extends SimplePacketBase {
 					if (canAnotherPlayerOpenBackpack(anotherPlayer, backpack)) {
 
 						BackpackContext.AnotherPlayer backpackContext = new BackpackContext.AnotherPlayer(inventoryName, identifier, slot, anotherPlayer);
-						player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext, backpack.getHoverName()));
+						player.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext, backpack.getHoverName()));
 					} else {
 						player.displayClientMessage(Component.translatable("gui.sophisticatedbackpacks.status.backpack_cannot_be_open_by_another_player"), true);
 					}
