@@ -16,12 +16,12 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
-import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModLoot;
 
 public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
 	SBLootModifierProvider(FabricDataGenerator packOutput) {
-		super(packOutput, SophisticatedBackpacks.ID);
+		super(packOutput, SophisticatedBackpacks.MOD_ID);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
 		@Override
 		public Codec<? extends IGlobalLootModifier> codec() {
-			return ModItems.INJECT_LOOT;
+			return ModLoot.INJECT_LOOT;
 		}
 	}
 }

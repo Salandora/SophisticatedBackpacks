@@ -49,18 +49,19 @@ public class DyeRecipesMaker {
 
 		BackpackWrapperLookup.get(backpackOutput).ifPresent(wrapper -> wrapper.setColors(clothColor, trimColor));
 
-		ResourceLocation id = SophisticatedBackpacks.getRL("multiple_colors");
+		ResourceLocation id = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "multiple_colors");
 		recipes.add(new ShapedRecipe(id, "", 3, 1, ingredients, backpackOutput));
 	}
 
 	private static void addSingleColorRecipes(List<CraftingRecipe> recipes) {
 		for (DyeColor color : DyeColor.values()) {
-			ResourceLocation id = SophisticatedBackpacks.getRL("single_color_" + color.getSerializedName());
+			ResourceLocation id = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "single_color_" + color.getSerializedName());
 			ItemStack backpackOutput = new ItemStack(ModItems.BACKPACK);
 			BackpackWrapperLookup.get(backpackOutput).ifPresent(
 					wrapper -> wrapper.setColors(ColorHelper.getColor(color.getTextureDiffuseColors()), ColorHelper.getColor(color.getTextureDiffuseColors())));
 			NonNullList<Ingredient> ingredients = NonNullList.create();
 			ingredients.add(Ingredient.of(ModItems.BACKPACK));
+			// TODO: make a proper tagkey for this
 			ingredients.add(Ingredient.of(TagKey.create(Registry.ITEM.key(), new ResourceLocation("c", color.getName() + "_dyes"))));
 			recipes.add(new ShapedRecipe(id, "", 1, 2, ingredients, backpackOutput));
 		}

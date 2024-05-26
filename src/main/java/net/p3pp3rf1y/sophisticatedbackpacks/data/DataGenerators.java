@@ -9,7 +9,7 @@ public class DataGenerators implements DataGeneratorEntrypoint {
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator generator) {
 		generator.addProvider(SBLootModifierProvider::new);
-		generator.addProvider(SBPBlockLootTableProvider::new);
+		generator.addProvider(SBPBlockLootProvider::new);
 		generator.addProvider(SBPLootInjectProvider::new);
 		generator.addProvider(SBPRecipeProvider::new);
 	}

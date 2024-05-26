@@ -75,6 +75,24 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_backpack", has(ModItems.BACKPACK))
 				.save(consumer);
 
+		ShapeBasedRecipeBuilder.shaped(ModItems.IRON_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
+				.pattern(" I ")
+				.pattern("IBI")
+				.pattern(" I ")
+				.define('I', ConventionalItemTags.IRON_INGOTS)
+				.define('B', ModItems.COPPER_BACKPACK)
+				.unlockedBy("has_copper_backpack", has(ModItems.COPPER_BACKPACK))
+				.save(consumer, new ResourceLocation(SophisticatedBackpacks.getRegistryName("iron_backpack_from_copper")));
+
+		ShapeBasedRecipeBuilder.shaped(ModItems.COPPER_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
+				.pattern("CCC")
+				.pattern("CBC")
+				.pattern("CCC")
+				.define('C', ConventionalItemTags.COPPER_INGOTS)
+				.define('B', ModItems.BACKPACK)
+				.unlockedBy("has_backpack", has(ModItems.BACKPACK))
+				.save(consumer);
+
 		ShapeBasedRecipeBuilder.shaped(ModItems.PICKUP_UPGRADE)
 				.pattern(" P ")
 				.pattern("SBS")
@@ -352,21 +370,39 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
+		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_STARTER_TIER)
+				.pattern("CCC")
+				.pattern("CBC")
+				.pattern("CCC")
+				.define('B', ModItems.UPGRADE_BASE)
+				.define('C', Tags.Items.STORAGE_BLOCKS_COPPER)
+				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
+				.save(consumer);
+
 		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_1)
 				.pattern("III")
 				.pattern("IBI")
 				.pattern("III")
 				.define('B', ModItems.UPGRADE_BASE)
-				.define('I', Items.IRON_BLOCK)
+				.define('I', Tags.Items.STORAGE_BLOCKS_IRON)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
+
+		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_1)
+				.pattern(" I ")
+				.pattern("ISI")
+				.pattern(" I ")
+				.define('S', ModItems.STACK_UPGRADE_STARTER_TIER)
+				.define('I', Tags.Items.STORAGE_BLOCKS_IRON)
+				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
+				.save(consumer, new ResourceLocation(SophisticatedBackpacks.getRegistryName("stack_upgrade_tier_1_from_starter")));
 
 		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_2)
 				.pattern("GGG")
 				.pattern("GSG")
 				.pattern("GGG")
 				.define('S', ModItems.STACK_UPGRADE_TIER_1)
-				.define('G', Items.GOLD_BLOCK)
+				.define('G', Tags.Items.STORAGE_BLOCKS_GOLD)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_1))
 				.save(consumer);
 
@@ -375,7 +411,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("DSD")
 				.pattern("DDD")
 				.define('S', ModItems.STACK_UPGRADE_TIER_2)
-				.define('D', Items.DIAMOND_BLOCK)
+				.define('D', Tags.Items.STORAGE_BLOCKS_DIAMOND)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_2))
 				.save(consumer);
 
@@ -384,7 +420,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("NSN")
 				.pattern("NNN")
 				.define('S', ModItems.STACK_UPGRADE_TIER_3)
-				.define('N', Items.NETHERITE_BLOCK)
+				.define('N', Tags.Items.STORAGE_BLOCKS_NETHERITE)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_3))
 				.save(consumer);
 

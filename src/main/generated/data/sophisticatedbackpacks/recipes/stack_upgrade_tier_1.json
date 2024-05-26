@@ -11,7 +11,7 @@
       "item": "sophisticatedbackpacks:upgrade_base"
     },
     "I": {
-      "item": "minecraft:iron_block"
+      "tag": "c:iron_blocks"
     }
   },
   "pattern": [

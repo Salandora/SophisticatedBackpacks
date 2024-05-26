@@ -11,21 +11,27 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 
-public class SBPBlockLootTableProvider extends FabricBlockLootTableProvider {
-	protected SBPBlockLootTableProvider(FabricDataGenerator output) {
+public class SBPBlockLootProvider extends FabricBlockLootTableProvider {
+	protected SBPBlockLootProvider(FabricDataGenerator output) {
 		super(output);
 	}
 
 	@Override
 	protected void generateBlockLootTables() {
-		add(ModBlocks.BACKPACK, dropBackpackWithContents(ModItems.BACKPACK));
-		add(ModBlocks.IRON_BACKPACK, dropBackpackWithContents(ModItems.IRON_BACKPACK));
-		add(ModBlocks.GOLD_BACKPACK, dropBackpackWithContents(ModItems.GOLD_BACKPACK));
-		add(ModBlocks.DIAMOND_BACKPACK, dropBackpackWithContents(ModItems.DIAMOND_BACKPACK));
-		add(ModBlocks.NETHERITE_BACKPACK, dropBackpackWithContents(ModItems.NETHERITE_BACKPACK));
+		add(ModBlocks.BACKPACK, getBackpack(ModItems.BACKPACK));
+		add(ModBlocks.COPPER_BACKPACK, getBackpack(ModItems.COPPER_BACKPACK));
+		add(ModBlocks.IRON_BACKPACK, getBackpack(ModItems.IRON_BACKPACK));
+		add(ModBlocks.GOLD_BACKPACK, getBackpack(ModItems.GOLD_BACKPACK));
+		add(ModBlocks.DIAMOND_BACKPACK, getBackpack(ModItems.DIAMOND_BACKPACK));
+		add(ModBlocks.NETHERITE_BACKPACK, getBackpack(ModItems.NETHERITE_BACKPACK));
 	}
 
-	private static LootTable.Builder dropBackpackWithContents(BackpackItem item) {
+	@Override
+	public String getName() {
+		return "SophisticatedBackpacks block loot tables";
+	}
+
+	private static LootTable.Builder getBackpack(BackpackItem item) {
 		LootPoolEntryContainer.Builder<?> entry = LootItem.lootTableItem(item);
 		LootPool.Builder pool = LootPool.lootPool().name("main").setRolls(ConstantValue.exactly(1)).add(entry).apply(CopyBackpackDataFunction.builder());
 		return LootTable.lootTable().withPool(pool);

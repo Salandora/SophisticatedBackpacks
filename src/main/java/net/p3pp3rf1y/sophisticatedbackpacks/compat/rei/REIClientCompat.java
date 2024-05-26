@@ -19,7 +19,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.common.DyeRecipesMaker;
 import net.p3pp3rf1y.sophisticatedbackpacks.crafting.BackpackUpgradeRecipe;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
-import net.p3pp3rf1y.sophisticatedcore.compat.common.ClientRecipeHelper;
+import net.p3pp3rf1y.sophisticatedcore.compat.jei.ClientRecipeHelper;
 import net.p3pp3rf1y.sophisticatedcore.compat.rei.StorageGhostIngredientHandler;
 
 import java.util.ArrayList;

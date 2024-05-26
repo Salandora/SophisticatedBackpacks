@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill;
 
+import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeItemBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeType;
@@ -13,7 +14,7 @@ public class RefillUpgradeItem extends UpgradeItemBase<RefillUpgradeWrapper> {
 	private final boolean supportsBlockPick;
 
 	public RefillUpgradeItem(IntSupplier filterSlotCount, boolean targetSlotSelection, boolean supportsBlockPick) {
-		super(ModItems.CREATIVE_TAB);
+		super(ModItems.CREATIVE_TAB, Config.SERVER.maxUpgradesPerStorage);
 		this.filterSlotCount = filterSlotCount;
 		this.targetSlotSelection = targetSlotSelection;
 		this.supportsBlockPick = supportsBlockPick;

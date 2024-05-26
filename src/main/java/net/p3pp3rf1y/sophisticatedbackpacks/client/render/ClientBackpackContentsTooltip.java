@@ -9,11 +9,11 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestBackpackInventoryContentsMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
-import net.p3pp3rf1y.sophisticatedcore.client.render.ClientStorageContentsTooltipBase;
+import net.p3pp3rf1y.sophisticatedcore.client.render.ClientStorageContentsTooltip;
 
 import java.util.UUID;
 
-public class ClientBackpackContentsTooltip extends ClientStorageContentsTooltipBase {
+public class ClientBackpackContentsTooltip extends ClientStorageContentsTooltip {
 	private final ItemStack backpack;
 
 	public static void onWorldLoad() {

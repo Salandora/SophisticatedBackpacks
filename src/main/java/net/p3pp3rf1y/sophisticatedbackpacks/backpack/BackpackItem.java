@@ -1,6 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
+import com.google.common.collect.MapMaker;
+
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
@@ -38,6 +41,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
@@ -61,6 +65,7 @@ import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -212,6 +217,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem {
 			}
 
 			SoundType soundtype = placementState.getSoundType();
+			//SoundType soundtype = placementState.getSoundType(world, pos, player);
 			world.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 			if (player == null || !player.isCreative()) {
 				backpack.shrink(1);
@@ -250,14 +256,33 @@ public class BackpackItem extends ItemBase implements IStashStorageItem {
 			int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 0;
 			BackpackContext.Item context = new BackpackContext.Item(handlerName, slot);
 
-			player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackContainer(w, pl, context), context, stack.getHoverName()));
+			player.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), context, stack.getHoverName()));
 		}
 		return InteractionResultHolder.success(stack);
 	}
 
+	public static ItemApiLookup.ItemApiProvider<LazyOptional<IBackpackWrapper>, Void> initCapabilities() {
+		return new ItemApiLookup.ItemApiProvider<>() {
+			final Map<ItemStack, IBackpackWrapper> wrapperMap = new MapMaker().weakKeys().weakValues().makeMap();
+
+			@Override
+			public LazyOptional<IBackpackWrapper> find(ItemStack stack, Void context) {
+				if (stack.getCount() == 1) {
+					return LazyOptional.of(() -> wrapperMap.computeIfAbsent(stack, this::initWrapper)).cast();
+				}
+
+				return LazyOptional.empty();
+			}
+
+			private IBackpackWrapper initWrapper(ItemStack stack) {
+				return new BackpackWrapper(stack);
+			}
+		};
+	}
+
 	@Override
 	public void onArmorTick(ItemStack stack, Level level, Player player) {
-		if (level.isClientSide || player.isSpectator() || player.isDeadOrDying() || Boolean.FALSE.equals(Config.COMMON.nerfsConfig.onlyWornBackpackTriggersUpgrades.get())) {
+		if (level.isClientSide || player.isSpectator() || player.isDeadOrDying() || Boolean.FALSE.equals(Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get())) {
 			return;
 		}
 		BackpackWrapperLookup.get(stack).ifPresent(
@@ -269,7 +294,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem {
 
 	@Override
 	public void inventoryTick(ItemStack stack, Level level, Entity entityIn, int itemSlot, boolean isSelected) {
-		if (level.isClientSide || !(entityIn instanceof Player player) || player.isSpectator() || player.isDeadOrDying() || (Config.COMMON.nerfsConfig.onlyWornBackpackTriggersUpgrades.get() && itemSlot > -1)) {
+		if (level.isClientSide || !(entityIn instanceof Player player) || player.isSpectator() || player.isDeadOrDying() || (Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get() && itemSlot > -1)) {
 			return;
 		}
 		BackpackWrapperLookup.get(stack).ifPresent(
@@ -368,6 +393,6 @@ public class BackpackItem extends ItemBase implements IStashStorageItem {
 
 	@Override
 	public boolean canFitInsideContainerItems() {
-		return Config.COMMON.canBePlacedInContainerItems.get();
+		return Config.SERVER.canBePlacedInContainerItems.get();
 	}
 }

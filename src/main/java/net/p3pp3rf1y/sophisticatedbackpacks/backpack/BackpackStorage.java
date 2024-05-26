@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BackpackStorage extends SavedData {
-	private static final String SAVED_DATA_NAME = SophisticatedBackpacks.ID;
+	private static final String SAVED_DATA_NAME = SophisticatedBackpacks.MOD_ID;
 
 	private final Map<UUID, CompoundTag> backpackContents = new HashMap<>();
 	private static final BackpackStorage clientStorageCopy = new BackpackStorage();

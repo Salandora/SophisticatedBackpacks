@@ -8,7 +8,7 @@
   ],
   "key": {
     "G": {
-      "item": "minecraft:gold_block"
+      "tag": "c:gold_blocks"
     },
     "S": {
       "item": "sophisticatedbackpacks:stack_upgrade_tier_1"
