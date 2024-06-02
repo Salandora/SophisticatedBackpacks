@@ -1,9 +1,12 @@
 package net.p3pp3rf1y.sophisticatedbackpacks;
 
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraftforge.fml.config.ModConfig;
 import net.p3pp3rf1y.sophisticatedbackpacks.command.SBPCommand;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.CommonEventHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica.LitematicaCompat;
@@ -21,17 +24,17 @@ public class SophisticatedBackpacks implements ModInitializer {
 	private final RegistryLoader registryLoader = new RegistryLoader();
 	public final CommonEventHandler commonEventHandler = new CommonEventHandler();
 
-	@SuppressWarnings("java:S1118") //needs to be public for mod to work
-	public SophisticatedBackpacks() {
-	}
-
 	@Override
 	public void onInitialize() {
-		Config.register();
+		ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.MOD_ID, ModConfig.Type.SERVER, Config.SERVER_SPEC);
+		ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.MOD_ID, ModConfig.Type.COMMON, Config.COMMON_SPEC);
+
 		commonEventHandler.registerHandlers();
 
 		ModCompat.initCompats();
 		LitematicaCompat.alwaysInit();
+
+		Config.SERVER.initListeners();
 
 		SBPCommand.init();
 		SBPPacketHandler.init();

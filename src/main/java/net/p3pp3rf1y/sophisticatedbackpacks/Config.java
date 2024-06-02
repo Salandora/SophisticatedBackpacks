@@ -1,6 +1,5 @@
 package net.p3pp3rf1y.sophisticatedbackpacks;
 
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
 import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -30,7 +29,6 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeConfig;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -39,14 +37,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("java:S1192")
 //don't complain about repeated config names if two upgrades happen to have the same setting
 public class Config {
-	private static final Map<ModConfig.Type, BaseConfig> CONFIGS = new EnumMap<>(ModConfig.Type.class);
 
 	private static final String REGISTRY_NAME_MATCHER = "([a-z0-9_.-]+:[a-z0-9_/.-]+)";
 	private static final String MAX_UPGRADES_MATCHER = "([a-z0-9_/.-]+\\|\\d+)";
@@ -54,17 +50,23 @@ public class Config {
 	private Config() {
 	}
 
-	public static Common COMMON;
-	public static Server SERVER;
+	public static final Server SERVER;
+	public static final ForgeConfigSpec SERVER_SPEC;
 
-	public static class BaseConfig {
-		public ForgeConfigSpec specification;
+	public static final Common COMMON;
+	public static final ForgeConfigSpec COMMON_SPEC;
 
-		public void onConfigLoad() { }
-		public void onConfigReload() { }
+	static {
+		final Pair<Server, ForgeConfigSpec> serverSpec = new ForgeConfigSpec.Builder().configure(Server::new);
+		SERVER_SPEC = serverSpec.getRight();
+		SERVER = serverSpec.getLeft();
+
+		final Pair<Common, ForgeConfigSpec> commonSpec = new ForgeConfigSpec.Builder().configure(Common::new);
+		COMMON_SPEC = commonSpec.getRight();
+		COMMON = commonSpec.getLeft();
 	}
 
-	public static class Server extends BaseConfig {
+	public static class Server {
 		public final DisallowedItems disallowedItems;
 		public final NoInteractionBlocks noInteractionBlocks;
 		public final NoConnectionBlocks noConnectionBlocks;
@@ -114,13 +116,16 @@ public class Config {
 		public final NerfsConfig nerfsConfig;
 		public final MaxUgradesPerStorageConfig maxUpgradesPerStorage;
 
-		@Override
-		public void onConfigReload() {
+		public void initListeners() {
+			ModConfigEvents.loading(SophisticatedBackpacks.MOD_ID).register(this::onConfigLoad);
+			ModConfigEvents.reloading(SophisticatedBackpacks.MOD_ID).register(this::onConfigReload);
+		}
+
+		public void onConfigReload(ModConfig modConfig) {
 			clearCache();
 		}
 
-		@Override
-		public void onConfigLoad() {
+		public void onConfigLoad(ModConfig modConfig) {
 			clearCache();
 		}
 
@@ -349,7 +354,7 @@ public class Config {
 			}
 
 			public boolean isBlockInteractionDisallowed(Block block) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!SERVER_SPEC.isLoaded()) {
 					return true;
 				}
 				if (!initialized) {
@@ -382,7 +387,7 @@ public class Config {
 			}
 
 			public boolean isBlockConnectionDisallowed(Block block) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!SERVER_SPEC.isLoaded()) {
 					return true;
 				}
 				if (!initialized) {
@@ -417,7 +422,7 @@ public class Config {
 			}
 
 			public boolean isItemDisallowed(Item item) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!SERVER_SPEC.isLoaded()) {
 					return true;
 				}
 
@@ -499,7 +504,7 @@ public class Config {
 		}
 	}
 
-	public static class Common extends BaseConfig {
+	public static class Common {
 		public final ForgeConfigSpec.BooleanValue chestLootEnabled;
 
 		Common(ForgeConfigSpec.Builder builder) {
@@ -508,39 +513,5 @@ public class Config {
 			chestLootEnabled = builder.comment("Turns on/off loot added to various vanilla chest loot tables").define("chestLootEnabled", true);
 			builder.pop();
 		}
-	}
-
-
-	private static <T extends BaseConfig> T register(Function<ForgeConfigSpec.Builder, T> factory, ModConfig.Type side) {
-		Pair<T, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(factory);
-
-		T config = specPair.getLeft();
-		config.specification = specPair.getRight();
-		CONFIGS.put(side, config);
-		return config;
-	}
-
-	public static void register() {
-		COMMON = register(Common::new, ModConfig.Type.CLIENT);
-		SERVER = register(Server::new, ModConfig.Type.SERVER);
-
-		for (Map.Entry<ModConfig.Type, BaseConfig> pair : CONFIGS.entrySet()) {
-			ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.MOD_ID, pair.getKey(), pair.getValue().specification);
-		}
-
-		ModConfigEvents.loading(SophisticatedBackpacks.MOD_ID).register(Config::onConfigLoad);
-		ModConfigEvents.reloading(SophisticatedBackpacks.MOD_ID).register(Config::onConfigReload);
-	}
-
-	public static void onConfigLoad(ModConfig modConfig) {
-		for (Config.BaseConfig config : CONFIGS.values())
-			if (config.specification == modConfig.getSpec())
-				config.onConfigLoad();
-	}
-
-	public static void onConfigReload(ModConfig modConfig) {
-		for (Config.BaseConfig config : CONFIGS.values())
-			if (config.specification == modConfig.getSpec())
-				config.onConfigReload();
 	}
 }
