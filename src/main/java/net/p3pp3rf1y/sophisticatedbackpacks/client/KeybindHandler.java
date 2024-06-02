@@ -1,10 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import committee.nova.mkb.api.IKeyBinding;
-import committee.nova.mkb.api.IKeyConflictContext;
-import committee.nova.mkb.keybinding.KeyConflictContext;
-import committee.nova.mkb.keybinding.KeyModifier;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -45,8 +41,6 @@ import net.p3pp3rf1y.sophisticatedcore.event.client.ClientRawInputEvent;
 
 import java.util.Map;
 import java.util.Optional;
-
-import static committee.nova.mkb.keybinding.KeyConflictContext.GUI;
 
 public class KeybindHandler {
 	private KeybindHandler() {}
@@ -103,36 +97,28 @@ public class KeybindHandler {
 	}
 
 	public static void registerKeyMappings() {
-		((IKeyBinding)TOOL_SWAP_KEYBIND).setKeyConflictContext(KeyConflictContext.IN_GAME);
-		((IKeyBinding)INVENTORY_INTERACTION_KEYBIND).setKeyConflictContext(KeyConflictContext.IN_GAME);
-		((IKeyBinding)BACKPACK_OPEN_KEYBIND).setKeyConflictContext(BackpackKeyConflictContext.INSTANCE);
-		((IKeyBinding)SORT_KEYBIND).setKeyConflictContext(BackpackGuiKeyConflictContext.INSTANCE);
-
 		KeyBindingHelper.registerKeyBinding(BACKPACK_OPEN_KEYBIND);
 		KeyBindingHelper.registerKeyBinding(INVENTORY_INTERACTION_KEYBIND);
 		KeyBindingHelper.registerKeyBinding(TOOL_SWAP_KEYBIND);
 		KeyBindingHelper.registerKeyBinding(SORT_KEYBIND);
 
-		((IKeyBinding)BACKPACK_TOGGLE_UPGRADE_1).setKeyModifierAndCode(KeyModifier.ALT, InputConstants.Type.KEYSYM.getOrCreate(KEY_Z));
-		((IKeyBinding)BACKPACK_TOGGLE_UPGRADE_2).setKeyModifierAndCode(KeyModifier.ALT, InputConstants.Type.KEYSYM.getOrCreate(KEY_Z));
-
-		UPGRADE_SLOT_TOGGLE_KEYBINDS.forEach((slot, keybind) -> {
-			((IKeyBinding)keybind).setKeyConflictContext(KeyConflictContext.UNIVERSAL);
-			KeyBindingHelper.registerKeyBinding(keybind);
-		});
+		UPGRADE_SLOT_TOGGLE_KEYBINDS.forEach((slot, keybind) -> KeyBindingHelper.registerKeyBinding(keybind));
 	}
 
 	public static boolean handleGuiKeyPress(Screen screen, int key, int scancode, int modifiers) {
-		InputConstants.Key input = InputConstants.getKey(key, scancode);
-		if (((IKeyBinding) SORT_KEYBIND).isActiveAndMatches(input) && tryCallSort(screen) || ((IKeyBinding) BACKPACK_OPEN_KEYBIND).isActiveAndMatches(input) && sendBackpackOpenOrCloseMessage()) {
+		if (SORT_KEYBIND.isDown() && tryCallSort(screen)) {
+			return false;
+		} else if (BACKPACK_OPEN_KEYBIND.matches(key, scancode) && sendBackpackOpenOrCloseMessage()) {
 			return false;
 		}
+
 		return true;
 	}
 
 	public static boolean handleGuiMouseKeyPress(Screen screen, double mouseX, double mouseY, int button) {
-		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(button);
-		if (((IKeyBinding)SORT_KEYBIND).isActiveAndMatches(input) && tryCallSort(screen) || ((IKeyBinding)BACKPACK_OPEN_KEYBIND).isActiveAndMatches(input) && sendBackpackOpenOrCloseMessage()) {
+		if (SORT_KEYBIND.matchesMouse(button) && tryCallSort(screen)) {
+			return false;
+		} else if (BACKPACK_OPEN_KEYBIND.matchesMouse(button) && sendBackpackOpenOrCloseMessage()) {
 			return false;
 		}
 
@@ -262,33 +248,5 @@ public class KeybindHandler {
 		}
 
 		return Optional.empty();
-	}
-
-	private static class BackpackKeyConflictContext implements IKeyConflictContext {
-		public static final BackpackKeyConflictContext INSTANCE = new BackpackKeyConflictContext();
-
-		@Override
-		public boolean isActive() {
-			return !GUI.isActive() || Minecraft.getInstance().screen instanceof AbstractContainerScreen<?>;
-		}
-
-		@Override
-		public boolean conflicts(IKeyConflictContext other) {
-			return this == other;
-		}
-	}
-
-	private static class BackpackGuiKeyConflictContext implements IKeyConflictContext {
-		public static final BackpackGuiKeyConflictContext INSTANCE = new BackpackGuiKeyConflictContext();
-
-		@Override
-		public boolean isActive() {
-			return GUI.isActive() && Minecraft.getInstance().screen instanceof BackpackScreen;
-		}
-
-		@Override
-		public boolean conflicts(IKeyConflictContext other) {
-			return this == other;
-		}
 	}
 }
