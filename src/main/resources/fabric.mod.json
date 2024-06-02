@@ -49,7 +49,6 @@
         "fabric-api": ">=${fabric_version}",
         "minecraft": "${minecraft_version}",
         "sophisticatedcore": ">=${sc_version}",
-        "mkb": ">=${mkb_version}",
         "forgeconfigapiport": ">=${forge_config_version}",
         "team_reborn_energy": ">=${energy_version}",
         "porting_lib_loot": ">=${port_lib_version}",
