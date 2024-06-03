@@ -119,7 +119,6 @@ public class PlayerInventoryProvider {
 				}
 			}
 		}
-
 		return false;
 	}
 

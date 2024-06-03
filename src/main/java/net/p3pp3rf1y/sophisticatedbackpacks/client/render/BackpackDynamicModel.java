@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.BATTERY;
@@ -157,13 +158,14 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			this.modelTransform = modelTransform;
 		}
 
+		@Nonnull
 		@Override
 		public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
 			List<BakedQuad> ret = new ArrayList<>(models.get(ModelPart.BASE).getQuads(state, side, rand));
 			if (state == null) {
-				addLeftSide(null, side, rand, ret, tankLeft);
-				addRightSide(null, side, rand, ret, tankRight);
-				addFront(null, side, rand, ret, battery);
+				addLeftSide(state, side, rand, ret, tankLeft);
+				addRightSide(state, side, rand, ret, tankRight);
+				addFront(state, side, rand, ret, battery);
 			} else {
 				addLeftSide(state, side, rand, ret, state.getValue(LEFT_TANK));
 				addRightSide(state, side, rand, ret, state.getValue(RIGHT_TANK));
@@ -239,7 +241,6 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			float bz1 = 0;
 			float bz2 = 5;
 
-			//noinspection DataFlowIssue
 			ret.add(createQuad(List.of(getVector(bounds.minX, bounds.maxY, bounds.minZ), getVector(bounds.minX, bounds.maxY, bounds.maxZ), getVector(bounds.maxX, bounds.maxY, bounds.maxZ), getVector(bounds.maxX, bounds.maxY, bounds.minZ)), tintIndex, still, Direction.UP, bx1, bx2, bz1, bz2));
 			ret.add(createQuad(List.of(getVector(bounds.maxX, bounds.maxY, bounds.minZ), getVector(bounds.maxX, bounds.minY, bounds.minZ), getVector(bounds.minX, bounds.minY, bounds.minZ), getVector(bounds.minX, bounds.maxY, bounds.minZ)), tintIndex, still, Direction.NORTH, bx1, bx2, by1, by2));
 			ret.add(createQuad(List.of(getVector(bounds.minX, bounds.maxY, bounds.maxZ), getVector(bounds.minX, bounds.minY, bounds.maxZ), getVector(bounds.maxX, bounds.minY, bounds.maxZ), getVector(bounds.maxX, bounds.maxY, bounds.maxZ)), tintIndex, still, Direction.SOUTH, bx1, bx2, by1, by2));

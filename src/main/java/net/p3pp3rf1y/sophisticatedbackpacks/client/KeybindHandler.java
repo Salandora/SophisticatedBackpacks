@@ -53,7 +53,6 @@ public class KeybindHandler {
 	private static final int MIDDLE_BUTTON = 2;
 	private static final int CHEST_SLOT_INDEX = 38;
 	private static final int OFFHAND_SLOT_INDEX = 40;
-
 	private static final String KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY = "keybind.sophisticatedbackpacks.category";
 	public static final KeyMapping BACKPACK_TOGGLE_UPGRADE_5 = new KeyMapping(SBPTranslationHelper.INSTANCE.translKeybind("toggle_upgrade_5"),
 			InputConstants.Type.KEYSYM.getOrCreate(KEY_UNKNOWN).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY);
@@ -65,7 +64,6 @@ public class KeybindHandler {
 		    InputConstants.Type.KEYSYM.getOrCreate(KEY_X).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY);
 	public static final KeyMapping BACKPACK_TOGGLE_UPGRADE_1 = new KeyMapping(SBPTranslationHelper.INSTANCE.translKeybind("toggle_upgrade_1"),
 		    InputConstants.Type.KEYSYM.getOrCreate(KEY_Z).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY);
-
 
 	public static final Map<Integer, KeyMapping> UPGRADE_SLOT_TOGGLE_KEYBINDS = Map.of(
 			0, BACKPACK_TOGGLE_UPGRADE_1,
@@ -97,7 +95,6 @@ public class KeybindHandler {
 		KeyBindingHelper.registerKeyBinding(INVENTORY_INTERACTION_KEYBIND);
 		KeyBindingHelper.registerKeyBinding(TOOL_SWAP_KEYBIND);
 		KeyBindingHelper.registerKeyBinding(SORT_KEYBIND);
-
 		UPGRADE_SLOT_TOGGLE_KEYBINDS.forEach((slot, keybind) -> KeyBindingHelper.registerKeyBinding(keybind));
 	}
 
@@ -107,7 +104,6 @@ public class KeybindHandler {
 		} else if (BACKPACK_OPEN_KEYBIND.matches(key, scancode) && sendBackpackOpenOrCloseMessage()) {
 			return false;
 		}
-
 		return true;
 	}
 
@@ -117,7 +113,6 @@ public class KeybindHandler {
 		} else if (BACKPACK_OPEN_KEYBIND.matchesMouse(button) && sendBackpackOpenOrCloseMessage()) {
 			return false;
 		}
-
         return true;
 	}
 

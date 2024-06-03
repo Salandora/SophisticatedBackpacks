@@ -140,7 +140,6 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 				}
 			}
 		});
-
 		ItemVariant mainHandItemResource = ItemVariant.of(mainHandItem);
 		ItemStack tool = selectedTool.get();
 		if (!tool.isEmpty() && hasSpaceInBackpackOrCanPlaceInTheSlotOfSwappedTool(backpackInventory, mainHandItemResource, mainHandItem.getCount(), tool, selectedSlot.get())) {

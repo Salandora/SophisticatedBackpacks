@@ -65,8 +65,10 @@ public class BackpackWrapper implements IBackpackWrapper {
 	private static final String COLUMNS_TAKEN_TAG = "columnsTaken";
 
 	private final ItemStack backpack;
-	private Runnable backpackSaveHandler = () -> {};
-	private Runnable inventorySlotChangeHandler = () -> {};
+	private Runnable backpackSaveHandler = () -> {
+	};
+	private Runnable inventorySlotChangeHandler = () -> {
+	};
 
 	@Nullable
 	private InventoryHandler handler = null;
@@ -87,14 +89,17 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	private final BackpackRenderInfo renderInfo;
 
-	private IntConsumer onSlotsChange = diff -> {};
+	private IntConsumer onSlotsChange = diff -> {
+	};
 
-	private Runnable onInventoryHandlerRefresh = () -> {};
-	private Runnable upgradeCachesInvalidatedHandler = () -> {};
+	private Runnable onInventoryHandlerRefresh = () -> {
+	};
+	private Runnable upgradeCachesInvalidatedHandler = () -> {
+	};
 
 	public BackpackWrapper(ItemStack backpack) {
 		this.backpack = backpack;
-		this.renderInfo = new BackpackRenderInfo(backpack, () -> backpackSaveHandler);
+		renderInfo = new BackpackRenderInfo(backpack, () -> backpackSaveHandler);
 	}
 
 	@Override
@@ -475,7 +480,8 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void unregisterOnSlotsChangeListener() {
-		onSlotsChange = diff -> {};
+		onSlotsChange = diff -> {
+		};
 	}
 
 	@Override
@@ -530,7 +536,8 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void unregisterOnInventoryHandlerRefreshListener() {
-		onInventoryHandlerRefresh = () -> {};
+		onInventoryHandlerRefresh = () -> {
+		};
 	}
 
 	@Override

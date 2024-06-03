@@ -33,6 +33,7 @@ import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
 import java.util.Objects;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.BATTERY;
@@ -141,9 +142,9 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 		return backpackWrapper;
 	}
 
-	@Nullable
-	public <T> LazyOptional<T> getCapability(BlockApiLookup<T, Direction> cap, @Nullable Direction opt) {
-		if (opt != null && level != null && Config.SERVER.noConnectionBlocks.isBlockConnectionDisallowed(level.getBlockState(getBlockPos().relative(opt)).getBlock())) {
+	@Nonnull
+	public <T> LazyOptional<T> getCapability(BlockApiLookup<T, Direction> cap, @Nullable Direction side) {
+		if (side != null && level != null && Config.SERVER.noConnectionBlocks.isBlockConnectionDisallowed(level.getBlockState(getBlockPos().relative(side)).getBlock())) {
 			return LazyOptional.empty();
 		}
 

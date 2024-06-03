@@ -36,7 +36,6 @@ public class InceptionEnergyStorage implements EnergyStorage {
 		energyStorages = storages.toArray(new EnergyStorage[] {});
 	}
 
-
 	@Override
 	public long insert(long maxAmount, TransactionContext transaction) {
 		long totalReceived = 0;

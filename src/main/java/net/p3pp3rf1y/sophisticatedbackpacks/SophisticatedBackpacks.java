@@ -28,19 +28,13 @@ public class SophisticatedBackpacks implements ModInitializer {
 	public void onInitialize() {
 		ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.MOD_ID, ModConfig.Type.SERVER, Config.SERVER_SPEC);
 		ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.MOD_ID, ModConfig.Type.COMMON, Config.COMMON_SPEC);
-
 		commonEventHandler.registerHandlers();
-
 		ModCompat.initCompats();
 		LitematicaCompat.alwaysInit();
-
 		Config.SERVER.initListeners();
-
 		SBPCommand.init();
 		SBPPacketHandler.init();
-
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(registryLoader);
-
 		SBPPacketHandler.getChannel().initServerListener();
 		ModCompat.compatsSetup();
 	}

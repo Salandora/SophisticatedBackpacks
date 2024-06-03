@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrapper, RefillUpgradeItem>
@@ -103,7 +104,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		setCooldown(world, COOLDOWN);
 	}
 
-	private void tryRefillFilter(LivingEntity entity, PlayerInventoryStorage playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
+	private void tryRefillFilter(@Nonnull LivingEntity entity, PlayerInventoryStorage playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
 		if (!(entity instanceof Player player)) {
 			return;
 		}
@@ -318,7 +319,6 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 				remaining -= playerInvHandler.insert(resource, remaining, outer);
 				outer.commit();
 			}
-
 			return resource.toStack((int) remaining);
 		}
 

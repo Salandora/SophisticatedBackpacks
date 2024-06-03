@@ -62,8 +62,8 @@ public class ClientEventHandler {
 
 		LivingEntityFeatureRendererRegistrationCallback.EVENT.register(ClientEventHandler::registerBackpackLayer);
 
-		ModBlockColors.register();
-		ModItemColors.register();
+		ModBlockColors.registerBlockColorHandlers();
+		ModItemColors.registerItemColorHandlers();
 	}
 
 	private static void onModelRegistry(Map<ResourceLocation, IGeometryLoader<?>> loaders) {

@@ -13,6 +13,7 @@ import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class InceptionFluidHandler implements IStorageFluidHandler {
@@ -129,6 +130,7 @@ public class InceptionFluidHandler implements IStorageFluidHandler {
 	}
 
 
+	@Nonnull
 	@Override
 	public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
 		return extract(resource, maxAmount, transaction, false);
