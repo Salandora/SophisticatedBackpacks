@@ -1,0 +1,89 @@
+name: Build
+on: [ push, pull_request, workflow_dispatch ]
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [
+          17-ubuntu,
+          21-ubuntu
+        ]
+    runs-on: ubuntu-22.04
+    container:
+      image: mcr.microsoft.com/openjdk/jdk:${{ matrix.java }}
+      options: --user root
+    steps:
+      # https://github.com/nektos/act/issues/973
+      - name: Install node
+        if: ${{ env.ACT }}
+        run: |
+          apt update
+          apt install -y curl git
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash - 
+          apt install -y nodejs
+      - name: Install git on container
+        if: ${{ !env.ACT }}
+        run: |
+          apt update
+          apt install -y git
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+      - name: Create run_tests dir if non existent
+        run: mkdir -p run_tests
+      - uses: gradle/wrapper-validation-action@v2
+      - run: chmod +x ./gradlew
+      - name: Build with Gradle
+        env:
+          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+          READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
+        run: ./gradlew check build publishToMavenLocal --stacktrace --warning-mode=fail -Porg.gradle.parallel.threads=4
+      - name: Remove unnecessary build files and move necessary ones
+        if: ${{ matrix.java == '21-ubuntu' }} # Only upload artifacts built from latest java
+        run: |
+          rm -rf build/libs/*
+          cp **/build/libs/* build/libs
+      - name: Capture build artifacts
+        if: ${{ !env.ACT && matrix.java == '21-ubuntu' }} # Only upload artifacts built from latest java
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: build/libs/
+      - uses: actions/upload-artifact@v4
+        if: ${{ !env.ACT && matrix.java == '21-ubuntu' }} # Only upload artifacts built from latest java
+        with:
+          name: Maven Local
+          path: /root/.m2/repository/com/github/salandora
+  check_resources:
+    runs-on: ubuntu-22.04
+    container:
+      image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
+      options: --user root
+    steps:
+      # https://github.com/nektos/act/issues/973
+      - name: Install node
+        if: ${{ env.ACT }}
+        run: |
+          apt update
+          apt install -y curl git
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt install -y nodejs
+      - name: Install git on container
+        if: ${{ !env.ACT }}
+        run: |
+          apt update
+          apt install -y git
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+      - run: chmod +x ./gradlew
+      - name: Generate Resources
+        env:
+          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
+          READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
+        run: ./gradlew generateResources --stacktrace --warning-mode=fail
+      - run: if [ -n "$(git status --porcelain)" ]; then exit 1; fi
