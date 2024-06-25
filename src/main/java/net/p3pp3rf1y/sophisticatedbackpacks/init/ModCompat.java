@@ -14,13 +14,12 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds.CHIPPED;
+import static net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds.MKB;
 import static net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds.TRINKETS;
 import static net.p3pp3rf1y.sophisticatedcore.compat.CompatModIds.LITEMATICA;
 
 public class ModCompat {
 	private ModCompat() {}
-
-	private static final String MKB_MOD_ID = "mkb";
 
 	private static final Map<String, Supplier<Callable<ICompat>>> compatFactories = new HashMap<>();
 	private static final Map<String, ICompat> loadedCompats = new HashMap<>();
@@ -30,7 +29,7 @@ public class ModCompat {
 		//compatFactories.put(BOTANIA, () -> BotaniaCompat::new);
 		compatFactories.put(CHIPPED, () -> ChippedCompat::new);
 		compatFactories.put(LITEMATICA, () -> LitematicaCompat::new);
-		compatFactories.put(MKB_MOD_ID, () -> ModernKeyBindingCompat::new);
+		compatFactories.put(MKB, () -> ModernKeyBindingCompat::new);
 	}
 
 	public static void compatsSetup() {
