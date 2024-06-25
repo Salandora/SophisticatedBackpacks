@@ -82,10 +82,12 @@ public class KeybindHandler {
 			InputConstants.Type.KEYSYM.getOrCreate(KEY_B).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY); // BackpackKeyConflictContext.INSTANCE
 
 	public static void register() {
-		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-			ScreenKeyboardEvents.allowKeyPress(screen).register(KeybindHandler::handleGuiKeyPress);
-			ScreenMouseEvents.allowMouseClick(screen).register(KeybindHandler::handleGuiMouseKeyPress);
-		});
+		if (!FabricLoader.getInstance().isModLoaded(CompatModIds.MKB)) {
+			ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+				ScreenKeyboardEvents.allowKeyPress(screen).register(KeybindHandler::handleGuiKeyPress);
+				ScreenMouseEvents.allowMouseClick(screen).register(KeybindHandler::handleGuiMouseKeyPress);
+			});
+		}
 
 		ClientRawInputEvent.KEY_PRESSED.register(KeybindHandler::handleKeyInputEvent);
 	}
@@ -99,7 +101,7 @@ public class KeybindHandler {
 	}
 
 	public static boolean handleGuiKeyPress(Screen screen, int key, int scancode, int modifiers) {
-		if (SORT_KEYBIND.isDown() && tryCallSort(screen)) {
+		if (SORT_KEYBIND.matches(key, scancode) && tryCallSort(screen)) {
 			return false;
 		} else if (BACKPACK_OPEN_KEYBIND.matches(key, scancode) && sendBackpackOpenOrCloseMessage()) {
 			return false;
@@ -142,7 +144,7 @@ public class KeybindHandler {
 		return InteractionResult.PASS;
 	}
 
-	private static boolean tryCallSort(Screen gui) {
+	public static boolean tryCallSort(Screen gui) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player != null && mc.player.containerMenu instanceof BackpackContainer container && gui instanceof BackpackScreen screen) {
 			MouseHandler mh = mc.mouseHandler;
@@ -194,7 +196,7 @@ public class KeybindHandler {
 		SBPPacketHandler.sendToServer(new InventoryInteractionMessage(pos, blockraytraceresult.getDirection()));
 	}
 
-	private static boolean sendBackpackOpenOrCloseMessage() {
+	public static boolean sendBackpackOpenOrCloseMessage() {
 		if (Minecraft.getInstance().screen == null) {
 			SBPPacketHandler.sendToServer(new BackpackOpenMessage());
 			return false;
