@@ -199,7 +199,7 @@ public class KeybindHandler {
 	}
 
 	private static boolean sendBackpackOpenOrCloseMessage() {
-		if (!GUI.isActive()) {
+		if (Minecraft.getInstance().screen == null) {
 			SBPPacketHandler.sendToServer(new BackpackOpenMessage());
 			return false;
 		}
