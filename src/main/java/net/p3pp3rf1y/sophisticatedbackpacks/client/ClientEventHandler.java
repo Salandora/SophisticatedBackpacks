@@ -103,6 +103,6 @@ public class ClientEventHandler {
 		}
 
 		SBPPacketHandler.sendToServer(new BlockPickMessage(stackResult));
-		return stackResult;
+		return stack;
 	}
 }
