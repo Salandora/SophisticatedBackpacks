@@ -125,11 +125,9 @@ public class KeybindHandler {
 		} else if (TOOL_SWAP_KEYBIND.consumeClick()) {
 			sendToolSwapMessage();
 		} else {
-			boolean success = false;
 			for (Map.Entry<Integer, KeyMapping> slotKeybind : UPGRADE_SLOT_TOGGLE_KEYBINDS.entrySet()) {
 				if (slotKeybind.getValue().consumeClick()) {
 					SBPPacketHandler.sendToServer(new UpgradeToggleMessage(slotKeybind.getKey()));
-					success = true;
 				}
 			}
 		}
