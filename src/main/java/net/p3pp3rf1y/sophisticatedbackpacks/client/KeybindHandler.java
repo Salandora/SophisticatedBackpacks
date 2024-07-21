@@ -2,6 +2,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
@@ -17,7 +18,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.phys.BlockHitResult;
@@ -36,7 +36,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.network.InventoryInteractionMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.UpgradeToggleMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
-import net.p3pp3rf1y.sophisticatedcore.event.client.ClientRawInputEvent;
 import net.p3pp3rf1y.sophisticatedcore.mixin.client.accessor.AbstractContainerScreenAccessor;
 
 import java.util.Map;
@@ -89,7 +88,7 @@ public class KeybindHandler {
 			});
 		}
 
-		ClientRawInputEvent.KEY_PRESSED.register(KeybindHandler::handleKeyInputEvent);
+		ClientTickEvents.END_CLIENT_TICK.register(KeybindHandler::handleKeyInputEvent);
 	}
 
 	public static void registerKeyMappings() {
@@ -118,16 +117,13 @@ public class KeybindHandler {
         return true;
 	}
 
-	public static InteractionResult handleKeyInputEvent(Minecraft minecraft, int key, int scancode, int action, int mods) {
+	private static void handleKeyInputEvent(Minecraft minecraft) {
 		if (BACKPACK_OPEN_KEYBIND.consumeClick()) {
 			sendBackpackOpenOrCloseMessage();
-			return InteractionResult.SUCCESS;
 		} else if (INVENTORY_INTERACTION_KEYBIND.consumeClick()) {
 			sendInteractWithInventoryMessage();
-			return InteractionResult.SUCCESS;
 		} else if (TOOL_SWAP_KEYBIND.consumeClick()) {
 			sendToolSwapMessage();
-			return InteractionResult.SUCCESS;
 		} else {
 			boolean success = false;
 			for (Map.Entry<Integer, KeyMapping> slotKeybind : UPGRADE_SLOT_TOGGLE_KEYBINDS.entrySet()) {
@@ -136,12 +132,7 @@ public class KeybindHandler {
 					success = true;
 				}
 			}
-			if (success) {
-				return InteractionResult.SUCCESS;
-			}
 		}
-
-		return InteractionResult.PASS;
 	}
 
 	public static boolean tryCallSort(Screen gui) {
