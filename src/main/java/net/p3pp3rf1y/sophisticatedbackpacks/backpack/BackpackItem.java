@@ -331,13 +331,12 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return Optional.of(new BackpackItem.BackpackContentsTooltip(stack));
 	}
 
-	@Override
-	public ItemStack stash(ItemStack storageStack, ItemStack stack) {
+	public ItemStack stash(ItemStack storageStack, ItemStack stack, @Nullable Transaction ctx) {
 		return BackpackWrapperLookup.get(storageStack)
 				.map(wrapper -> {
-					try (Transaction ctx = Transaction.openOuter()) {
-						long inserted = wrapper.getInventoryForUpgradeProcessing().insert(ItemVariant.of(stack), stack.getCount(), ctx);
-						ctx.commit();
+					try (Transaction inner = Transaction.openNested(ctx)) {
+						long inserted = wrapper.getInventoryForUpgradeProcessing().insert(ItemVariant.of(stack), stack.getCount(), inner);
+						inner.commit();
 						return stack.copyWithCount(stack.getCount() - (int) inserted);
 					}
 				}).orElse(stack);
@@ -370,10 +369,14 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		}
 
 		ItemStack stackToStash = slot.getItem();
-		ItemStack stashResult = stash(storageStack, stackToStash);
-		if (stashResult.getCount() != stackToStash.getCount()) {
-			slot.set(stashResult);
-			slot.onTake(player, stashResult);
+		ItemStack stashResult;
+		try(Transaction simulate = Transaction.openOuter()) {
+			stashResult = stash(storageStack, stackToStash, simulate);
+		}
+		if (stashResult.getCount() < stackToStash.getCount()) {
+			int countToTake = stackToStash.getCount() - stashResult.getCount();
+			ItemStack takeResult = slot.safeTake(countToTake, countToTake, player);
+			stash(storageStack, takeResult, null);
 			return true;
 		}
 
@@ -386,7 +389,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			return super.overrideOtherStackedOnMe(storageStack, otherStack, slot, action, player, carriedAccess);
 		}
 
-		ItemStack result = stash(storageStack, otherStack);
+		ItemStack result = stash(storageStack, otherStack, null);
 		if (result.getCount() != otherStack.getCount()) {
 			carriedAccess.set(result);
 			slot.set(storageStack);
