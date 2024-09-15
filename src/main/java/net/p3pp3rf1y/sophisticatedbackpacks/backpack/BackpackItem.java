@@ -314,11 +314,10 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return numberOfUpgradeSlots.getAsInt();
 	}
 
-	// TODO: Is this implemented?
-/*	@Override
+	@Override
 	public boolean onDroppedByPlayer(ItemStack item, Player player) {
 		return !(player.containerMenu instanceof BackpackContainer backpackContainer && backpackContainer.getVisibleStorageItem().map(visibleStorageItem -> visibleStorageItem == item).orElse(false));
-	}*/
+	}
 
 	@Nullable
 	@Override
