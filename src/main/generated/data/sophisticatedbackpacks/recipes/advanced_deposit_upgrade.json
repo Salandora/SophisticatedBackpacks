@@ -6,6 +6,7 @@
     }
   ],
   "type": "sophisticatedcore:upgrade_next_tier",
+  "category": "misc",
   "key": {
     "D": {
       "tag": "c:diamonds"

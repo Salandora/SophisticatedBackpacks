@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:auto_blasting_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "I": {
       "tag": "c:iron_ingots"
@@ -23,6 +24,6 @@
     "TTT"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:auto_blasting_upgrade"
+    "id": "sophisticatedbackpacks:auto_blasting_upgrade"
   }
 }

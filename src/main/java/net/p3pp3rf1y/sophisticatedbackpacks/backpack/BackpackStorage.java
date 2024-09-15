@@ -27,14 +27,15 @@ public class BackpackStorage extends SavedData {
 	private static final BackpackStorage clientStorageCopy = new BackpackStorage();
 	private final Map<UUID, AccessLogRecord> accessLogRecords = new HashMap<>();
 
-	private BackpackStorage() {}
+	private BackpackStorage() {
+	}
 
 	public static BackpackStorage get() {
 		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
 			ServerLevel overworld = SophisticatedCore.getCurrentServer().getLevel(Level.OVERWORLD);
 			//noinspection ConstantConditions - by this time overworld is loaded
 			DimensionDataStorage storage = overworld.getDataStorage();
-			return storage.computeIfAbsent(BackpackStorage::load, BackpackStorage::new, SAVED_DATA_NAME);
+			return storage.computeIfAbsent(new Factory<>(BackpackStorage::new, BackpackStorage::load, null), SAVED_DATA_NAME);
 		}
 		return clientStorageCopy;
 	}

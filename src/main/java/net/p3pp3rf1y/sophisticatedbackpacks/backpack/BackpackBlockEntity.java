@@ -5,9 +5,6 @@ import team.reborn.energy.api.EnergyStorage;
 import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
-import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -16,10 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.controller.ControllerBlockEntityBase;
@@ -33,7 +29,6 @@ import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
 import java.util.Objects;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.BATTERY;
@@ -50,11 +45,11 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	private boolean chunkBeingUnloaded = false;
 
 	@Nullable
-	private LazyOptional<SlottedStackStorage> itemHandlerCap;
+	private SlottedStackStorage externalItemHandler;
 	@Nullable
-	private LazyOptional<IStorageFluidHandler> fluidHandlerCap;
+	private IStorageFluidHandler externalFluidHandler;
 	@Nullable
-	private LazyOptional<EnergyStorage> energyStorageCap;
+	private EnergyStorage externalEnergyStorage;
 
 	public BackpackBlockEntity(BlockPos pos, BlockState state) {
 		super(BACKPACK_TILE_TYPE, pos, state);
@@ -62,20 +57,20 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 		ServerChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> onChunkUnloaded());
 		ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((be, world) -> {
 			if (be == this) {
-				invalidateCaps();
+				invalidateHandlers();
 			}
 		});
 	}
 
 	public void setBackpack(ItemStack backpack) {
-		backpackWrapper = BackpackWrapperLookup.get(backpack).orElse(IBackpackWrapper.Noop.INSTANCE);
+		backpackWrapper = BackpackWrapper.fromData(backpack);
 		backpackWrapper.setSaveHandler(() -> {
 			setChanged();
 			updateBlockRender = false;
 			WorldHelper.notifyBlockUpdate(this);
 		});
 		backpackWrapper.setInventorySlotChangeHandler(this::setChanged);
-		backpackWrapper.setUpgradeCachesInvalidatedHandler(this::invalidateBackpackCaps);
+		backpackWrapper.setUpgradeCachesInvalidatedHandler(this::invalidateHandlers);
 	}
 
 	@Override
@@ -142,51 +137,47 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 		return backpackWrapper;
 	}
 
-	@Nonnull
-	public <T> LazyOptional<T> getCapability(BlockApiLookup<T, Direction> cap, @Nullable Direction side) {
-		if (side != null && level != null && Config.SERVER.noConnectionBlocks.isBlockConnectionDisallowed(level.getBlockState(getBlockPos().relative(side)).getBlock())) {
-			return LazyOptional.empty();
-		}
-
-		if (cap == ItemStorage.SIDED) {
-			if (itemHandlerCap == null) {
-				itemHandlerCap = LazyOptional.of(() -> new CachedFailedInsertInventoryHandler(() -> getBackpackWrapper().getInventoryForInputOutput(), () -> level != null ? level.getGameTime() : 0));
-			}
-			return itemHandlerCap.cast();
-		} else if (cap == FluidStorage.SIDED) {
-			if (fluidHandlerCap == null) {
-				fluidHandlerCap = LazyOptional.of(() -> getBackpackWrapper().getFluidHandler().map(IStorageFluidHandler.class::cast).orElse(EmptyFluidHandler.INSTANCE));
-			}
-			return fluidHandlerCap.cast();
-		} else if (cap == EnergyStorage.SIDED) {
-			if (energyStorageCap == null) {
-				energyStorageCap = LazyOptional.of(() -> getBackpackWrapper().getEnergyStorage().map(EnergyStorage.class::cast).orElse(EnergyStorage.EMPTY));
-			}
-			return energyStorageCap.cast();
-		}
-		return LazyOptional.empty();
+	private void invalidateHandlers() {
+		externalItemHandler = null;
+		externalFluidHandler = null;
+		externalEnergyStorage = null;
 	}
 
-	public void invalidateCaps() {
-		invalidateBackpackCaps();
+	private boolean isBlockConnectionDisallowed(@Nullable Direction direction) {
+		return direction != null && level != null && Config.SERVER.noConnectionBlocks.isBlockConnectionDisallowed(level.getBlockState(getBlockPos().relative(direction)).getBlock());
 	}
 
-	private void invalidateBackpackCaps() {
-		if (itemHandlerCap != null) {
-			LazyOptional<SlottedStackStorage> tempItemHandlerCap = itemHandlerCap;
-			itemHandlerCap = null;
-			tempItemHandlerCap.invalidate();
+	@Nullable
+	public SlottedStackStorage getExternalItemHandler(@Nullable Direction direction) {
+		if (isBlockConnectionDisallowed(direction)) {
+			return null;
 		}
-		if (fluidHandlerCap != null) {
-			LazyOptional<IStorageFluidHandler> tempFluidHandlerCap = fluidHandlerCap;
-			fluidHandlerCap = null;
-			tempFluidHandlerCap.invalidate();
+		if (externalItemHandler == null) {
+			externalItemHandler = new CachedFailedInsertInventoryHandler(() -> getBackpackWrapper().getInventoryForInputOutput(), () -> level != null ? level.getGameTime() : 0);
 		}
-		if (energyStorageCap != null) {
-			LazyOptional<EnergyStorage> tempEnergyStorageCap = energyStorageCap;
-			energyStorageCap = null;
-			tempEnergyStorageCap.invalidate();
+		return externalItemHandler;
+	}
+
+	@Nullable
+	public IStorageFluidHandler getExternalFluidHandler(@Nullable Direction direction) {
+		if (isBlockConnectionDisallowed(direction)) {
+			return null;
 		}
+		if (externalFluidHandler == null) {
+			externalFluidHandler = getBackpackWrapper().getFluidHandler().map(IStorageFluidHandler.class::cast).orElse(EmptyFluidHandler.INSTANCE);
+		}
+		return externalFluidHandler;
+	}
+
+	@Nullable
+	public EnergyStorage getExternalEnergyStorage(@Nullable Direction direction) {
+		if (isBlockConnectionDisallowed(direction)) {
+			return null;
+		}
+		if (externalEnergyStorage == null) {
+			externalEnergyStorage = getBackpackWrapper().getEnergyStorage().map(EnergyStorage.class::cast).orElse(EnergyStorage.EMPTY);
+		}
+		return externalEnergyStorage;
 	}
 
 	public void refreshRenderState() {

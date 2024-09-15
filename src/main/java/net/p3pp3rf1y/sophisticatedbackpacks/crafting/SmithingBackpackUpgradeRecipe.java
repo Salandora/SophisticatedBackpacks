@@ -1,31 +1,27 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.SmithingTransformRecipeAccessor;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.crafting.IWrapperRecipe;
 import net.p3pp3rf1y.sophisticatedcore.crafting.RecipeWrapperSerializer;
 
-import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.Set;
 
 public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe implements IWrapperRecipe<SmithingTransformRecipe> {
-	public static final Set<ResourceLocation> REGISTERED_RECIPES = new LinkedHashSet<>();
 	private final SmithingTransformRecipe compose;
 
 	public SmithingBackpackUpgradeRecipe(SmithingTransformRecipe compose) {
-		super(compose.getId(), ((SmithingTransformRecipeAccessor) compose).getTemplate(), ((SmithingTransformRecipeAccessor) compose).getBase(), ((SmithingTransformRecipeAccessor) compose).getAddition(), ((SmithingTransformRecipeAccessor) compose).getResult());
+		super(((SmithingTransformRecipeAccessor) compose).getTemplate(), ((SmithingTransformRecipeAccessor) compose).getBase(), ((SmithingTransformRecipeAccessor) compose).getAddition(), ((SmithingTransformRecipeAccessor) compose).getResult());
 		this.compose = compose;
-		REGISTERED_RECIPES.add(compose.getId());
 	}
 
 	@Override
@@ -38,11 +34,9 @@ public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe imple
 		ItemStack upgradedBackpack = ((SmithingTransformRecipeAccessor) this).getResult().copy();
 		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
 			getBackpack(inv).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
-			BackpackWrapperLookup.get(upgradedBackpack)
-					.ifPresent(wrapper -> {
-						BackpackItem backpackItem = ((BackpackItem) upgradedBackpack.getItem());
-						wrapper.setSlotNumbers(backpackItem.getNumberOfSlots(), backpackItem.getNumberOfUpgradeSlots());
-					});
+			IBackpackWrapper wrapper = BackpackWrapper.fromData(upgradedBackpack);
+			BackpackItem backpackItem = ((BackpackItem) upgradedBackpack.getItem());
+			wrapper.setSlotNumbers(backpackItem.getNumberOfSlots(), backpackItem.getNumberOfUpgradeSlots());
 		}
 		return upgradedBackpack;
 	}

@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_1"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "I": {
       "tag": "c:iron_blocks"
@@ -20,6 +21,6 @@
     " I "
   ],
   "result": {
-    "item": "sophisticatedbackpacks:stack_upgrade_tier_1"
+    "id": "sophisticatedbackpacks:stack_upgrade_tier_1"
   }
 }

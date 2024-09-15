@@ -2,12 +2,12 @@ package net.p3pp3rf1y.sophisticatedbackpacks.client.gui;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenPacket;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackSettingsTabControl;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.SettingsScreen;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Position;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SettingsContainerMenu;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
 import net.p3pp3rf1y.sophisticatedcore.settings.StorageSettingsTabControlBase;
 
 public class BackpackSettingsScreen extends SettingsScreen {
@@ -26,6 +26,6 @@ public class BackpackSettingsScreen extends SettingsScreen {
 
 	@Override
 	protected void sendStorageInventoryScreenOpenMessage() {
-		SBPPacketHandler.sendToServer(new BackpackOpenMessage());
+		PacketHelper.sendToServer(new BackpackOpenPacket());
 	}
 }

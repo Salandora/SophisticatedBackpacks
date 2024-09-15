@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:xp_pump_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "C": {
       "item": "minecraft:experience_bottle"
@@ -26,6 +27,6 @@
     "RER"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:xp_pump_upgrade"
+    "id": "sophisticatedbackpacks:xp_pump_upgrade"
   }
 }

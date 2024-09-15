@@ -41,7 +41,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.client.accessor.VertexFormatAccessor;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
@@ -102,7 +103,8 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		private static final ItemTransforms ITEM_TRANSFORMS = createItemTransforms();
 		private static final ResourceLocation BACKPACK_MODULES_TEXTURE = new ResourceLocation("sophisticatedbackpacks:block/backpack_modules");
 
-		@SuppressWarnings("java:S4738") //ItemTransforms require Guava ImmutableMap to be passed in so no way to change that to java Map
+		@SuppressWarnings("java:S4738")
+		//ItemTransforms require Guava ImmutableMap to be passed in so no way to change that to java Map
 		private static ItemTransforms createItemTransforms() {
 			return new ItemTransforms(new ItemTransform(
 					new Vector3f(85, -90, 0),
@@ -233,7 +235,6 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 
 			FluidVariant fluidVariant = fluidStack.getType();
 			TextureAtlasSprite still = FluidVariantRendering.getSprite(fluidVariant);
-
 			float bx1 = 0;
 			float bx2 = 5;
 			float by1 = 0;
@@ -274,7 +275,8 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			return true;
 		}
 
-		@SuppressWarnings("java:S1874") //don't have model data to pass in here and just calling getParticleTexture of baked model that doesn't need model data
+		@SuppressWarnings("java:S1874")
+		//don't have model data to pass in here and just calling getParticleTexture of baked model that doesn't need model data
 		@Override
 		public TextureAtlasSprite getParticleIcon() {
 			return models.get(ModelPart.BASE).getParticleIcon();
@@ -351,9 +353,9 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 	}
 
 	private static class BackpackItemOverrideList extends ItemOverrides {
-		private final BackpackDynamicModel.BackpackBakedModel backpackModel;
+		private final BackpackBakedModel backpackModel;
 
-		public BackpackItemOverrideList(BackpackDynamicModel.BackpackBakedModel backpackModel) {
+		public BackpackItemOverrideList(BackpackBakedModel backpackModel) {
 			this.backpackModel = backpackModel;
 		}
 
@@ -363,22 +365,21 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			backpackModel.tankRight = false;
 			backpackModel.tankLeft = false;
 			backpackModel.battery = false;
-			BackpackWrapperLookup.get(stack).ifPresent(backpackWrapper -> {
-				RenderInfo renderInfo = backpackWrapper.getRenderInfo();
-				Map<TankPosition, IRenderedTankUpgrade.TankRenderInfo> tankRenderInfos = renderInfo.getTankRenderInfos();
-				tankRenderInfos.forEach((pos, info) -> {
-					if (pos == TankPosition.LEFT) {
-						backpackModel.tankLeft = true;
-						backpackModel.leftTankRenderInfo = info;
-					} else {
-						backpackModel.tankRight = true;
-						backpackModel.rightTankRenderInfo = info;
-					}
-				});
-				renderInfo.getBatteryRenderInfo().ifPresent(batteryRenderInfo -> {
-					backpackModel.battery = true;
-					backpackModel.batteryRenderInfo = batteryRenderInfo;
-				});
+			IBackpackWrapper backpackWrapper = BackpackWrapper.fromData(stack);
+			RenderInfo renderInfo = backpackWrapper.getRenderInfo();
+			Map<TankPosition, IRenderedTankUpgrade.TankRenderInfo> tankRenderInfos = renderInfo.getTankRenderInfos();
+			tankRenderInfos.forEach((pos, info) -> {
+				if (pos == TankPosition.LEFT) {
+					backpackModel.tankLeft = true;
+					backpackModel.leftTankRenderInfo = info;
+				} else {
+					backpackModel.tankRight = true;
+					backpackModel.rightTankRenderInfo = info;
+				}
+			});
+			renderInfo.getBatteryRenderInfo().ifPresent(batteryRenderInfo -> {
+				backpackModel.battery = true;
+				backpackModel.batteryRenderInfo = batteryRenderInfo;
 			});
 
 			return backpackModel;

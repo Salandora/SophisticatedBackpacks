@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:smoking_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -26,6 +27,6 @@
     "RSR"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:smoking_upgrade"
+    "id": "sophisticatedbackpacks:smoking_upgrade"
   }
 }

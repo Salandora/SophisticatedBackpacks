@@ -5,22 +5,22 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-class BlockContext {
-	private final Level world;
+public class BlockContext {
+	private final Level level;
 
 	private final BlockState state;
 	private final Block block;
 	private final BlockPos pos;
 
-	public BlockContext(Level world, BlockState state, Block block, BlockPos pos) {
-		this.world = world;
+	public BlockContext(Level level, BlockState state, Block block, BlockPos pos) {
+		this.level = level;
 		this.state = state;
 		this.block = block;
 		this.pos = pos;
 	}
 
-	public Level getWorld() {
-		return world;
+	public Level getLevel() {
+		return level;
 	}
 
 	public BlockState getState() {

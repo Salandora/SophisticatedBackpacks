@@ -1,6 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
+import team.reborn.energy.api.EnergyStorage;
+
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
@@ -13,7 +17,8 @@ import java.util.function.Supplier;
 
 public class ModBlocks {
 
-	private ModBlocks() {}
+    private ModBlocks() {
+    }
 
 	public static final BackpackBlock BACKPACK = register("backpack", BackpackBlock::new);
 	public static final BackpackBlock COPPER_BACKPACK = register("copper_backpack", BackpackBlock::new);
@@ -38,5 +43,12 @@ public class ModBlocks {
 
 	public static void registerEvents() {
 		UseBlockCallback.EVENT.register(BackpackBlock::playerInteract);
+		registerCapabilities();
+	}
+
+	private static void registerCapabilities() {
+		ItemStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalItemHandler, ModBlocks.BACKPACK_TILE_TYPE);
+		FluidStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalFluidHandler, ModBlocks.BACKPACK_TILE_TYPE);
+		EnergyStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalEnergyStorage, ModBlocks.BACKPACK_TILE_TYPE);
 	}
 }

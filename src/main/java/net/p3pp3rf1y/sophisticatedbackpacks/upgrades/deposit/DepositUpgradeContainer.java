@@ -19,7 +19,7 @@ public class DepositUpgradeContainer extends UpgradeContainerBase<DepositUpgrade
 	}
 
 	@Override
-	public void handleMessage(CompoundTag data) {
-		filterLogicContainer.handleMessage(data);
+	public void handlePacket(CompoundTag data) {
+		filterLogicContainer.handlePacket(data);
 	}
 }

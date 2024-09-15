@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_2"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "G": {
       "tag": "c:gold_blocks"
@@ -20,6 +21,6 @@
     "GGG"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:stack_upgrade_tier_2"
+    "id": "sophisticatedbackpacks:stack_upgrade_tier_2"
   }
 }

@@ -7,9 +7,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.client.init.ModItemsClient;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.render.ClientBackpackContentsTooltip;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica.LitematicaPackets;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModPackets;
 
 import javax.annotation.Nullable;
 
@@ -23,11 +24,12 @@ public class SophisticatedBackpacksClient implements ClientModInitializer {
 
 		ClientEventHandler.registerHandlers();
 
-		ModItems.registerScreens();
+		ModItemsClient.registerScreens();
 
 		TooltipComponentCallback.EVENT.register(SophisticatedBackpacksClient::registerTooltipComponent);
 
-		SBPPacketHandler.getChannel().initClientListener();
+		ModPackets.registerClientPackets();
+		LitematicaPackets.registerClientPackets();
 	}
 	@Nullable
 	private static ClientTooltipComponent registerTooltipComponent(TooltipComponent data) {

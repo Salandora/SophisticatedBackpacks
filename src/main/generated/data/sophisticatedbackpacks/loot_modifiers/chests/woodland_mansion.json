@@ -6,7 +6,7 @@
     },
     {
       "condition": "porting_lib:loot_table_id",
-      "loot_table_id": "minecraft:chests/woodland_mansion"
+      "value": "minecraft:chests/woodland_mansion"
     }
   ],
   "loot_table": "sophisticatedbackpacks:inject/chests/woodland_mansion",

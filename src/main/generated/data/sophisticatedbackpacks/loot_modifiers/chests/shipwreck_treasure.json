@@ -6,7 +6,7 @@
     },
     {
       "condition": "porting_lib:loot_table_id",
-      "loot_table_id": "minecraft:chests/shipwreck_treasure"
+      "value": "minecraft:chests/shipwreck_treasure"
     }
   ],
   "loot_table": "sophisticatedbackpacks:inject/chests/shipwreck_treasure",

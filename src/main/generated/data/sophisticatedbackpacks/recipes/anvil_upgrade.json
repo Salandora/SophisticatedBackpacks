@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:anvil_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "A": {
       "item": "minecraft:anvil"
@@ -29,6 +30,6 @@
     " C "
   ],
   "result": {
-    "item": "sophisticatedbackpacks:anvil_upgrade"
+    "id": "sophisticatedbackpacks:anvil_upgrade"
   }
 }

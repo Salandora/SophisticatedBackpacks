@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:compacting_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -26,6 +27,6 @@
     "RPR"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:compacting_upgrade"
+    "id": "sophisticatedbackpacks:compacting_upgrade"
   }
 }

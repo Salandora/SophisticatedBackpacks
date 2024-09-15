@@ -20,7 +20,7 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 	private static final String DATA_SHIFT_CLICK_INTO_STORAGE = "shiftClickIntoStorage";
 	private final Slot resultSlot;
 
-	private PersistableAnvilMenu anvilMenuDelegate;
+	private final PersistableAnvilMenu anvilMenuDelegate;
 	private Runnable slotsChangeListener = () -> {};
 	private boolean processingOnTakeLogic = false;
 	public AnvilUpgradeContainer(Player player, int upgradeContainerId, AnvilUpgradeWrapper upgradeWrapper, UpgradeContainerType<AnvilUpgradeWrapper, AnvilUpgradeContainer> type) {
@@ -39,7 +39,7 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 	}
 
 	@Override
-	public void handleMessage(CompoundTag data) {
+	public void handlePacket(CompoundTag data) {
 		if (data.contains(DATA_SHIFT_CLICK_INTO_STORAGE)) {
 			setShiftClickIntoStorage(data.getBoolean(DATA_SHIFT_CLICK_INTO_STORAGE));
 		} else if (data.contains("itemName")) {
@@ -105,8 +105,8 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		}
 
 		@Override
-		public void slotsChanged(Container pInventory) {
-			super.slotsChanged(pInventory);
+		public void slotsChanged(Container inventory) {
+			super.slotsChanged(inventory);
 			if (initializing) {
 				return;
 			}

@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_diamond_backpack",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_diamond_backpack"
     ]
   ],
   "rewards": {
     "recipes": [
       "sophisticatedbackpacks:netherite_backpack"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

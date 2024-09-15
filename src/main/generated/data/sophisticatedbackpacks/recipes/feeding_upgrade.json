@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:feeding_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "A": {
       "item": "minecraft:golden_apple"
@@ -29,6 +30,6 @@
     " E "
   ],
   "result": {
-    "item": "sophisticatedbackpacks:feeding_upgrade"
+    "id": "sophisticatedbackpacks:feeding_upgrade"
   }
 }

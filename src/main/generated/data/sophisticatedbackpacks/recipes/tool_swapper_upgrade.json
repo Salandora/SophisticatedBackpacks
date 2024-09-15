@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:tool_swapper_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "A": {
       "item": "minecraft:wooden_axe"
@@ -35,6 +36,6 @@
     "ISI"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:tool_swapper_upgrade"
+    "id": "sophisticatedbackpacks:tool_swapper_upgrade"
   }
 }

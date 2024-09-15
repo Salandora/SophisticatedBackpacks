@@ -12,13 +12,16 @@ import dev.emi.emi.api.widget.Bounds;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.common.DyeRecipesMaker;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.SettingsScreen;
@@ -46,30 +49,29 @@ public class EmiCompat implements EmiPlugin {
 
     @Override
     public void register(EmiRegistry registry) {
-        registry.addExclusionArea(BackpackScreen.class, (screen, consumer) -> {
-            screen.getUpgradeSlotsRectangle().ifPresent(r -> consumer.accept(new Bounds(r.getX(), r.getY(), r.getWidth(), r.getHeight())));
-            screen.getUpgradeSettingsControl().getTabRectangles().forEach(r -> consumer.accept(new Bounds(r.getX(), r.getY(), r.getWidth(), r.getHeight())));
-            screen.getSortButtonsRectangle().ifPresent(r -> consumer.accept(new Bounds(r.getX(), r.getY(), r.getWidth(), r.getHeight())));
-        });
+		registry.addExclusionArea(BackpackScreen.class, (screen, consumer) -> {
+			screen.getUpgradeSlotsRectangle().ifPresent(r -> consumer.accept(new Bounds(r.getX(), r.getY(), r.getWidth(), r.getHeight())));
+			screen.getUpgradeSettingsControl().getTabRectangles().forEach(r -> consumer.accept(new Bounds(r.getX(), r.getY(), r.getWidth(), r.getHeight())));
+			screen.getSortButtonsRectangle().ifPresent(r -> consumer.accept(new Bounds(r.getX(), r.getY(), r.getWidth(), r.getHeight())));
+		});
 
-        registry.addExclusionArea(BackpackSettingsScreen.class, (screen, consumer) -> {
-            if (screen == null || screen.getSettingsTabControl() == null) { // Due to how Emi collects the exclusion area this can be null
-                return;
-            }
-            screen.getSettingsTabControl().getTabRectangles().forEach(r -> consumer.accept(new Bounds(r.getX(), r.getY(), r.getWidth(), r.getHeight())));
-        });
+		registry.addExclusionArea(BackpackSettingsScreen.class, (screen, consumer) -> {
+			if (screen == null || screen.getSettingsTabControl() == null) { // Due to how Emi collects the exclusion area this can be null
+				return;
+			}
+			screen.getSettingsTabControl().getTabRectangles().forEach(r -> consumer.accept(new Bounds(r.getX(), r.getY(), r.getWidth(), r.getHeight())));
+		});
 
-        registry.addDragDropHandler(BackpackScreen.class, new EmiStorageGhostDragDropHandler<>());
-        registry.addDragDropHandler(SettingsScreen.class, new EmiSettingsGhostDragDropHandler<>());
+		registry.addDragDropHandler(BackpackScreen.class, new EmiStorageGhostDragDropHandler<>());
+		registry.addDragDropHandler(SettingsScreen.class, new EmiSettingsGhostDragDropHandler<>());
 
-        registerCraftingRecipes(registry, DyeRecipesMaker.getRecipes());
+		registerCraftingRecipes(registry, DyeRecipesMaker.getRecipes());
 
-        Comparison compareColor = Comparison.of((a, b) ->
-            BackpackWrapperLookup.get(a.getItemStack())
-                .map(stackA -> BackpackWrapperLookup.get(b.getItemStack())
-                    .map(stackB -> stackA.getMainColor() == stackB.getMainColor() && stackA.getAccentColor() == stackB.getAccentColor())
-                    .orElse(false))
-                .orElse(false));
+		Comparison compareColor = Comparison.of((a, b) -> {
+			IBackpackWrapper wrapperA = BackpackWrapper.fromData(a.getItemStack());
+			IBackpackWrapper wrapperB = BackpackWrapper.fromData(b.getItemStack());
+			return wrapperA.getMainColor() == wrapperB.getMainColor() && wrapperA.getAccentColor() == wrapperB.getAccentColor();
+		});
 
         registry.setDefaultComparison(EmiStack.of(ModItems.BACKPACK), compareColor);
 
@@ -85,12 +87,13 @@ public class EmiCompat implements EmiPlugin {
 		}
     }
 
-    private static void registerCraftingRecipes(EmiRegistry registry, Collection<CraftingRecipe> recipes) {
+    private static void registerCraftingRecipes(EmiRegistry registry, Collection<RecipeHolder<CraftingRecipe>> recipes) {
+		Minecraft mc = Minecraft.getInstance();
         recipes.forEach(r -> registry.addRecipe(
             new EmiCraftingRecipe(
-                r.getIngredients().stream().map(EmiIngredient::of).toList(),
-                EmiStack.of(r.getResultItem(null)),
-                r.getId())
+                r.value().getIngredients().stream().map(EmiIngredient::of).toList(),
+                EmiStack.of(r.value().getResultItem(mc.level.registryAccess())),
+                r.id())
             )
         );
     }

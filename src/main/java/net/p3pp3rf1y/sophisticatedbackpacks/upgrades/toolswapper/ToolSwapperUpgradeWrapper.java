@@ -245,13 +245,14 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	private void updateBestWeapons(AtomicReference<ItemStack> bestAxe, AtomicDouble bestAxeDamage, AtomicReference<ItemStack> bestSword, AtomicDouble bestSwordDamage, ItemStack stack) {
-		AttributeInstance attribute = new AttributeInstance(Attributes.ATTACK_DAMAGE, a -> {});
+		AttributeInstance attribute = new AttributeInstance(Attributes.ATTACK_DAMAGE, a -> {
+		});
 		Multimap<Attribute, AttributeModifier> attributeModifiers = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
 		if (!attributeModifiers.containsKey(Attributes.ATTACK_DAMAGE)) {
 			return;
 		}
 		attributeModifiers.get(Attributes.ATTACK_DAMAGE).forEach(m -> {
-			attribute.removeModifier(m);
+			attribute.removeModifier(m.getId());
 			attribute.addTransientModifier(m);
 		});
 		double damageValue = attribute.getValue();
@@ -312,7 +313,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	@Override
-	public boolean onEntityInteract(Level world, Entity entity, Player player) {
+	public boolean onEntityInteract(Level level, Entity entity, Player player) {
 		if (!upgradeItem.shouldSwapToolOnKeyPress()) {
 			return false;
 		}
@@ -328,12 +329,12 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	@Override
-	public boolean onBlockInteract(Level world, BlockPos pos, BlockState blockState, Player player) {
+	public boolean onBlockInteract(Level level, BlockPos pos, BlockState blockState, Player player) {
 		if (!upgradeItem.shouldSwapToolOnKeyPress()) {
 			return false;
 		}
 
-		return tryToSwapTool(player, stack -> itemWorksOnBlock(world, pos, blockState, player, stack), BuiltInRegistries.BLOCK.getKey(blockState.getBlock()));
+		return tryToSwapTool(player, stack -> itemWorksOnBlock(level, pos, blockState, player, stack), BuiltInRegistries.BLOCK.getKey(blockState.getBlock()));
 	}
 
 	private boolean tryToSwapTool(Player player, Predicate<ItemStack> isToolValid, @Nullable ResourceLocation targetRegistryName) {
@@ -433,8 +434,8 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		return stack.getItem() instanceof ShearsItem || stack.is(ConventionalItemTags.SHEARS);
 	}
 
-	private boolean isShearInteractionBlock(Level world, BlockPos pos, ItemStack stack, Block block) {
-		return (block instanceof IShearable shearable && shearable.isShearable(stack, world, pos)) || block instanceof BeehiveBlock;
+	private boolean isShearInteractionBlock(Level level, BlockPos pos, ItemStack stack, Block block) {
+		return (block instanceof IShearable shearable && shearable.isShearable(stack, level, pos)) || block instanceof BeehiveBlock;
 	}
 
 	private boolean isShearableEntity(Entity entity, ItemStack stack) {

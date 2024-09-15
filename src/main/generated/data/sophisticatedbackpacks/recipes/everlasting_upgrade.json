@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:everlasting_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -23,6 +24,6 @@
     "CSC"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:everlasting_upgrade"
+    "id": "sophisticatedbackpacks:everlasting_upgrade"
   }
 }

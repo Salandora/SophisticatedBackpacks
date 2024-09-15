@@ -29,20 +29,21 @@ import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.trinkets.TrinketsCompat;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockToolSwapMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.EntityToolSwapMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.InventoryInteractionMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.UpgradeToggleMessage;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenPacket;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockToolSwapPacket;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.EntityToolSwapPacket;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.InventoryInteractionPacket;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.UpgradeTogglePacket;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.mixin.client.accessor.AbstractContainerScreenAccessor;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
 
 import java.util.Map;
 import java.util.Optional;
 
 public class KeybindHandler {
-	private KeybindHandler() {}
+	private KeybindHandler() {
+	}
 
 	private static final int KEY_B = 66;
 	private static final int KEY_C = 67;
@@ -127,7 +128,7 @@ public class KeybindHandler {
 		} else {
 			for (Map.Entry<Integer, KeyMapping> slotKeybind : UPGRADE_SLOT_TOGGLE_KEYBINDS.entrySet()) {
 				if (slotKeybind.getValue().consumeClick()) {
-					SBPPacketHandler.sendToServer(new UpgradeToggleMessage(slotKeybind.getKey()));
+					PacketHelper.sendToServer(new UpgradeTogglePacket(slotKeybind.getKey()));
 				}
 			}
 		}
@@ -162,10 +163,10 @@ public class KeybindHandler {
 		if (rayTrace.getType() == HitResult.Type.BLOCK) {
 			BlockHitResult blockRayTraceResult = (BlockHitResult) rayTrace;
 			BlockPos pos = blockRayTraceResult.getBlockPos();
-			SBPPacketHandler.sendToServer(new BlockToolSwapMessage(pos));
+			PacketHelper.sendToServer(new BlockToolSwapPacket(pos));
 		} else if (rayTrace.getType() == HitResult.Type.ENTITY) {
 			EntityHitResult entityRayTraceResult = (EntityHitResult) rayTrace;
-			SBPPacketHandler.sendToServer(new EntityToolSwapMessage(entityRayTraceResult.getEntity().getId()));
+			PacketHelper.sendToServer(new EntityToolSwapPacket(entityRayTraceResult.getEntity().getId()));
 		}
 	}
 
@@ -178,32 +179,35 @@ public class KeybindHandler {
 		BlockHitResult blockraytraceresult = (BlockHitResult) rayTrace;
 		BlockPos pos = blockraytraceresult.getBlockPos();
 
+		// TODO:
+		// if (Boolean.FALSE.equals(CapabilityHelper.getFromItemHandler(mc.level, pos, itemHandler -> true, false))) {
 		if (ItemStorage.SIDED.find(mc.level, pos, null) == null) {
 			return;
 		}
 
-		SBPPacketHandler.sendToServer(new InventoryInteractionMessage(pos, blockraytraceresult.getDirection()));
+		PacketHelper.sendToServer(new InventoryInteractionPacket(pos, blockraytraceresult.getDirection()));
 	}
 
 	public static boolean sendBackpackOpenOrCloseMessage() {
 		if (Minecraft.getInstance().screen == null) {
-			SBPPacketHandler.sendToServer(new BackpackOpenMessage());
+			PacketHelper.sendToServer(new BackpackOpenPacket());
 			return false;
 		}
 
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
 			Slot slot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
-			if (slot != null && (slot.container instanceof Inventory || isTrinket(slot.container))) {
-				Optional<PlayerInventoryReturn> ret = getPlayerInventory(slot);
 
-				if (ret.isPresent() && slot.getItem().getItem() instanceof BackpackItem) {
-					SBPPacketHandler.sendToServer(new BackpackOpenMessage(slot.getContainerSlot(), ret.get().identifier(), ret.get().handlerName()));
+			if (slot != null && (slot.container instanceof Inventory || isTrinket(slot.container))) {
+				Optional<PlayerInventoryReturn> handler = getPlayerInventory(slot);
+
+				if (handler.isPresent() && slot.getItem().getItem() instanceof BackpackItem) {
+					PacketHelper.sendToServer(new BackpackOpenPacket(slot.getContainerSlot(), handler.get().identifier(), handler.get().handlerName()));
 					return true;
 				}
 			}
 			if (screen instanceof BackpackScreen && slot != null && slot.getItem().getItem() instanceof BackpackItem && slot.getItem().getCount() == 1) {
-				SBPPacketHandler.sendToServer(new BackpackOpenMessage(slot.getContainerSlot()));
+				PacketHelper.sendToServer(new BackpackOpenPacket(slot.getContainerSlot()));
 				return true;
 			}
 		}

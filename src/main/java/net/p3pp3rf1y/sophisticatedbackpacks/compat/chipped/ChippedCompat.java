@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.chipped;
 
-import earth.terrarium.chipped.common.compat.jei.ChippedRecipeCategory;
+import earth.terrarium.chipped.common.compat.jei.WorkbenchCategory;
 import earth.terrarium.chipped.common.registry.ModBlocks;
 import earth.terrarium.chipped.common.registry.ModRecipeTypes;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
@@ -12,39 +12,34 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPButtonDefinitions;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.emi.EmiCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBPPlugin;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REIClientCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.UpgradeGuiManager;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Position;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerRegistry;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
 import net.p3pp3rf1y.sophisticatedcore.compat.CompatModIds;
 import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
 import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeItem;
-import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeTab;
 import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeWrapper;
 
 public class ChippedCompat implements ICompat {
 
 	public static final BlockTransformationUpgradeItem BOTANIST_WORKBENCH_UPGRADE = ModItems.register("chipped/botanist_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.BOTANIST_WORKBENCH, Config.SERVER.maxUpgradesPerStorage));
+			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.WORKBENCH, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem GLASSBLOWER_UPGRADE = ModItems.register("chipped/glassblower_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.GLASSBLOWER, Config.SERVER.maxUpgradesPerStorage));
+			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.WORKBENCH, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem CARPENTERS_TABLE_UPGRADE = ModItems.register("chipped/carpenters_table_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.CARPENTERS_TABLE, Config.SERVER.maxUpgradesPerStorage));
+			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.WORKBENCH, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem LOOM_TABLE_UPGRADE = ModItems.register("chipped/loom_table_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.LOOM_TABLE, Config.SERVER.maxUpgradesPerStorage));
+			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.WORKBENCH, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem MASON_TABLE_UPGRADE = ModItems.register("chipped/mason_table_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.MASON_TABLE, Config.SERVER.maxUpgradesPerStorage));
+			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.WORKBENCH, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem ALCHEMY_BENCH_UPGRADE = ModItems.register("chipped/alchemy_bench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.ALCHEMY_BENCH, Config.SERVER.maxUpgradesPerStorage));
+			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.WORKBENCH, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem TINKERING_TABLE_UPGRADE = ModItems.register("chipped/tinkering_table_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.TINKERING_TABLE, Config.SERVER.maxUpgradesPerStorage));
+			() -> new BlockTransformationUpgradeItem(ModRecipeTypes.WORKBENCH, Config.SERVER.maxUpgradesPerStorage));
 
 	@Override
 	public void init() {
@@ -56,13 +51,13 @@ public class ChippedCompat implements ICompat {
 
 		if (FabricLoader.getInstance().isModLoaded(CompatModIds.JEI)) {
 			SBPPlugin.setAdditionalCatalystRegistrar(registration -> {
-				registration.addRecipeCatalyst(new ItemStack(BOTANIST_WORKBENCH_UPGRADE), ChippedRecipeCategory.BOTANIST_WORKBENCH_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(GLASSBLOWER_UPGRADE), ChippedRecipeCategory.GLASSBLOWER_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(CARPENTERS_TABLE_UPGRADE), ChippedRecipeCategory.CARPENTERS_TABLE_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(LOOM_TABLE_UPGRADE), ChippedRecipeCategory.LOOM_TABLE_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(MASON_TABLE_UPGRADE), ChippedRecipeCategory.MASON_TABLE_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(ALCHEMY_BENCH_UPGRADE), ChippedRecipeCategory.ALCHEMY_BENCH_RECIPE);
-				registration.addRecipeCatalyst(new ItemStack(TINKERING_TABLE_UPGRADE), ChippedRecipeCategory.TINKERING_TABLE_RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(BOTANIST_WORKBENCH_UPGRADE), WorkbenchCategory.RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(GLASSBLOWER_UPGRADE), WorkbenchCategory.RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(CARPENTERS_TABLE_UPGRADE), WorkbenchCategory.RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(LOOM_TABLE_UPGRADE), WorkbenchCategory.RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(MASON_TABLE_UPGRADE), WorkbenchCategory.RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(ALCHEMY_BENCH_UPGRADE), WorkbenchCategory.RECIPE);
+				registration.addRecipeCatalyst(new ItemStack(TINKERING_TABLE_UPGRADE), WorkbenchCategory.RECIPE);
 			});
 		}
 
@@ -106,10 +101,7 @@ public class ChippedCompat implements ICompat {
 		ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
 		UpgradeContainerRegistry.register(itemId, containerType);
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-			UpgradeGuiManager.registerTab(containerType, (BlockTransformationUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) -> {
-				String itemName = itemId.getPath();
-				return new BlockTransformationUpgradeTab(upgradeContainer, position, screen, SBPButtonDefinitions.SHIFT_CLICK_TARGET, itemName.replace('/', '_').substring(0, itemName.length() - "_upgrade".length()));
-			});
+			ChippedCompatClient.registerUpgradeTab(itemId, containerType);
 		}
 	}
 

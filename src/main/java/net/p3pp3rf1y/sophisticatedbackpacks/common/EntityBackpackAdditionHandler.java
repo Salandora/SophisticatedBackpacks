@@ -35,6 +35,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.RecordItemAccessor;
@@ -56,7 +57,8 @@ public class EntityBackpackAdditionHandler {
 	private static final int MAX_DIFFICULTY = 3;
 	private static final float MAX_LOCAL_DIFFICULTY = 6.75f;
 
-	private EntityBackpackAdditionHandler() {}
+	private EntityBackpackAdditionHandler() {
+	}
 
 	private static final String SPAWNED_WITH_BACKPACK = "spawnedWithBackpack";
 	private static final String SPAWNED_WITH_JUKEBOX_UPGRADE = SophisticatedBackpacks.MOD_ID + ":jukebox";
@@ -120,8 +122,8 @@ public class EntityBackpackAdditionHandler {
 			return;
 		}
 
-		//noinspection UnstableApiUsage
-		int index = Ints.constrainToRange((int) Math.floor(DIFFICULTY_BACKPACK_CHANCES.size() / MAX_LOCAL_DIFFICULTY * difficultyInstance.getEffectiveDifficulty() - 0.1f), 0, DIFFICULTY_BACKPACK_CHANCES.size());
+		float localDifficulty = difficultyInstance.getEffectiveDifficulty();
+		int index = Ints.constrainToRange((int) Math.floor(DIFFICULTY_BACKPACK_CHANCES.size() / MAX_LOCAL_DIFFICULTY * localDifficulty - 0.1f), 0, DIFFICULTY_BACKPACK_CHANCES.size());
 
 		RandHelper.getRandomWeightedElement(rnd, DIFFICULTY_BACKPACK_CHANCES.get(index)).ifPresent(backpackAddition -> {
 			ItemStack backpack = new ItemStack(backpackAddition.getBackpackItem());
@@ -154,18 +156,18 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void equipBackpack(Monster monster, ItemStack backpack, int difficulty, boolean playMusicDisc, LevelAccessor level, RandomSource rnd) {
-		getSpawnEgg(monster.getType()).ifPresent(egg -> BackpackWrapperLookup.get(backpack)
-				.ifPresent(w -> {
-					w.setColors(getPrimaryColor(egg), getSecondaryColor(egg));
-					setLoot(monster, w, difficulty, level);
-					if (playMusicDisc) {
-						w.getInventoryHandler(); //just to assign uuid and real upgrade handler
-						if (w.getUpgradeHandler().getSlotCount() > 0) {
-							monster.addTag(SPAWNED_WITH_JUKEBOX_UPGRADE);
-							addJukeboxUpgradeAndRandomDisc(w, rnd);
-						}
-					}
-				}));
+		getSpawnEgg(monster.getType()).ifPresent(egg -> {
+			IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+			wrapper.setColors(egg.getColor(0), egg.getColor(1));
+			setLoot(monster, wrapper, difficulty, level);
+			if (playMusicDisc) {
+				wrapper.getInventoryHandler(); //just to assign uuid and real upgrade handler
+				if (wrapper.getUpgradeHandler().getSlotCount() > 0) {
+					monster.addTag(SPAWNED_WITH_JUKEBOX_UPGRADE);
+					addJukeboxUpgradeAndRandomDisc(wrapper, rnd);
+				}
+			}
+		});
 		monster.setItemSlot(EquipmentSlot.CHEST, backpack);
 		monster.setDropChance(EquipmentSlot.CHEST, 0);
 	}
@@ -191,7 +193,6 @@ public class EntityBackpackAdditionHandler {
 				Set<String> blockedDiscs = new HashSet<>(Config.SERVER.entityBackpackAdditions.discBlockList.get());
 				musicDiscs = new ArrayList<>();
 				records.forEach((sound, musicDisc) -> {
-					//noinspection ConstantConditions - by this point the disc has registry name
 					if (!blockedDiscs.contains(BuiltInRegistries.ITEM.getKey(musicDisc).toString())) {
 						musicDiscs.add(musicDisc);
 					}
@@ -220,7 +221,7 @@ public class EntityBackpackAdditionHandler {
 		return Optional.ofNullable(SpawnEggItem.byId(entityType));
 	}
 
-	private static int getPrimaryColor(SpawnEggItem egg) {
+/*	private static int getPrimaryColor(SpawnEggItem egg) {
 		Integer primaryColor = egg.getColor(0);
 		return primaryColor == null ? -1 : primaryColor;
 	}
@@ -228,7 +229,7 @@ public class EntityBackpackAdditionHandler {
 	private static int getSecondaryColor(SpawnEggItem egg) {
 		Integer secondaryColor = egg.getColor(1);
 		return secondaryColor == null ? -1 : secondaryColor;
-	}
+	}*/
 
 	private static final List<ApplicableEffect> APPLICABLE_EFFECTS = List.of(
 			new ApplicableEffect(List.of(MobEffects.DAMAGE_RESISTANCE, MobEffects.REGENERATION), 1),
@@ -312,22 +313,21 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void removeContentsUuid(ItemStack stack) {
-		BackpackWrapperLookup.get(stack).flatMap(IStorageWrapper::getContentsUuid)
-				.ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid));
+		BackpackWrapper.fromData(stack).getContentsUuid().ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid));
 	}
 
 	public static void onLivingUpdate(LivingEntity entity) {
 		if (!entity.getTags().contains(SPAWNED_WITH_JUKEBOX_UPGRADE)) {
 			return;
 		}
-		BackpackWrapperLookup.get(entity.getItemBySlot(EquipmentSlot.CHEST))
-				.ifPresent(backpackWrapper -> backpackWrapper.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).forEach(wrapper -> {
-					if (wrapper.isPlaying()) {
-						wrapper.tick(entity, entity.level(), entity.blockPosition());
-					} else {
-						wrapper.play(entity);
-					}
-				}));
+		IBackpackWrapper backpackWrapper = BackpackWrapper.fromData(entity.getItemBySlot(EquipmentSlot.CHEST));
+		backpackWrapper.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).forEach(wrapper -> {
+			if (wrapper.isPlaying()) {
+				wrapper.tick(entity, entity.level(), entity.blockPosition());
+			} else {
+				wrapper.play(entity);
+			}
+		});
 	}
 
 	private record BackpackAddition(Item backpackItem, int minDifficulty,

@@ -1,21 +1,21 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica;
 
-import me.pepperbell.simplenetworking.S2CPacket;
-import me.pepperbell.simplenetworking.SimpleChannel;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedcore.compat.litematica.LitematicaHelper;
 
 import java.util.UUID;
 
-public class BackpackContentsMessage implements S2CPacket {
+public class BackpackContentsMessage implements FabricPacket {
+	public static final PacketType<BackpackContentsMessage> TYPE = PacketType.create(new ResourceLocation(SophisticatedBackpacks.MOD_ID, "litematica_backpack_contents"), BackpackContentsMessage::new);
+
 	private final UUID backpackUuid;
 	private final CompoundTag backpackContents;
 
@@ -28,21 +28,22 @@ public class BackpackContentsMessage implements S2CPacket {
 	}
 
 	@Override
-	public void encode(FriendlyByteBuf buffer) {
+	public void write(FriendlyByteBuf buffer) {
 		buffer.writeUUID(this.backpackUuid);
 		buffer.writeNbt(this.backpackContents);
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void handle(Minecraft client, ClientPacketListener listener, PacketSender responseSender, SimpleChannel channel) {
-		client.execute(() -> {
-			if (client.player == null || this.backpackContents == null) {
-				return;
-			}
+	public void handle(LocalPlayer player, PacketSender responseSender) {
+		if (this.backpackContents == null) {
+			return;
+		}
 
-			BackpackStorage.get().setBackpackContents(this.backpackUuid, this.backpackContents);
-			LitematicaHelper.incrementReceived(1);
-		});
+		BackpackStorage.get().setBackpackContents(this.backpackUuid, this.backpackContents);
+		LitematicaHelper.incrementReceived(1);
+	}
+
+	@Override
+	public PacketType<?> getType() {
+		return TYPE;
 	}
 }

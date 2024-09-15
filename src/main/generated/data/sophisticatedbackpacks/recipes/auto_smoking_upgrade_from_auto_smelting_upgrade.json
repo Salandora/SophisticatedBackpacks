@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:auto_smoking_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "L": {
       "tag": "minecraft:logs"
@@ -20,6 +21,6 @@
     " L "
   ],
   "result": {
-    "item": "sophisticatedbackpacks:auto_smoking_upgrade"
+    "id": "sophisticatedbackpacks:auto_smoking_upgrade"
   }
 }

@@ -5,7 +5,7 @@ import net.p3pp3rf1y.sophisticatedcore.settings.main.MainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.settings.main.MainSettingsContainer;
 
 public class BackpackMainSettingsContainer extends MainSettingsContainer {
-	public BackpackMainSettingsContainer(SettingsContainerMenu<?> settingsContainer, String categoryName, MainSettingsCategory category) {
+	public BackpackMainSettingsContainer(SettingsContainerMenu<?> settingsContainer, String categoryName, MainSettingsCategory<?> category) {
 		super(settingsContainer, categoryName, category);
 	}
 

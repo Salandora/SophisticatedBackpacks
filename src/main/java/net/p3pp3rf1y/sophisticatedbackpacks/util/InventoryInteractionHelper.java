@@ -12,13 +12,14 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IItemHandlerInteractionUpgrade;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 
 import java.util.List;
 
 public class InventoryInteractionHelper {
-	private InventoryInteractionHelper() {}
+	private InventoryInteractionHelper() {
+	}
 
 	public static boolean tryInventoryInteraction(UseOnContext context) {
 		Player player = context.getPlayer();
@@ -29,16 +30,19 @@ public class InventoryInteractionHelper {
 	}
 
 	@SuppressWarnings("unused")
-	public static boolean tryInventoryInteraction(BlockPos pos, Level world, ItemStack backpack, Direction face, Player player) {
-		if (Config.SERVER.noInteractionBlocks.isBlockInteractionDisallowed(world.getBlockState(pos).getBlock())) {
+	public static boolean tryInventoryInteraction(BlockPos pos, Level level, ItemStack backpack, Direction face, Player player) {
+		if (Config.SERVER.noInteractionBlocks.isBlockInteractionDisallowed(level.getBlockState(pos).getBlock())) {
 			return false;
 		}
 
-		Storage<ItemVariant> storage = ItemStorage.SIDED.find(world, pos, null);
+		// TODO:
+		/*return CapabilityHelper.getFromItemHandler(level, pos, face,
+				itemHandler -> player.level().isClientSide || tryRunningInteractionWrappers(itemHandler, BackpackWrapper.fromData(backpack), player),
+				false);*/
+
+		Storage<ItemVariant> storage = ItemStorage.SIDED.find(level, pos, null);
 		if (storage instanceof SlottedStorage<ItemVariant> invStorage) {
-			return player.level().isClientSide || BackpackWrapperLookup.get(backpack)
-					.map(wrapper -> tryRunningInteractionWrappers(invStorage, wrapper, player))
-					.orElse(false);
+			return player.level().isClientSide || tryRunningInteractionWrappers(invStorage, BackpackWrapper.fromData(backpack), player);
 		}
 
 		return false;

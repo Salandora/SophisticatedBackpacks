@@ -42,7 +42,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
@@ -86,7 +86,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean hasAnalogOutputSignal(BlockState pState) {
+	public boolean hasAnalogOutputSignal(BlockState state) {
 		return true;
 	}
 
@@ -126,7 +126,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	private boolean hasEverlastingUpgrade(BlockGetter world, BlockPos pos) {
-		return WorldHelper.getBlockEntity(world, pos, BackpackBlockEntity.class).map(te -> !te.getBackpackWrapper().getUpgradeHandler().getTypeWrappers(EverlastingUpgradeItem.TYPE).isEmpty()).orElse(false);
+		return WorldHelper.getBlockEntity(world, pos, BackpackBlockEntity.class).map(be -> !be.getBackpackWrapper().getUpgradeHandler().getTypeWrappers(EverlastingUpgradeItem.TYPE).isEmpty()).orElse(false);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -137,25 +137,25 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 	@Nullable
 	@Override
-	public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-		return new BackpackBlockEntity(pPos, pState);
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new BackpackBlockEntity(pos, state);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-		if (world.isClientSide) {
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (level.isClientSide) {
 			return InteractionResult.SUCCESS;
 		}
 
 		ItemStack heldItem = player.getItemInHand(hand);
 		if (player.isShiftKeyDown() && heldItem.isEmpty()) {
-			putInPlayersHandAndRemove(state, world, pos, player, hand);
+			putInPlayersHandAndRemove(state, level, pos, player, hand);
 			return InteractionResult.SUCCESS;
 		}
 
 		if (!heldItem.isEmpty() && FluidHelper.isFluidStorage(heldItem)) {
-			WorldHelper.getBlockEntity(world, pos, BackpackBlockEntity.class)
+			WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class)
 				.flatMap(te -> te.getBackpackWrapper().getFluidHandler()).ifPresent(backpackFluidHandler -> FluidStorageUtil.interactWithFluidStorage(backpackFluidHandler, player, hand));
 
 			return InteractionResult.SUCCESS;
@@ -163,25 +163,25 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 		BackpackContext.Block backpackContext = new BackpackContext.Block(pos);
 		player.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext,
-				getBackpackDisplayName(world, pos)));
+				getBackpackDisplayName(level, pos)));
 		return InteractionResult.SUCCESS;
 	}
 
-	private Component getBackpackDisplayName(Level world, BlockPos pos) {
+	private Component getBackpackDisplayName(Level level, BlockPos pos) {
 		Component defaultDisplayName = new ItemStack(ModItems.BACKPACK).getHoverName();
-		return WorldHelper.getBlockEntity(world, pos, BackpackBlockEntity.class).map(te -> te.getBackpackWrapper().getBackpack().getHoverName()).orElse(defaultDisplayName);
+		return WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class).map(be -> be.getBackpackWrapper().getBackpack().getHoverName()).orElse(defaultDisplayName);
 	}
 
-	private static void putInPlayersHandAndRemove(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand) {
-		ItemStack backpack = WorldHelper.getBlockEntity(world, pos, BackpackBlockEntity.class).map(te -> te.getBackpackWrapper().getBackpack()).orElse(ItemStack.EMPTY);
-		stopBackpackSounds(backpack, world, pos);
+	private static void putInPlayersHandAndRemove(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand) {
+		ItemStack backpack = WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class).map(be -> be.getBackpackWrapper().getBackpack()).orElse(ItemStack.EMPTY);
+		stopBackpackSounds(backpack, level, pos);
 
 		player.setItemInHand(hand, backpack.copy());
 		player.getCooldowns().addCooldown(backpack.getItem(), 5);
-		world.removeBlock(pos, false);
+		level.removeBlock(pos, false);
 
 		SoundType soundType = state.getSoundType();
-		world.playSound(null, pos, soundType.getBreakSound(), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
+		level.playSound(null, pos, soundType.getBreakSound(), SoundSource.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -195,15 +195,15 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-		super.playerWillDestroy(level, pos, state, player);
+	public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+		BlockState result = super.playerWillDestroy(level, pos, state, player);
 		WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class).ifPresent(IControllableStorage::removeFromController);
+		return result;
 	}
 
-	private static void stopBackpackSounds(ItemStack backpack, Level world, BlockPos pos) {
-		BackpackWrapperLookup.get(backpack).flatMap(IStorageWrapper::getContentsUuid).ifPresent(uuid ->
-				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid)
-		);
+	private static void stopBackpackSounds(ItemStack backpack, Level level, BlockPos pos) {
+		BackpackWrapper.fromData(backpack).getContentsUuid().ifPresent(uuid ->
+				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) level, Vec3.atCenterOf(pos), uuid));
 	}
 
 	public static InteractionResult playerInteract(Player player, Level level, InteractionHand hand, BlockHitResult hitResult) {
@@ -238,10 +238,10 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
-		super.entityInside(state, world, pos, entity);
-		if (!world.isClientSide && entity instanceof ItemEntity itemEntity) {
-			WorldHelper.getBlockEntity(world, pos, BackpackBlockEntity.class).ifPresent(te -> tryToPickup(world, itemEntity, te.getBackpackWrapper()));
+	public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+		super.entityInside(state, level, pos, entity);
+		if (!level.isClientSide && entity instanceof ItemEntity itemEntity) {
+			WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class).ifPresent(be -> tryToPickup(level, itemEntity, be.getBackpackWrapper()));
 		}
 	}
 
@@ -253,10 +253,10 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 		return BlockInterfaceHelper.super.canEntityDestroy(state, world, pos, entity);
 	}
 
-	private void tryToPickup(Level world, ItemEntity itemEntity, IStorageWrapper w) {
+	private void tryToPickup(Level level, ItemEntity itemEntity, IStorageWrapper w) {
 		ItemStack remainingStack = itemEntity.getItem().copy();
 		try (Transaction ctx = Transaction.openOuter()) {
-			remainingStack = InventoryHelper.runPickupOnPickupResponseUpgrades(world, w.getUpgradeHandler(), remainingStack, ctx);
+			remainingStack = InventoryHelper.runPickupOnPickupResponseUpgrades(level, w.getUpgradeHandler(), remainingStack, ctx);
 			ctx.commit();
 		}
 		if (remainingStack.getCount() < itemEntity.getItem().getCount()) {
@@ -266,8 +266,8 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 	@Nullable
 	@Override
-	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-		return !pLevel.isClientSide ? createTickerHelper(pBlockEntityType, ModBlocks.BACKPACK_TILE_TYPE, (level, blockPos, blockState, backpackBlockEntity) -> BackpackBlockEntity.serverTick(level, blockPos, backpackBlockEntity)) : null;
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+		return !level.isClientSide ? createTickerHelper(blockEntityType, ModBlocks.BACKPACK_TILE_TYPE, (l, blockPos, blockState, backpackBlockEntity) -> BackpackBlockEntity.serverTick(l, blockPos, backpackBlockEntity)) : null;
 	}
 
 	@Nullable
@@ -278,8 +278,8 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 	@Override
 	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource rand) {
-		WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class).ifPresent(te -> {
-			RenderInfo renderInfo = te.getBackpackWrapper().getRenderInfo();
+		WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class).ifPresent(be -> {
+			RenderInfo renderInfo = be.getBackpackWrapper().getRenderInfo();
 			renderUpgrades(level, rand, pos, state.getValue(FACING), renderInfo);
 		});
 

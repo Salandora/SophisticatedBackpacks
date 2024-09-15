@@ -1,4 +1,10 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:iron_backpack"
+    }
+  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_copper_backpack": {
@@ -22,14 +28,13 @@
   },
   "requirements": [
     [
-      "has_copper_backpack",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_copper_backpack"
     ]
   ],
   "rewards": {
     "recipes": [
       "sophisticatedbackpacks:iron_backpack_from_copper"
     ]
-  },
-  "sends_telemetry_event": true
+  }
 }

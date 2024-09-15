@@ -1,17 +1,18 @@
 {
   "fabric:load_conditions": [
     {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:chipped/mason_table_upgrade"
+    },
+    {
       "condition": "fabric:all_mods_loaded",
       "values": [
         "chipped"
       ]
-    },
-    {
-      "condition": "sophisticatedcore:item_enabled",
-      "itemRegistryName": "sophisticatedbackpacks:chipped/mason_table_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -32,6 +33,6 @@
     " R "
   ],
   "result": {
-    "item": "sophisticatedbackpacks:chipped/mason_table_upgrade"
+    "id": "sophisticatedbackpacks:chipped/mason_table_upgrade"
   }
 }

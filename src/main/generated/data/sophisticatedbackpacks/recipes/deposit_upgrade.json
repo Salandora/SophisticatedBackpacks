@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:deposit_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -29,6 +30,6 @@
     "RCR"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:deposit_upgrade"
+    "id": "sophisticatedbackpacks:deposit_upgrade"
   }
 }

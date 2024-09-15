@@ -6,7 +6,7 @@
     },
     {
       "condition": "porting_lib:loot_table_id",
-      "loot_table_id": "minecraft:chests/nether_bridge"
+      "value": "minecraft:chests/nether_bridge"
     }
   ],
   "loot_table": "sophisticatedbackpacks:inject/chests/nether_bridge",

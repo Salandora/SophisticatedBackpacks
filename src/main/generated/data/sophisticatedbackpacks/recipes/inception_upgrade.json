@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:inception_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -26,6 +27,6 @@
     "EDE"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:inception_upgrade"
+    "id": "sophisticatedbackpacks:inception_upgrade"
   }
 }

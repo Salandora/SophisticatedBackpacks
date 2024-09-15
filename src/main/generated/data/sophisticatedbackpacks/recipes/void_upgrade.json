@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:void_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -26,6 +27,6 @@
     "ROR"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:void_upgrade"
+    "id": "sophisticatedbackpacks:void_upgrade"
   }
 }

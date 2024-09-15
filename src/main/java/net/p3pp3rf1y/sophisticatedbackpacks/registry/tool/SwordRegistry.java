@@ -21,7 +21,8 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 public class SwordRegistry {
-	private SwordRegistry() {}
+	private SwordRegistry() {
+	}
 
 	private static final Set<Item> SWORD_ITEMS = new HashSet<>();
 	private static final Map<String, Set<Predicate<ItemStack>>> MOD_SWORD_MATCHERS = new HashMap<>();
@@ -38,7 +39,7 @@ public class SwordRegistry {
 		}
 
 		ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(stack.getItem());
-		if (registryName == null) {
+		if (registryName == BuiltInRegistries.ITEM.getDefaultKey()) {
 			return false;
 		}
 
@@ -94,17 +95,18 @@ public class SwordRegistry {
 		}
 
 		private void parseSword(String swordName) {
-			ResourceLocation location = new ResourceLocation(swordName);
-			if (BuiltInRegistries.ITEM.containsKey(location)) {
-				SWORD_ITEMS.add(BuiltInRegistries.ITEM.get(location));
-			} else {
-				String modId = swordName.split(":")[0];
-				if (!FabricLoader.getInstance().isModLoaded(modId)) {
-					SophisticatedBackpacks.LOGGER.debug("Mod {} isn't loaded skipping load of sword {}", modId, swordName);
-				} else {
-					SophisticatedBackpacks.LOGGER.warn("Mod {} is loaded and yet sword {} doesn't exist in registry, skipping its load", modId, swordName);
-				}
-			}
+			BuiltInRegistries.ITEM.getOptional(new ResourceLocation(swordName))
+					.ifPresentOrElse(
+							SWORD_ITEMS::add,
+							() -> {
+								String modId = swordName.split(":")[0];
+								if (!FabricLoader.getInstance().isModLoaded(modId)) {
+									SophisticatedBackpacks.LOGGER.debug("Mod {} isn't loaded skipping load of sword {}", modId, swordName);
+								} else {
+									SophisticatedBackpacks.LOGGER.warn("Mod {} is loaded and yet sword {} doesn't exist in registry, skipping its load", modId, swordName);
+								}
+							}
+					);
 		}
 
 		@Override

@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_4"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "N": {
       "tag": "c:netherite_blocks"
@@ -20,6 +21,6 @@
     "NNN"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:stack_upgrade_tier_4"
+    "id": "sophisticatedbackpacks:stack_upgrade_tier_4"
   }
 }

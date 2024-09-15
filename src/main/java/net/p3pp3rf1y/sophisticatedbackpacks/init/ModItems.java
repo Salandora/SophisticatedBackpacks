@@ -1,24 +1,26 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
 import com.mojang.serialization.Codec;
+import team.reborn.energy.api.EnergyStorage;
 
 import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
 import io.github.fabricators_of_create.porting_lib.loot.PortingLibLoot;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemItemStorages;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -40,13 +42,11 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackSettingsContainerMenu;
 import net.p3pp3rf1y.sophisticatedbackpacks.crafting.BackpackDyeRecipe;
@@ -135,6 +135,8 @@ import java.util.function.Supplier;
 public class ModItems {
 	static List<Item> ITEMS = new ArrayList<>(); // Must be up here!
 
+	private ModItems() {
+	}
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,10 +285,11 @@ public class ModItems {
 	public static final RecipeSerializer<SmithingBackpackUpgradeRecipe> SMITHING_BACKPACK_UPGRADE_RECIPE_SERIALIZER = registerRecipeSerializer("smithing_backpack_upgrade", SmithingBackpackUpgradeRecipe.Serializer::new);
 	public static final RecipeSerializer<BasicBackpackRecipe> BASIC_BACKPACK_RECIPE_SERIALIZER = registerRecipeSerializer("basic_backpack", BasicBackpackRecipe.Serializer::new);
 
-	public static final LootItemFunctionType COPY_BACKPACK_DATA = registerLootFunction("copy_backpack_data", () -> new LootItemFunctionType(new CopyBackpackDataFunction.Serializer()));
-	public static final LootItemConditionType LOOT_ENABLED_CONDITION = registerLootCondition("loot_enabled", () -> new LootItemConditionType(new SBLootEnabledCondition.Serializer()));
+	public static final LootItemFunctionType COPY_BACKPACK_DATA = registerLootFunction("copy_backpack_data", () -> new LootItemFunctionType(CopyBackpackDataFunction.CODEC));
+	public static final LootItemConditionType LOOT_ENABLED_CONDITION = registerLootCondition("loot_enabled", () -> new LootItemConditionType(SBLootEnabledCondition.CODEC));
 	public static final Codec<SBLootModifierProvider.InjectLootModifier> INJECT_LOOT = registerLootModifier("inject_loot", () -> SBLootModifierProvider.InjectLootModifier.CODEC);
 
+	public static AttachmentType<BackpackWrapper> BACKPACK_WRAPPER = AttachmentRegistry.createDefaulted(new ResourceLocation(SophisticatedBackpacks.MOD_ID, "backpack_wrapper"), BackpackWrapper::new);
 
 	// Register
 	public static <T extends Item> T register(String id, Supplier<T> supplier) {
@@ -321,12 +324,7 @@ public class ModItems {
 		registerCauldronInteractions();
 
 		registerContainers();
-		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(ModItems::onResourceReload);
-	}
-
-	private static void onResourceReload(MinecraftServer server, CloseableResourceManager resourceManager, boolean success) {
-		BackpackUpgradeRecipe.REGISTERED_RECIPES.clear();
-		SmithingBackpackUpgradeRecipe.REGISTERED_RECIPES.clear();
+		registerCapabilities();
 	}
 
 	public static final UpgradeContainerType<PickupUpgradeWrapper, ContentsFilteredUpgradeContainer<PickupUpgradeWrapper>> PICKUP_BASIC_TYPE = new UpgradeContainerType<>(ContentsFilteredUpgradeContainer::new);
@@ -411,28 +409,41 @@ public class ModItems {
 	}
 
 	public static void registerCauldronInteractions() {
-		CauldronInteraction.WATER.put(BACKPACK, new BackpackCauldronInteraction());
-		CauldronInteraction.WATER.put(COPPER_BACKPACK, new BackpackCauldronInteraction());
-		CauldronInteraction.WATER.put(IRON_BACKPACK, new BackpackCauldronInteraction());
-		CauldronInteraction.WATER.put(GOLD_BACKPACK, new BackpackCauldronInteraction());
-		CauldronInteraction.WATER.put(DIAMOND_BACKPACK, new BackpackCauldronInteraction());
-		CauldronInteraction.WATER.put(NETHERITE_BACKPACK, new BackpackCauldronInteraction());
+		CauldronInteraction.WATER.map().put(BACKPACK, new BackpackCauldronInteraction());
+		CauldronInteraction.WATER.map().put(COPPER_BACKPACK, new BackpackCauldronInteraction());
+		CauldronInteraction.WATER.map().put(IRON_BACKPACK, new BackpackCauldronInteraction());
+		CauldronInteraction.WATER.map().put(GOLD_BACKPACK, new BackpackCauldronInteraction());
+		CauldronInteraction.WATER.map().put(DIAMOND_BACKPACK, new BackpackCauldronInteraction());
+		CauldronInteraction.WATER.map().put(NETHERITE_BACKPACK, new BackpackCauldronInteraction());
 	}
 
-	private static boolean hasDefaultColor(IStorageWrapper wrapper) {
-		return wrapper.getAccentColor() == BackpackWrapper.DEFAULT_BORDER_COLOR && wrapper.getMainColor() == BackpackWrapper.DEFAULT_CLOTH_COLOR;
+	private static void registerCapabilities() {
+		ItemItemStorages.ITEM.registerForItems((stack, ctx) -> BackpackWrapper.fromData(stack).getInventoryForInputOutput(), BACKPACKS);
+
+		FluidStorage.ITEM.registerForItems((stack, ctx) -> {
+			if (Boolean.FALSE.equals(Config.SERVER.itemFluidHandlerEnabled.get())) {
+				return null;
+			}
+			return BackpackWrapper.fromData(stack).getItemFluidHandler().orElse(null);
+		}, BACKPACKS);
+
+		EnergyStorage.ITEM.registerForItems((stack, ctx) -> BackpackWrapper.fromData(stack).getEnergyStorage().orElse(null), BACKPACKS);
 	}
 
 	private static class BackpackCauldronInteraction implements CauldronInteraction {
+		private static boolean hasDefaultColor(IStorageWrapper wrapper) {
+			return wrapper.getAccentColor() == BackpackWrapper.DEFAULT_BORDER_COLOR && wrapper.getMainColor() == BackpackWrapper.DEFAULT_CLOTH_COLOR;
+		}
+
 		@Override
 		public InteractionResult interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, ItemStack stack) {
-			LazyOptional<IBackpackWrapper> backpackWrapperCapability = BackpackWrapperLookup.get(stack);
-			if (backpackWrapperCapability.map(ModItems::hasDefaultColor).orElse(true)) {
+			IBackpackWrapper backpackWrapper = BackpackWrapper.fromData(stack);
+			if (hasDefaultColor(backpackWrapper)) {
 				return InteractionResult.PASS;
 			}
 
 			if (!level.isClientSide) {
-				backpackWrapperCapability.ifPresent(w -> w.setColors(BackpackWrapper.DEFAULT_CLOTH_COLOR, BackpackWrapper.DEFAULT_BORDER_COLOR));
+				backpackWrapper.setColors(BackpackWrapper.DEFAULT_CLOTH_COLOR, BackpackWrapper.DEFAULT_BORDER_COLOR);
 			}
 
 			return InteractionResult.sidedSuccess(level.isClientSide);
@@ -445,11 +456,11 @@ public class ModItems {
 			setSuccess(false);
 			Item item = stack.getItem();
 			if (item instanceof BackpackItem backpackItem) {
-				Direction dispenserDirection = source.getBlockState().getValue(DispenserBlock.FACING);
-				BlockPos blockpos = source.getPos().relative(dispenserDirection);
-				Direction against = source.getLevel().isEmptyBlock(blockpos.below()) ? dispenserDirection.getOpposite() : Direction.UP;
+				Direction dispenserDirection = source.state().getValue(DispenserBlock.FACING);
+				BlockPos blockpos = source.pos().relative(dispenserDirection);
+				Direction against = source.level().isEmptyBlock(blockpos.below()) ? dispenserDirection.getOpposite() : Direction.UP;
 
-				setSuccess(backpackItem.tryPlace(null, dispenserDirection.getAxis() == Direction.Axis.Y ? Direction.NORTH : dispenserDirection.getOpposite(), new DirectionalPlaceContext(source.getLevel(), blockpos, dispenserDirection, stack, against)).consumesAction());
+				setSuccess(backpackItem.tryPlace(null, dispenserDirection.getAxis() == Direction.Axis.Y ? Direction.NORTH : dispenserDirection.getOpposite(), new DirectionalPlaceContext(source.level(), blockpos, dispenserDirection, stack, against)).consumesAction());
 			}
 
 			return stack;

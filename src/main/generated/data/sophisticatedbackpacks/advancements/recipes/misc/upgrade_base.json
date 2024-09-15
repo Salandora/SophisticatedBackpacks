@@ -1,4 +1,10 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:upgrade_base"
+    }
+  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_leather": {
@@ -22,14 +28,13 @@
   },
   "requirements": [
     [
-      "has_leather",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_leather"
     ]
   ],
   "rewards": {
     "recipes": [
       "sophisticatedbackpacks:upgrade_base"
     ]
-  },
-  "sends_telemetry_event": true
+  }
 }

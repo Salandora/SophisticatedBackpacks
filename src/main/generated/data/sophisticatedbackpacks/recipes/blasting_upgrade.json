@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:blasting_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -26,6 +27,6 @@
     "RFR"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:blasting_upgrade"
+    "id": "sophisticatedbackpacks:blasting_upgrade"
   }
 }

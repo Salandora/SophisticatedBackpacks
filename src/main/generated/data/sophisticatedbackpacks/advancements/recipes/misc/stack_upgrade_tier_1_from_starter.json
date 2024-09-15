@@ -1,4 +1,10 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_1"
+    }
+  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_the_recipe": {
@@ -22,14 +28,13 @@
   },
   "requirements": [
     [
-      "has_upgrade_base",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_upgrade_base"
     ]
   ],
   "rewards": {
     "recipes": [
       "sophisticatedbackpacks:stack_upgrade_tier_1_from_starter"
     ]
-  },
-  "sends_telemetry_event": true
+  }
 }

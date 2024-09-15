@@ -35,7 +35,8 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 public class ToolRegistry {
-	private ToolRegistry() {}
+	private ToolRegistry() {
+	}
 
 	private static final String TOOLS_PROPERTY = "tools";
 
@@ -44,8 +45,8 @@ public class ToolRegistry {
 	private static final ToolMapping<Block, BlockContext> BLOCK_TOOL_MAPPING = new ToolMapping<>(BuiltInRegistries.BLOCK, BlockContext::getBlock);
 	private static final ToolMapping<EntityType<?>, Entity> ENTITY_TOOL_MAPPING = new ToolMapping<>(BuiltInRegistries.ENTITY_TYPE, Entity::getType);
 
-	public static boolean isToolForBlock(ItemStack stack, Block block, Level world, BlockState blockState, BlockPos pos) {
-		return BLOCK_TOOL_MAPPING.isToolFor(stack, block, () -> new BlockContext(world, blockState, block, pos));
+	public static boolean isToolForBlock(ItemStack stack, Block block, Level level, BlockState blockState, BlockPos pos) {
+		return BLOCK_TOOL_MAPPING.isToolFor(stack, block, () -> new BlockContext(level, blockState, block, pos));
 	}
 
 	public static boolean isToolForEntity(ItemStack stack, Entity entity) {
@@ -202,13 +203,13 @@ public class ToolRegistry {
 
 	public static class BlockToolsLoader extends ToolsLoaderBase<Block, BlockContext> {
 		public BlockToolsLoader() {
-			super(Matchers.getBlockMatcherFactories(), BLOCK_TOOL_MAPPING, BuiltInRegistries.BLOCK, rn -> Optional.of(BuiltInRegistries.BLOCK.get(rn)), "block_tools", "blocks");
+			super(Matchers.getBlockMatcherFactories(), BLOCK_TOOL_MAPPING, BuiltInRegistries.BLOCK, BuiltInRegistries.BLOCK::getOptional, "block_tools", "blocks");
 		}
 	}
 
 	public static class EntityToolsLoader extends ToolsLoaderBase<EntityType<?>, Entity> {
 		public EntityToolsLoader() {
-			super(Matchers.getEntityMatcherFactories(), ENTITY_TOOL_MAPPING, BuiltInRegistries.ENTITY_TYPE, rn -> Optional.of(BuiltInRegistries.ENTITY_TYPE.get(rn)), "entity_tools", "entities");
+			super(Matchers.getEntityMatcherFactories(), ENTITY_TOOL_MAPPING, BuiltInRegistries.ENTITY_TYPE, BuiltInRegistries.ENTITY_TYPE::getOptional, "entity_tools", "entities");
 		}
 	}
 

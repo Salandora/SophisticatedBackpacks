@@ -3,21 +3,23 @@ package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 import com.google.common.collect.ImmutableMap;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlockEntity;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SyncClientInfoMessage;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.SyncClientInfoPacket;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
@@ -27,6 +29,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 public abstract class BackpackContext implements MenuProviderHelper.ContextProvider {
+
+	public static final String SUBBACKPACK_DISPLAY_NAME_PREFIX = "... > ";
+
 	public abstract Optional<IStorageWrapper> getParentBackpackWrapper(Player player);
 
 	public abstract boolean shouldLockBackpackSlot(Player player);
@@ -41,12 +46,12 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 
 	public abstract ContextType getType();
 
-	public void toBuffer(FriendlyByteBuf packetBuffer) {
-		getType().toBuffer(packetBuffer);
-		addToBuffer(packetBuffer);
+	public void toBuffer(FriendlyByteBuf buffer) {
+		getType().toBuffer(buffer);
+		addToBuffer(buffer);
 	}
 
-	public abstract void addToBuffer(FriendlyByteBuf packetBuffer);
+	public abstract void addToBuffer(FriendlyByteBuf buffer);
 
 	public abstract boolean canInteractWith(Player player);
 
@@ -111,7 +116,7 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 
 	public static class Item extends BackpackContext {
 		protected final String handlerName;
-		protected String identifier;
+		protected final String identifier;
 		protected final int backpackSlotIndex;
 		private final boolean openFromInventory;
 
@@ -152,19 +157,18 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 				SophisticatedBackpacks.LOGGER.error("Error getting backpack wrapper - Unable to find inventory handler for \"{}\"", handlerName);
 				return IBackpackWrapper.Noop.INSTANCE;
 			}
-			LazyOptional<IBackpackWrapper> backpackWrapper = BackpackWrapperLookup.get(inventoryHandler.get().getStackInSlot(player, identifier, backpackSlotIndex));
-			if (!backpackWrapper.isPresent()) {
-				SophisticatedBackpacks.LOGGER.error("Error getting backpack wrapper - Unable to find backpack at slot index {} in \"{}\" inventory handler", backpackSlotIndex, handlerName);
-				return IBackpackWrapper.Noop.INSTANCE;
-			}
-			return backpackWrapper.orElse(IBackpackWrapper.Noop.INSTANCE);
+			return BackpackWrapper.fromData(inventoryHandler.get().getStackInSlot(player, identifier, backpackSlotIndex));
 		}
 
 		@Override
 		public void onUpgradeChanged(Player player) {
 			if (!player.level().isClientSide && handlerName.equals(PlayerInventoryProvider.MAIN_INVENTORY)) {
 				IStorageWrapper backpackWrapper = getBackpackWrapper(player);
-				SBPPacketHandler.sendToClient((ServerPlayer) player, new SyncClientInfoMessage(backpackSlotIndex, backpackWrapper.getRenderInfo().getNbt(), backpackWrapper.getColumnsTaken()));
+				//copying render info nbt because in single player the packet just gets handed over to client instead of actually buffer being used and making a copy of the nbt
+				// which resulted in issues where client would happily modify nbt instance which is used on server as well and follow up updates on client would also mess up
+				// as they are free to clear state which caused the new cleared state write into the already existing nbt and server nbt as all were the same instanced
+				CompoundTag modificationSafeRenderInfoNbt = backpackWrapper.getRenderInfo().getNbt().copy();
+				PacketHelper.sendToPlayer(new SyncClientInfoPacket(backpackSlotIndex, modificationSafeRenderInfoNbt, backpackWrapper.getColumnsTaken()), (ServerPlayer) player);
 			}
 		}
 
@@ -188,16 +192,16 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 			return ContextType.ITEM_BACKPACK;
 		}
 
-		public static BackpackContext fromBuffer(FriendlyByteBuf packetBuffer) {
-			return new BackpackContext.Item(packetBuffer.readUtf(), packetBuffer.readUtf(), packetBuffer.readInt(), packetBuffer.readBoolean());
+		public static BackpackContext fromBuffer(FriendlyByteBuf buffer) {
+			return new Item(buffer.readUtf(), buffer.readUtf(), buffer.readInt(), buffer.readBoolean());
 		}
 
 		@Override
-		public void addToBuffer(FriendlyByteBuf packetBuffer) {
-			packetBuffer.writeUtf(handlerName);
-			packetBuffer.writeUtf(identifier);
-			packetBuffer.writeInt(backpackSlotIndex);
-			packetBuffer.writeBoolean(openFromInventory);
+		public void addToBuffer(FriendlyByteBuf buffer) {
+			buffer.writeUtf(handlerName);
+			buffer.writeUtf(identifier);
+			buffer.writeInt(backpackSlotIndex);
+			buffer.writeBoolean(openFromInventory);
 		}
 
 		@Override
@@ -226,23 +230,29 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 
 		@Override
 		public IBackpackWrapper getBackpackWrapper(Player player) {
-			return getParentBackpackWrapper(player).map(parent -> BackpackWrapperLookup.get(parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex))
-					.orElse(IBackpackWrapper.Noop.INSTANCE)).orElse(IBackpackWrapper.Noop.INSTANCE);
+			return getParentBackpackWrapper(player)
+					.map(parent -> {
+						ItemStack stackInSlot = parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex);
+						if (!(stackInSlot.getItem() instanceof BackpackItem)) {
+							return IBackpackWrapper.Noop.INSTANCE;
+						}
+						return BackpackWrapper.fromData(stackInSlot);
+					}).orElse(IBackpackWrapper.Noop.INSTANCE);
 		}
 
-		public static BackpackContext fromBuffer(FriendlyByteBuf packetBuffer) {
-			return new BackpackContext.ItemSubBackpack(packetBuffer.readUtf(), packetBuffer.readUtf(), packetBuffer.readInt(), packetBuffer.readBoolean(), packetBuffer.readInt());
+		public static BackpackContext fromBuffer(FriendlyByteBuf buffer) {
+			return new ItemSubBackpack(buffer.readUtf(), buffer.readUtf(), buffer.readInt(), buffer.readBoolean(), buffer.readInt());
 		}
 
 		@Override
-		public void addToBuffer(FriendlyByteBuf packetBuffer) {
-			super.addToBuffer(packetBuffer);
-			packetBuffer.writeInt(subBackpackSlotIndex);
+		public void addToBuffer(FriendlyByteBuf buffer) {
+			super.addToBuffer(buffer);
+			buffer.writeInt(subBackpackSlotIndex);
 		}
 
 		@Override
 		public BackpackContext getParentBackpackContext() {
-			return new BackpackContext.Item(handlerName, identifier, backpackSlotIndex, super.wasOpenFromInventory());
+			return new Item(handlerName, identifier, backpackSlotIndex, super.wasOpenFromInventory());
 		}
 
 		@Override
@@ -252,7 +262,7 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 
 		@Override
 		public Component getDisplayName(Player player) {
-			return Component.literal("... > " + super.getDisplayName(player).getString());
+			return Component.literal(SUBBACKPACK_DISPLAY_NAME_PREFIX + super.getDisplayName(player).getString());
 		}
 
 		@Override
@@ -310,13 +320,13 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 			return this;
 		}
 
-		public static BackpackContext fromBuffer(FriendlyByteBuf packetBuffer) {
-			return new BackpackContext.Block(BlockPos.of(packetBuffer.readLong()));
+		public static BackpackContext fromBuffer(FriendlyByteBuf buffer) {
+			return new Block(BlockPos.of(buffer.readLong()));
 		}
 
 		@Override
-		public void addToBuffer(FriendlyByteBuf packetBuffer) {
-			packetBuffer.writeLong(pos.asLong());
+		public void addToBuffer(FriendlyByteBuf buffer) {
+			buffer.writeLong(pos.asLong());
 		}
 
 		@Override
@@ -351,23 +361,29 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 
 		@Override
 		public IBackpackWrapper getBackpackWrapper(Player player) {
-			return getParentBackpackWrapper(player).map(parent -> BackpackWrapperLookup.get(parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex))
-					.orElse(IBackpackWrapper.Noop.INSTANCE)).orElse(IBackpackWrapper.Noop.INSTANCE);
+			return getParentBackpackWrapper(player)
+					.map(parent -> {
+						ItemStack stackInSlot = parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex);
+						if (!(stackInSlot.getItem() instanceof BackpackItem)) {
+							return IBackpackWrapper.Noop.INSTANCE;
+						}
+						return BackpackWrapper.fromData(stackInSlot);
+					}).orElse(IBackpackWrapper.Noop.INSTANCE);
 		}
 
-		public static BackpackContext fromBuffer(FriendlyByteBuf packetBuffer) {
-			return new BackpackContext.BlockSubBackpack(BlockPos.of(packetBuffer.readLong()), packetBuffer.readInt());
+		public static BackpackContext fromBuffer(FriendlyByteBuf buffer) {
+			return new BlockSubBackpack(BlockPos.of(buffer.readLong()), buffer.readInt());
 		}
 
 		@Override
-		public void addToBuffer(FriendlyByteBuf packetBuffer) {
-			super.addToBuffer(packetBuffer);
-			packetBuffer.writeInt(subBackpackSlotIndex);
+		public void addToBuffer(FriendlyByteBuf buffer) {
+			super.addToBuffer(buffer);
+			buffer.writeInt(subBackpackSlotIndex);
 		}
 
 		@Override
 		public BackpackContext getParentBackpackContext() {
-			return new BackpackContext.Block(pos);
+			return new Block(pos);
 		}
 
 		@Override
@@ -377,7 +393,7 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 
 		@Override
 		public Component getDisplayName(Player player) {
-			return Component.literal("... > " + super.getDisplayName(player).getString());
+			return Component.literal(SUBBACKPACK_DISPLAY_NAME_PREFIX + super.getDisplayName(player).getString());
 		}
 
 		@Override
@@ -410,11 +426,11 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 		}
 
 		@Override
-		public void addToBuffer(FriendlyByteBuf packetBuffer) {
-			packetBuffer.writeInt(otherPlayer.getId());
-			packetBuffer.writeUtf(handlerName);
-			packetBuffer.writeUtf(identifier);
-			packetBuffer.writeInt(backpackSlotIndex);
+		public void addToBuffer(FriendlyByteBuf buffer) {
+			buffer.writeInt(otherPlayer.getId());
+			buffer.writeUtf(handlerName);
+			buffer.writeUtf(identifier);
+			buffer.writeInt(backpackSlotIndex);
 		}
 
 		@Override
@@ -432,11 +448,11 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 			return super.getDisplayName(otherPlayer);
 		}
 
-		public static BackpackContext fromBuffer(FriendlyByteBuf packetBuffer, Level level) {
-			int playerId = packetBuffer.readInt();
+		public static BackpackContext fromBuffer(FriendlyByteBuf buffer, Level level) {
+			int playerId = buffer.readInt();
 			Player otherPlayer = (Player) level.getEntity(playerId);
 
-			return new BackpackContext.AnotherPlayer(packetBuffer.readUtf(), packetBuffer.readUtf(), packetBuffer.readInt(), Objects.requireNonNull(otherPlayer));
+			return new AnotherPlayer(buffer.readUtf(), buffer.readUtf(), buffer.readInt(), Objects.requireNonNull(otherPlayer));
 		}
 	}
 
@@ -460,19 +476,20 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 
 		@Override
 		public IBackpackWrapper getBackpackWrapper(Player player) {
-			return getParentBackpackWrapper(otherPlayer).map(parent -> BackpackWrapperLookup.get(parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex))
-					.orElse(IBackpackWrapper.Noop.INSTANCE)).orElse(IBackpackWrapper.Noop.INSTANCE);
+			return getParentBackpackWrapper(otherPlayer)
+					.map(parent -> BackpackWrapper.fromExistingData(parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex))
+							.orElse(IBackpackWrapper.Noop.INSTANCE)).orElse(IBackpackWrapper.Noop.INSTANCE);
 		}
 
 		@Override
-		public void addToBuffer(FriendlyByteBuf packetBuffer) {
-			super.addToBuffer(packetBuffer);
-			packetBuffer.writeInt(subBackpackSlotIndex);
+		public void addToBuffer(FriendlyByteBuf buffer) {
+			super.addToBuffer(buffer);
+			buffer.writeInt(subBackpackSlotIndex);
 		}
 
 		@Override
 		public BackpackContext getParentBackpackContext() {
-			return new BackpackContext.AnotherPlayer(handlerName, identifier, backpackSlotIndex, otherPlayer);
+			return new AnotherPlayer(handlerName, identifier, backpackSlotIndex, otherPlayer);
 		}
 
 		@Override
@@ -482,14 +499,14 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 
 		@Override
 		public Component getDisplayName(Player player) {
-			return Component.literal("... > " + super.getDisplayName(player).getString());
+			return Component.literal(SUBBACKPACK_DISPLAY_NAME_PREFIX + super.getDisplayName(player).getString());
 		}
 
-		public static BackpackContext fromBuffer(FriendlyByteBuf packetBuffer, Level level) {
-			int playerId = packetBuffer.readInt();
+		public static BackpackContext fromBuffer(FriendlyByteBuf buffer, Level level) {
+			int playerId = buffer.readInt();
 			Player otherPlayer = (Player) level.getEntity(playerId);
 
-			return new BackpackContext.AnotherPlayerSubBackpack(Objects.requireNonNull(otherPlayer), packetBuffer.readUtf(), packetBuffer.readUtf(), packetBuffer.readInt(), packetBuffer.readInt());
+			return new AnotherPlayerSubBackpack(Objects.requireNonNull(otherPlayer), buffer.readUtf(), buffer.readUtf(), buffer.readInt(), buffer.readInt());
 		}
 
 		@Override

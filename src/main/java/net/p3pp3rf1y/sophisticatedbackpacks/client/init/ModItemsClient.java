@@ -85,7 +85,7 @@ import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.TOOL_SWAPPER_TY
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.VOID_TYPE;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.XP_PUMP_TYPE;
 
-public class ModItems {
+public class ModItemsClient {
 	public static void registerScreens() {
 		MenuScreens.register(BACKPACK_CONTAINER_TYPE, BackpackScreen::constructScreen);
 		MenuScreens.register(SETTINGS_CONTAINER_TYPE, BackpackSettingsScreen::constructScreen);

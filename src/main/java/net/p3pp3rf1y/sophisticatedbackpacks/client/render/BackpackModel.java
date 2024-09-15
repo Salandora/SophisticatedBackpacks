@@ -524,7 +524,6 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 	}
 
 	private static String getTierPartName(Item backpackItem, String partNamePrefix) {
-		//noinspection ConstantConditions - by this point backpack items are registered
 		return partNamePrefix + BuiltInRegistries.ITEM.getKey(backpackItem).getPath();
 	}
 

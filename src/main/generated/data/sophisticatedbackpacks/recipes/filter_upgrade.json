@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:filter_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -23,6 +24,6 @@
     "RSR"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:filter_upgrade"
+    "id": "sophisticatedbackpacks:filter_upgrade"
   }
 }

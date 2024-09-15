@@ -1,4 +1,10 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:gold_backpack"
+    }
+  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_iron_backpack": {
@@ -22,14 +28,13 @@
   },
   "requirements": [
     [
-      "has_iron_backpack",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_iron_backpack"
     ]
   ],
   "rewards": {
     "recipes": [
       "sophisticatedbackpacks:gold_backpack"
     ]
-  },
-  "sends_telemetry_event": true
+  }
 }

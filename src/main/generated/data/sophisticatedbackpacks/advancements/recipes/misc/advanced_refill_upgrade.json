@@ -1,4 +1,10 @@
 {
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:advanced_refill_upgrade"
+    }
+  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_refill_upgrade": {
@@ -22,14 +28,13 @@
   },
   "requirements": [
     [
-      "has_refill_upgrade",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_refill_upgrade"
     ]
   ],
   "rewards": {
     "recipes": [
       "sophisticatedbackpacks:advanced_refill_upgrade"
     ]
-  },
-  "sends_telemetry_event": true
+  }
 }

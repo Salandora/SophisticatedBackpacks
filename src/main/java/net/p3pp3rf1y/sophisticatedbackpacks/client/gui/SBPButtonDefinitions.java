@@ -21,7 +21,7 @@ public class SBPButtonDefinitions {
 
 	private SBPButtonDefinitions() {}
 
-	public static final ButtonDefinition.Toggle<Boolean> SHIFT_CLICK_TARGET = net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ButtonDefinitions.createToggleButtonDefinition(
+	public static final ButtonDefinition.Toggle<Boolean> SHIFT_CLICK_TARGET = ButtonDefinitions.createToggleButtonDefinition(
 			Map.of(
 					true, getButtonStateData(new UV(32, 48), Dimension.SQUARE_16, new Position(1, 1),
 							SBPTranslationHelper.INSTANCE.getTranslatedLines(SBPTranslationHelper.INSTANCE.translUpgradeButton("shift_click_into_backpack"), null)),

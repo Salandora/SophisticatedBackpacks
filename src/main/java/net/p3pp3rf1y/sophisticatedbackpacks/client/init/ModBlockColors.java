@@ -16,7 +16,7 @@ public class ModBlockColors {
 				return -1;
 			}
 			return WorldHelper.getBlockEntity(blockDisplayReader, pos, BackpackBlockEntity.class)
-					.map(te -> tintIndex == 0 ? te.getBackpackWrapper().getMainColor() : te.getBackpackWrapper().getAccentColor())
+					.map(be -> tintIndex == 0 ? be.getBackpackWrapper().getMainColor() : be.getBackpackWrapper().getAccentColor())
 					.orElse(getDefaultColor(tintIndex));
 		}, BACKPACKS);
 	}

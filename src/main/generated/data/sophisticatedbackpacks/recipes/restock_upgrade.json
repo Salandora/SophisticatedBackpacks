@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:restock_upgrade"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
@@ -29,6 +30,6 @@
     "RCR"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:restock_upgrade"
+    "id": "sophisticatedbackpacks:restock_upgrade"
   }
 }

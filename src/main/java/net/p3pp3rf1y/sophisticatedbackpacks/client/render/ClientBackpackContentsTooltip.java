@@ -4,10 +4,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestBackpackInventoryContentsMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestBackpackInventoryContentsPacket;
 import net.p3pp3rf1y.sophisticatedcore.client.render.ClientStorageContentsTooltipBase;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
 
 import java.util.UUID;
 
@@ -21,7 +21,7 @@ public class ClientBackpackContentsTooltip extends ClientStorageContentsTooltipB
 
 	@Override
 	public void renderImage(Font font, int leftX, int topY, GuiGraphics guiGraphics) {
-		BackpackWrapperLookup.get(backpack).ifPresent(wrapper -> renderTooltip(wrapper, font, leftX, topY, guiGraphics));
+		renderTooltip(BackpackWrapper.fromData(backpack), font, leftX, topY, guiGraphics);
 	}
 
 	public ClientBackpackContentsTooltip(BackpackItem.BackpackContentsTooltip tooltip) {
@@ -30,6 +30,6 @@ public class ClientBackpackContentsTooltip extends ClientStorageContentsTooltipB
 
 	@Override
 	protected void sendInventorySyncRequest(UUID uuid) {
-		SBPPacketHandler.sendToServer(new RequestBackpackInventoryContentsMessage(uuid));
+		PacketHelper.sendToServer(new RequestBackpackInventoryContentsPacket(uuid));
 	}
 }

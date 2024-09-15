@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_3"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "D": {
       "tag": "c:diamond_blocks"
@@ -20,6 +21,6 @@
     "DDD"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:stack_upgrade_tier_3"
+    "id": "sophisticatedbackpacks:stack_upgrade_tier_3"
   }
 }

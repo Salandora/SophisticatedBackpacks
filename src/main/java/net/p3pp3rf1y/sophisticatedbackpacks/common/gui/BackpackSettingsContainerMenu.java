@@ -8,11 +8,11 @@ import net.minecraft.world.entity.player.Player;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackSettingsHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsPacket;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsContainer;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SettingsContainerMenu;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.SETTINGS_CONTAINER_TYPE;
 
@@ -30,8 +30,8 @@ public class BackpackSettingsContainerMenu extends SettingsContainerMenu<IBackpa
 		this.backpackContext = backpackContext;
 	}
 
-	public static BackpackSettingsContainerMenu fromBuffer(int windowId, Inventory playerInventory, FriendlyByteBuf packetBuffer) {
-		return new BackpackSettingsContainerMenu(windowId, playerInventory.player, BackpackContext.fromBuffer(packetBuffer, playerInventory.player.level()));
+	public static BackpackSettingsContainerMenu fromBuffer(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
+		return new BackpackSettingsContainerMenu(windowId, playerInventory.player, BackpackContext.fromBuffer(buffer, playerInventory.player.level()));
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class BackpackSettingsContainerMenu extends SettingsContainerMenu<IBackpa
 				CompoundTag settingsNbt = storageWrapper.getSettingsHandler().getNbt();
 				if (!settingsNbt.isEmpty()) {
 					settingsContents.put(BackpackSettingsHandler.SETTINGS_TAG, settingsNbt);
-					SBPPacketHandler.sendToClient((ServerPlayer) player, new BackpackContentsMessage(uuid, settingsContents));
+					PacketHelper.sendToPlayer(new BackpackContentsPacket(uuid, settingsContents), (ServerPlayer) player);
 				}
 			});
 		}

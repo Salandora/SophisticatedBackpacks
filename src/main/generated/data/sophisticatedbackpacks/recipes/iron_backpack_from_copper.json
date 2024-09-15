@@ -6,6 +6,7 @@
     }
   ],
   "type": "sophisticatedbackpacks:backpack_upgrade",
+  "category": "misc",
   "key": {
     "B": {
       "item": "sophisticatedbackpacks:copper_backpack"

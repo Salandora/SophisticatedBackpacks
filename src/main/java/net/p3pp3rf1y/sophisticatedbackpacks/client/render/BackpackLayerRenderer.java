@@ -17,7 +17,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.api.IUpgradeRenderer;
 import net.p3pp3rf1y.sophisticatedcore.client.render.UpgradeRenderRegistry;
@@ -58,13 +59,12 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 	public static <T extends LivingEntity, M extends EntityModel<T>> void renderBackpack(M parentModel, LivingEntity livingEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, ItemStack backpack, boolean wearsArmor, IBackpackModel model) {
 		model.translateRotateAndScale(parentModel, livingEntity, matrixStack, wearsArmor);
 
-		BackpackWrapperLookup.get(backpack).ifPresent(wrapper -> {
-			int clothColor = wrapper.getMainColor();
-			int borderColor = wrapper.getAccentColor();
-			model.render(parentModel, livingEntity, matrixStack, buffer, packedLight, clothColor, borderColor, backpack.getItem(), wrapper.getRenderInfo());
-			renderUpgrades(livingEntity, wrapper.getRenderInfo());
-			renderItemShown(matrixStack, buffer, packedLight, wrapper.getRenderInfo(), livingEntity.level());
-		});
+		IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+		int clothColor = wrapper.getMainColor();
+		int borderColor = wrapper.getAccentColor();
+		model.render(parentModel, livingEntity, matrixStack, buffer, packedLight, clothColor, borderColor, backpack.getItem(), wrapper.getRenderInfo());
+		renderUpgrades(livingEntity, wrapper.getRenderInfo());
+		renderItemShown(matrixStack, buffer, packedLight, wrapper.getRenderInfo(), livingEntity.level());
 	}
 
 	private static void renderItemShown(PoseStack matrixStack, MultiBufferSource buffer, int packedLight, RenderInfo renderInfo, @Nullable Level level) {

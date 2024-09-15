@@ -32,19 +32,19 @@ import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IAttackEntityResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenPacket;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.event.common.EntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.ItemEntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.LivingEntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.MobSpawnEvents;
-import net.p3pp3rf1y.sophisticatedcore.network.PacketHandler;
-import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsMessage;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsPacket;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
@@ -111,7 +111,7 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 		if (targetPlayer.level().isClientSide) {
-			SBPPacketHandler.sendToServer(new AnotherPlayerBackpackOpenMessage(targetPlayer.getId()));
+			PacketHelper.sendToServer(new AnotherPlayerBackpackOpenPacket(targetPlayer.getId()));
 			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
@@ -136,8 +136,7 @@ public class CommonEventHandler {
 					numberOfBackpacks.incrementAndGet();
 				}
 				if (runDedupeLogic) {
-					BackpackWrapperLookup.get(backpack).ifPresent(backpackWrapper ->
-							addBackpackIdIfUniqueOrDedupe(backpackIds, backpackWrapper));
+					addBackpackIdIfUniqueOrDedupe(backpackIds, BackpackWrapper.fromData(backpack));
 				}
 				return false;
 			});
@@ -174,7 +173,7 @@ public class CommonEventHandler {
 
 	private void sendPlayerSettingsToClient(Player player) {
 		String playerTagName = BackpackMainSettingsCategory.SOPHISTICATED_BACKPACK_SETTINGS_PLAYER_TAG;
-		PacketHandler.sendToClient((ServerPlayer) player, new SyncPlayerSettingsMessage(playerTagName, SettingsManager.getPlayerSettingsTag(player, playerTagName)));
+		PacketHelper.sendToPlayer(new SyncPlayerSettingsPacket(playerTagName, SettingsManager.getPlayerSettingsTag(player, playerTagName)), (ServerPlayer) player);
 	}
 
 	private void onPlayerRespawn(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean alive) {
@@ -186,15 +185,15 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 
-		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
-				.map(wrapper -> {
-					for (IBlockClickResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IBlockClickResponseUpgrade.class)) {
-						if (upgrade.onBlockClick(player, pos)) {
-							return true;
-						}
-					}
-					return false;
-				}).orElse(false));
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
+			IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+			for (IBlockClickResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IBlockClickResponseUpgrade.class)) {
+				if (upgrade.onBlockClick(player, pos)) {
+					return true;
+				}
+			}
+			return false;
+		});
 		return InteractionResult.PASS;
 	}
 
@@ -202,15 +201,16 @@ public class CommonEventHandler {
 		if (level.isClientSide) {
 			return InteractionResult.PASS;
 		}
-		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
-				.map(wrapper -> {
-					for (IAttackEntityResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IAttackEntityResponseUpgrade.class)) {
-						if (upgrade.onAttackEntity(player)) {
-							return true;
-						}
-					}
-					return false;
-				}).orElse(false));
+
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
+			IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+			for (IAttackEntityResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IAttackEntityResponseUpgrade.class)) {
+				if (upgrade.onAttackEntity(player)) {
+					return true;
+				}
+			}
+			return false;
+		});
 		return InteractionResult.PASS;
 	}
 
@@ -234,13 +234,13 @@ public class CommonEventHandler {
 		}
 
 		AtomicReference<ItemStack> remainingStack = new AtomicReference<>(stack.copy());
-		Level world = player.getCommandSenderWorld();
+		Level level = player.getCommandSenderWorld();
 		try(Transaction ctx = Transaction.openOuter()) {
-			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
-					.map(wrapper -> {
-						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(world, player, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
+			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
+						IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, player, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
 						return remainingStack.get().isEmpty();
-					}).orElse(false), Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
+					}, Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
 			);
 
 			if (remainingStack.get().getCount() != stack.getCount()) {

@@ -16,7 +16,8 @@ import java.util.UUID;
 public class BackpackAccessLogger {
 	private static final int REFRESH_INTERVAL_SECONDS = 30;
 
-	private BackpackAccessLogger() {}
+	private BackpackAccessLogger() {
+	}
 
 	private static long lastCacheRefresh = 0;
 	private static final Map<String, Set<AccessLogRecord>> playerLogCache = new HashMap<>();

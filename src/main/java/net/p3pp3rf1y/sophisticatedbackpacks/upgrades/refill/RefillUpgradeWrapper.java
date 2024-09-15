@@ -88,10 +88,17 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	}
 
 	@Override
-	public void tick(@Nullable LivingEntity entity, Level world, BlockPos pos) {
-		if (entity == null /*not supported in block form*/ || isInCooldown(world)) {
+	public void tick(@Nullable LivingEntity entity, Level level, BlockPos pos) {
+		if (entity == null /*not supported in block form*/ || isInCooldown(level)) {
 			return;
 		}
+		// TODO:
+		/*CapabilityHelper.runOnItemHandler(entity, playerInvHandler -> InventoryHelper.iterate(filterLogic.getFilterHandler(), (slot, filter) -> {
+			if (filter.isEmpty()) {
+				return;
+			}
+			tryRefillFilter(entity, playerInvHandler, filter, getTargetSlots().getOrDefault(slot, TargetSlot.ANY));
+		}));*/
 		if (entity instanceof Player player) {
 			PlayerInventoryStorage playerInvHandler = PlayerInventoryStorage.of(player);
 			InventoryHelper.iterate(filterLogic.getFilterHandler(), (slot, filter) -> {
@@ -101,7 +108,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 				tryRefillFilter(entity, playerInvHandler, filter, getTargetSlots().getOrDefault(slot, TargetSlot.ANY));
 			});
 		}
-		setCooldown(world, COOLDOWN);
+		setCooldown(level, COOLDOWN);
 	}
 
 	private void tryRefillFilter(@Nonnull LivingEntity entity, PlayerInventoryStorage playerInvHandler, ItemStack filter, TargetSlot targetSlot) {

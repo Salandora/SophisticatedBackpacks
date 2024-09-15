@@ -5,7 +5,8 @@
       "itemRegistryName": "sophisticatedbackpacks:upgrade_base"
     }
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
   "key": {
     "I": {
       "tag": "c:iron_ingots"
@@ -23,6 +24,6 @@
     "SIS"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:upgrade_base"
+    "id": "sophisticatedbackpacks:upgrade_base"
   }
 }

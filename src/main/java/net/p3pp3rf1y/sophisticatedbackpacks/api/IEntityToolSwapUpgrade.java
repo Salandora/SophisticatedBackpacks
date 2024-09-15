@@ -20,10 +20,10 @@ public interface IEntityToolSwapUpgrade {
 	/**
 	 * Called when player presses tool swap keybind over an entity
 	 *
-	 * @param world  World
+	 * @param level  World
 	 * @param entity Entity player is looking at
 	 * @param player Player that pressed the key
 	 * @return true if the keypress was handled by this upgrade and no other {@link IEntityToolSwapUpgrade} upgrades should process their logic
 	 */
-	boolean onEntityInteract(Level world, Entity entity, Player player);
+	boolean onEntityInteract(Level level, Entity entity, Player player);
 }

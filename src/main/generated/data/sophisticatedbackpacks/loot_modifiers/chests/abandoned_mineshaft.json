@@ -6,7 +6,7 @@
     },
     {
       "condition": "porting_lib:loot_table_id",
-      "loot_table_id": "minecraft:chests/abandoned_mineshaft"
+      "value": "minecraft:chests/abandoned_mineshaft"
     }
   ],
   "loot_table": "sophisticatedbackpacks:inject/chests/abandoned_mineshaft",
