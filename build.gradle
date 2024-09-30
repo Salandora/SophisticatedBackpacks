@@ -1,7 +1,574 @@
-moduleDependency(project, [ "SophisticatedCore" ])
+import net.fabricmc.loom.task.ValidateMixinNameTask
+import net.fabricmc.loom.util.gradle.SourceSetHelper
+import net.fabricmc.loom.util.gradle.SourceSetReference
+
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = "https://maven.fabricmc.net/" }
+    }
+}
+
+plugins {
+    id 'idea'
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.9"
+    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'maven-publish'
+    id "net.darkhax.curseforgegradle" version "1.1.15"
+    id "com.modrinth.minotaur" version "2.+"
+}
+
+apply from: getProject().file('gradle/package-info.gradle')
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+
+    maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
+    maven { url = "https://maven.quiltmc.org/repository/release" } // QM
+    maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib
+    maven { url = "https://mvn.devos.one/releases/" } // Porting Lib
+
+    maven { // Forge Config API Port
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    }
+    maven { url = "https://maven.nova-committee.cn/releases" } // Modern KeyBinding
+    maven { url = "https://maven.terraformersmc.com/releases/" } // Emi
+    maven { url = "https://maven.shedaniel.me/" } // REI and deps
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name = "entity reach"
+        url = "https://maven.jamieswhiteshirt.com/libs-release/"
+    }
+
+    // maven { url = 'https://maven.blamejared.com' } // Botania
+    maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
+    maven { url = "https://www.cursemaven.com" } // Balm, CraftingTweaks
+    maven { url = "https://modmaven.dev" } // Jei
+    // maven { url = "https://maven.resourcefulbees.com/repository/maven-public/" } // Chipped, resourcefullib, athena
+    maven { url = "https://maven.teamresourceful.com/repository/maven-public/" } // Chipped, resourcefullib, athena
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
+        credentials {
+            username = System.getenv("USERNAME")
+            password = System.getenv("READ_PACKAGES_TOKEN")
+        }
+        content {
+            includeGroupByRegex "sophisticatedcore.*"
+        }
+    }
+}
+
+group = mod_group_id
+version = "${project.minecraft_version}-${project.mod_version}.${getBuildNumber()}${getStable()}"
+logger.lifecycle("${project.name} version: ${project.version}")
+
+base {
+    archivesName = "${mod_id}"
+}
+
+fabricApi {
+    configureDataGeneration {
+        setModId(project.mod_id)
+        setOutputDirectory(getProject().file("src/generated/resources")) // Set output directory to the same as the forge version
+    }
+}
+
+loom {
+    runtimeOnlyLog4j = true
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+
+    runs {
+        client {
+            client()
+
+            configName = "Minecraft Client ${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}"
+
+            property("mixin.debug.export=true") // export all mixins
+            property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
+            property("mixin.debug.countInjections=true")
+            vmArg("-XX:+AllowEnhancedClassRedefinition")
+            if (System.getenv("HOTSWAP_AGENT") != null) {
+                property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
+                vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.lang=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.io=ALL-UNNAMED")
+                vmArg("--add-opens=java.desktop/java.beans=ALL-UNNAMED")
+                vmArg("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED")
+            }
+
+            try {
+                afterEvaluate {
+                    def mixinDep = this.configurations.compileClasspath.incoming.artifactView {
+                        componentFilter {
+                            it instanceof ModuleComponentIdentifier
+                                    && it.module == "sponge-mixin"
+                        }
+                    }
+
+                    if (mixin != null) {
+                        vmArg("-javaagent:${mixinDep.files.first().path}")
+                        println("[Info]: Mixin Hotswap setup finished")
+                    } else {
+                        println("[Warning]: Unable to locate file path for Mixin jar")
+                    }
+                }
+            } catch (Exception e) {
+                println("[Error]: Mixin Hotswap setup failed!")
+                e.printStackTrace()
+            }
+        }
+
+        server {
+            server()
+
+            configName = "Minecraft Server ${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}"
+        }
+    }
+}
 
 dependencies {
+    minecraft("com.mojang:minecraft:$project.minecraft_version")
+    mappings(loom.layered {
+        it.officialMojangMappings()
+        it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
+    })
+
+    modImplementation("net.fabricmc:fabric-loader:$project.loader_version")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:$project.fabric_version")
+
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
+    implementation("com.google.code.findbugs:jsr305:3.0.2")
+
+    if (findProject(":SophisticatedCore") != null) {
+        api project(path: ":SophisticatedCore", configuration: "namedElements")
+    } else {
+        modApi("sophisticatedcore:sophisticatedcore:${sc_version}") {
+            transitive = false
+        }
+    }
+
+    for (def module in port_lib_modules.split(',')) {
+        modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
+    }
+
+    // EMI
+    modCompileOnly("dev.emi:emi-fabric:$emi_version")
+    // JEI
+    //modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
+    modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version")
+    // REI
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
+
+    implementation("com.electronwill.night-config:core:$project.night_config_version")
+    implementation("com.electronwill.night-config:toml:$project.night_config_version")
+    modApi(include("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$project.forge_config_api_port_version"))
+    modApi(include("teamreborn:energy:$project.energy_version")) {
+        transitive = false
+    }
+
+    modImplementation("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
+
+    modImplementation("curse.maven:jade-324717:${jade_version}")
+
+    modImplementation("curse.maven:litematica-308892:$project.litematica_cf_file_id")
+    modImplementation("curse.maven:malilib-303119:$project.malilib_cf_file_id")
+
+    modImplementation("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
+    modImplementation("curse.maven:balm-500525:${project.balm_cf_file_id}")
+
+    modImplementation("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
+
+    /*modImplementation("vazkii.botania:Botania:${project.botania_version}") {
+        transitive = false
+    }*/
+
+    /*modImplementation("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") {
+        transitive = false
+    }*/
+    modImplementation("maven.modrinth:modernkeybinding:${project.mkb_modrinth_mod_version}") {
+        transitive = false
+    }
+
     modImplementation("dev.emi:trinkets:$project.trinkets_version")
-    modImplementation(include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$project.cca_version")) // for Trinkets
-    modImplementation(include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version")) // for Trinkets
+    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$project.cca_version") // for Trinkets
+    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version") // for Trinkets
+
+    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.+'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.+'
+    testImplementation "org.mockito:mockito-core:5.10.+"
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.+'
+}
+
+test {
+    dependsOn("processResources")
+
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.register('validateMixinNames', ValidateMixinNameTask) {
+    source(sourceSets.main.output)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = 'UTF-8'
+    it.options.release = 17
+}
+
+java {
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+    from('/') {
+        include 'LICENSE'
+    }
+
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : "p3pp3rf1y",
+                'Specification-Version'   : '1', // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : "p3pp3rf1y",
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+processResources {
+    var replaceProperties = [
+            mod_id              : project.mod_id,
+            mod_name            : project.mod_name,
+            mod_license         : project.mod_license,
+            mod_version         : version,
+            mod_issue_tracker_url: project.mod_issue_tracker_url,
+            mod_sources_url     : project.mod_sources_url,
+            mod_logo_file       : project.mod_logo_file,
+            mod_credits         : project.mod_credits,
+            mod_description     : project.mod_description,
+            mod_display_url     : project.mod_display_url,
+            minecraft_version   : project.minecraft_version,
+            loader_version      : project.loader_version,
+            fabric_version      : project.fabric_version,
+            sc_version          : mavenVersionToFabric(project.sc_version),
+            forge_config_version: project.forge_config_api_port_version,
+            energy_version      : project.energy_version,
+            port_lib_version    : project.port_lib_version
+    ]
+
+    inputs.properties replaceProperties
+
+    var mod_authors = []
+    for (String author in project.mod_authors.split(',')) {
+        mod_authors.add("\"${author.trim()}\"")
+    }
+
+    filesMatching("fabric.mod.json") {
+        expand replaceProperties + [project: project]
+
+        filter { String line ->
+            line = line.replace("\"mod_authors\"", mod_authors.toString())
+            line
+        }
+    }
+}
+
+// Fix to make IDEA load the correct resources when build and run is delegated to it
+tasks.register('fixIntelliJResources', Copy) {
+    def ideaClasspath = SourceSetHelper.getIdeaClasspath(new SourceSetReference(SourceSetHelper.getMainSourceSet(getProject()), getProject()), getProject())
+    if (ideaClasspath.empty)
+        return
+
+    dependsOn processResources
+    group "fabric"
+
+    from processResources
+    ideaClasspath.each {
+        into it.toPath()
+    }
+}
+rootProject.idea.project.settings {
+    taskTriggers {
+        afterBuild tasks.getByName("fixIntelliJResources")
+        afterRebuild tasks.getByName("fixIntelliJResources")
+    }
+}
+
+static def mavenVersionToFabric(String version) {
+    StringBuilder builder = new StringBuilder()
+    if (version.startsWith("[")) {
+        builder.append(">=")
+    } else {
+        builder.append(">")
+    }
+    builder.append(version.substring(1, version.lastIndexOf(',')))
+
+    if (version.endsWith(')')) {
+        builder.append(" <")
+    } else {
+        builder.append(" <=")
+    }
+    builder.append(version.substring(version.lastIndexOf(',') + 1, version.length() - 1))
+    return builder.toString()
+}
+
+static def getBuildNumber() {
+    if (System.getenv("GITHUB_RUN_NUMBER") != null) {
+        return System.getenv("GITHUB_RUN_NUMBER").toString()
+    }
+    return ""
+}
+
+static def getStable() {
+    if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev")) {
+        return "-SNAPSHOT"
+    }
+    return ""
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("${github_package_url}")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            artifactId = mod_id
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+        }
+    }
+}
+
+tasks.register('generateChangelog') {
+    doLast {
+        // Function to remove characters with Unicode code points 129 or higher
+        def removeHighUnicodeChars = { text ->
+            text.codePoints()
+                    .filter { codePoint -> codePoint <= 0x007F }  // Keep only ASCII characters (U+0000 to U+007F)
+                    .collect { codePoint -> new String(Character.toChars(codePoint)) }
+                    .join('')
+        }
+
+        // Function to format commit messages with nesting
+        def formatMultilineMessage = { message ->
+            // Split message by lines, trim whitespace, and create formatted list
+            def lines = message.split('\n')
+            def formattedMessage = lines[0].trim() // First line as top-level list item
+            if (lines.size() > 1) {
+                formattedMessage += "\n" + lines[1..-1].collect { line ->
+                    // Trim the line and remove leading dash if present
+                    def trimmedLine = line.trim()
+                    if (trimmedLine.startsWith('-')) {
+                        trimmedLine = trimmedLine.substring(1).trim()
+                    }
+                    "    - ${trimmedLine}" // Nested list for additional lines
+                }.join('\n')
+            }
+            return formattedMessage
+        }
+
+        // Function to remove [DEV] section from commit message
+        def removeDevSection = { message ->
+            def devIndex = message.indexOf('[DEV]')
+            if (devIndex != -1) {
+                return message.substring(0, devIndex).trim()
+            }
+            return message
+        }
+
+        // Get the latest commit hash
+        def latestCommitHash = "git rev-parse HEAD".execute().text.trim()
+
+        // Check if the latest commit is a merge commit
+        def parentCommits = "git rev-list --parents -n 1 ${latestCommitHash}".execute().text.split()
+        logger.info("Parent commits: ${parentCommits}")
+
+        def commitMessages = []
+        if (parentCommits.size() > 2) { // Merge commit has more than 2 parents
+            def firstParent = parentCommits[1]
+            def secondParent = parentCommits[2]
+            def gitLogCommand = [
+                    "bash", "-c", "git log --pretty=format:%B ${firstParent}..${secondParent}"
+            ]
+            commitMessages = gitLogCommand.execute().text.split('\n\n')  // Split by two newlines for each commit
+            logger.info("Merge commit, ran git log command: ${gitLogCommand.join(' ')} and got ${commitMessages}")
+        } else {
+            // Single commit log
+            commitMessages = "git log -1 --pretty=%B".execute().text.split('\n\n')
+            // Split by two newlines for each commit
+            logger.info("Single commit, ran git log command: git log -1 --pretty=%B and got ${commitMessages}");
+        }
+
+        def generals = []
+        def features = []
+        def fixes = []
+        def compatibility = []
+        def cleanup = false
+        commitMessages.each { String commitMessage ->
+            commitMessage = removeHighUnicodeChars(commitMessage) // Remove high Unicode characters
+            commitMessage = removeDevSection(commitMessage) // Remove [DEV] section
+
+            if (commitMessage.startsWith('[General]: ')) {
+                generals.add(commitMessage.replaceFirst('\\[General]: ', '').trim())
+            } else if (commitMessage.startsWith('[Feat]: ')) {
+                features.add(commitMessage.replaceFirst('\\[Feat]: ', '').trim())
+            } else if (commitMessage.startsWith('[Fix]: ')) {
+                fixes.add(commitMessage.replaceFirst('\\[Fix]: ', '').trim())
+            } else if (commitMessage.startsWith('[Compatibility]: ')) {
+                compatibility.add(commitMessage.replaceFirst('\\[Compatibility]: ', '').trim())
+            } else if (commitMessage.startsWith('[Cleanup]: ')) {
+                cleanup = true
+            }
+        }
+
+        def changelog = new StringBuilder()
+
+        changelog.append("# Changelog\n\n")
+
+        changelog.append("### General\n")
+        changelog.append("- Update to version ${project.mod_version}\n")
+        if (cleanup) {
+            changelog.append("- Code cleanup\n")
+        }
+        if (generals) {
+            generals.each { general -> changelog.append("- ${formatMultilineMessage(general)}\n") }
+        }
+        changelog.append("\n")
+
+        if (features) {
+            changelog.append("### Features\n")
+            features.each { feature -> changelog.append("- ${formatMultilineMessage(feature)}\n") }
+            changelog.append("\n")
+        }
+
+        if (fixes) {
+            changelog.append("### Fixes\n")
+            fixes.each { fix -> changelog.append("- ${formatMultilineMessage(fix)}\n") }
+            changelog.append("\n")
+        }
+
+        if (compatibility) {
+            changelog.append("### Compatibility\n")
+            compatibility.each { comp -> changelog.append("- ${formatMultilineMessage(comp)}\n") }
+            changelog.append("\n")
+        }
+
+        // Store the changelog in a project property or an environment variable
+        logger.info("Compiled changelog: " + changelog.toString())
+        project.ext.changelog = changelog.toString()
+    }
+    project.ext.changelog = ""
+}
+
+task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    dependsOn 'generateChangelog'
+
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+    def mainFile = upload(project.curseforge_id, file("${project.layout.buildDirectory.get()}/libs/${base.archivesName.get()}-${version}.jar"))
+    mainFile.changelogType = 'markdown'
+    mainFile.changelog = { project.ext.changelog }
+    mainFile.addModLoader('Fabric')
+    mainFile.releaseType = "${release_type}"
+
+    // Game versions
+    mainFile.addGameVersion("${release_versions}".split(','))
+
+    // Dependencies
+    mainFile.addRequirement('sophisticated-core-unofficial-fabric-port')
+    mainFile.addRequirement('fabric-api')
+    mainFile.addEmbedded('forge-config-api-port-fabric')
+    mainFile.addEmbedded('porting-lib')
+    mainFile.addOptional('jei')
+    mainFile.addOptional('emi')
+    mainFile.addOptional('roughly-enough-items')
+    mainFile.addOptional('trinkets')
+    mainFile.addOptional('modern-keybinding-fabric')
+    mainFile.addOptional('crafting-tweaks-fabric')
+    onlyIf { !project.ext.changelog.isEmpty() }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "${modrinth_project_id}"
+    versionType = "${release_type}"
+    uploadFile = remapJar
+    gameVersions = "${release_versions}".split(',').collect {e -> e}
+    loaders = ["fabric"]
+    dependencies {
+        required.project "sophisticated-core-(unofficial-fabric-port)"
+        required.project "fabric-api"
+        embedded.project "forge-config-api-port"
+        embedded.project "porting_lib"
+        optional.project "jei"
+        optional.project "emi"
+        optional.project "rei"
+        optional.project "trinkets"
+        optional.project "crafting-tweaks-fabric"
+        optional.project "modernkeybinding"
+    }
+    changelog = provider {
+        project.ext.changelog
+    }
+}
+tasks.modrinth {
+    dependsOn(tasks.generateChangelog)
+    onlyIf { !project.ext.changelog.isEmpty() }
 }
