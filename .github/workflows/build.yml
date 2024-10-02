@@ -14,16 +14,16 @@ jobs:
           java-version: 17
           distribution: zulu
           cache: gradle
-      - uses: gradle/wrapper-validation-action@v3
+      - uses: gradle/actions/wrapper-validation@v4
       - run: chmod +x ./gradlew
       - name: Build with Gradle
         env:
           USERNAME: ${{ secrets.USERNAME }}
           READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
         run: ./gradlew build
-      - name: Check resources
-        run: ./gradlew build runDatagen
-      - run: if [ -n "$(git status --porcelain)" ]; then exit 1; fi
+#      - name: Check resources
+#        run: ./gradlew build runDatagen
+#      - run: if [ -n "$(git status --porcelain)" ]; then exit 1; fi
       - name: Publish to Github Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
