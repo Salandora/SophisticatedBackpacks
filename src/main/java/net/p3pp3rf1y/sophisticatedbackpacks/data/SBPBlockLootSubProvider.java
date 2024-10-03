@@ -19,6 +19,7 @@ public class SBPBlockLootSubProvider extends FabricBlockLootTableProvider {
 	@Override
 	public void generate() {
 		add(ModBlocks.BACKPACK, dropBackpackWithContents(ModItems.BACKPACK));
+		add(ModBlocks.COPPER_BACKPACK, dropBackpackWithContents(ModItems.COPPER_BACKPACK));
 		add(ModBlocks.IRON_BACKPACK, dropBackpackWithContents(ModItems.IRON_BACKPACK));
 		add(ModBlocks.GOLD_BACKPACK, dropBackpackWithContents(ModItems.GOLD_BACKPACK));
 		add(ModBlocks.DIAMOND_BACKPACK, dropBackpackWithContents(ModItems.DIAMOND_BACKPACK));

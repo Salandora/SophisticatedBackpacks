@@ -59,7 +59,7 @@ public class EntityBackpackAdditionHandler {
 	private EntityBackpackAdditionHandler() {}
 
 	private static final String SPAWNED_WITH_BACKPACK = "spawnedWithBackpack";
-	private static final String SPAWNED_WITH_JUKEBOX_UPGRADE = SophisticatedBackpacks.ID + ":jukebox";
+	private static final String SPAWNED_WITH_JUKEBOX_UPGRADE = SophisticatedBackpacks.MOD_ID + ":jukebox";
 
 	private static final List<WeightedElement<Item>> HELMET_CHANCES = List.of(
 			new WeightedElement<>(1, Items.NETHERITE_HELMET),
@@ -85,6 +85,7 @@ public class EntityBackpackAdditionHandler {
 
 	private static final Map<Item, Float> dropChanceMultiplier = Map.of(
 			ModItems.BACKPACK, 1F,
+			ModItems.COPPER_BACKPACK, 1.25F,
 			ModItems.IRON_BACKPACK, 1.5F,
 			ModItems.GOLD_BACKPACK, 3F,
 			ModItems.DIAMOND_BACKPACK, 4.5F,
@@ -100,6 +101,8 @@ public class EntityBackpackAdditionHandler {
 					HELMET_CHANCES.subList(1, 3), LEGGINGS_CHANCES.subList(1, 3), BOOTS_CHANCES.subList(1, 3))),
 			new WeightedElement<>(125, new BackpackAddition(ModItems.IRON_BACKPACK, 1,
 					HELMET_CHANCES.subList(2, 4), LEGGINGS_CHANCES.subList(2, 4), BOOTS_CHANCES.subList(2, 4))),
+			new WeightedElement<>(250, new BackpackAddition(ModItems.COPPER_BACKPACK, 1,
+					HELMET_CHANCES.subList(2, 4), LEGGINGS_CHANCES.subList(3, 5), BOOTS_CHANCES.subList(3, 5))),
 			new WeightedElement<>(625, new BackpackAddition(ModItems.BACKPACK, 0,
 					HELMET_CHANCES.subList(3, 5), LEGGINGS_CHANCES.subList(3, 5), BOOTS_CHANCES.subList(3, 5)))
 	);
@@ -309,7 +312,8 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void removeContentsUuid(ItemStack stack) {
-		BackpackWrapperLookup.get(stack).flatMap(IStorageWrapper::getContentsUuid).ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid));
+		BackpackWrapperLookup.get(stack).flatMap(IStorageWrapper::getContentsUuid)
+				.ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid));
 	}
 
 	public static void onLivingUpdate(LivingEntity entity) {

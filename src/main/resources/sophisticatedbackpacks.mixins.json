@@ -20,9 +20,9 @@
         "common.accessor.SmithingTransformRecipeAccessor"
     ],
     "client": [
-        "client.CreativeModeInventoryScreenSlotWrapperMixin",
         "client.ItemInHandRendererMixin",
-        "client.accessor.ItemRendererAccessor", "client.accessor.VertexFormatAccessor"
+        "client.accessor.ItemRendererAccessor",
+        "client.accessor.VertexFormatAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

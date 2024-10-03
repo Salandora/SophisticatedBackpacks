@@ -34,10 +34,10 @@ public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe imple
 	}
 
 	@Override
-	public ItemStack assemble(Container inventory, RegistryAccess registryManager) {
+	public ItemStack assemble(Container inv, RegistryAccess registryAccess) {
 		ItemStack upgradedBackpack = ((SmithingTransformRecipeAccessor) this).getResult().copy();
 		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
-			getBackpack(inventory).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
+			getBackpack(inv).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
 			BackpackWrapperLookup.get(upgradedBackpack)
 					.ifPresent(wrapper -> {
 						BackpackItem backpackItem = ((BackpackItem) upgradedBackpack.getItem());

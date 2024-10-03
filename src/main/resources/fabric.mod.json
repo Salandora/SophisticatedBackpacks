@@ -1,20 +1,16 @@
 {
     "schemaVersion": 1,
-    "id": "sophisticatedbackpacks",
+    "id": "${mod_id}",
     "version": "${mod_version}",
-    "name": "Sophisticated Backpacks",
-    "description": "Fancy and functional backpacks.",
-    "license": "GNU General Public License v3.0",
-    "icon": "SophisticatedBackpacksFabric.png",
-    "authors": [
-        "P3pp3rF1y",
-        "Ridanisaurus",
-        "Salandora"
-    ],
+    "name": "${mod_name}",
+    "description": "${mod_description}",
+    "license": "${mod_license}",
+    "icon": "${mod_logo_file}",
+    "authors": "mod_authors",
     "contact": {
-        "homepage": "https://www.curseforge.com/minecraft/mc-mods/sophisticated-backpacks-unofficial-fabric-port",
-        "issues": "https://github.com/Salandora/SophisticatedBackpacks/issues",
-        "sources": "https://github.com/Salandora/SophisticatedBackpacks/"
+        "homepage": "${mod_display_url}",
+        "issues": "${mod_issue_tracker_url}",
+        "sources": "${mod_sources_url}"
     },
     "environment": "*",
     "entrypoints": {
@@ -31,7 +27,7 @@
             "net.p3pp3rf1y.sophisticatedbackpacks.compat.emi.EmiCompat"
         ],
         "jei_mod_plugin": [
-            "net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBJeiPlugin"
+            "net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBPPlugin"
         ],
         "rei_common": [
             "net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REICompat"
@@ -48,7 +44,7 @@
         "fabricloader": ">=${loader_version}",
         "fabric-api": ">=${fabric_version}",
         "minecraft": "${minecraft_version}",
-        "sophisticatedcore": ">=${sc_version}",
+        "sophisticatedcore": "${sc_version}",
         "forgeconfigapiport": ">=${forge_config_version}",
         "team_reborn_energy": ">=${energy_version}",
         "porting_lib_loot": ">=${port_lib_version}",

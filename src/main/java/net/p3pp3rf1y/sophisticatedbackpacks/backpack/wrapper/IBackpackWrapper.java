@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.function.IntConsumer;
 
 public interface IBackpackWrapper extends IStorageWrapper {
+
 	@Override
 	BackpackSettingsHandler getSettingsHandler();
 
@@ -54,7 +55,8 @@ public interface IBackpackWrapper extends IStorageWrapper {
 		public static final Noop INSTANCE = new Noop();
 
 		private final ItemStack backpack = new ItemStack(ModItems.BACKPACK);
-		private final BackpackSettingsHandler settingsHandler = new BackpackSettingsHandler(this, new CompoundTag(), () -> {});
+		private final BackpackSettingsHandler settingsHandler = new BackpackSettingsHandler(this, new CompoundTag(), () -> {
+		});
 
 		@Override
 		public BackpackSettingsHandler getSettingsHandler() {
@@ -73,6 +75,21 @@ public interface IBackpackWrapper extends IStorageWrapper {
 
 		@Override
 		public void copyDataTo(IStorageWrapper otherStorageWrapper) {
+			//noop
+		}
+
+		@Override
+		public void setSlotNumbers(int numberOfInventorySlots, int numberOfUpgradeSlots) {
+			//noop
+		}
+
+		@Override
+		public void setLoot(ResourceLocation lootTableName, float lootPercentage) {
+			//noop
+		}
+
+		@Override
+		public void setContentsUuid(UUID storageUuid) {
 			//noop
 		}
 	}

@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
 	SBLootModifierProvider(FabricDataOutput packOutput) {
-		super(packOutput, SophisticatedBackpacks.ID);
+		super(packOutput, SophisticatedBackpacks.MOD_ID);
 	}
 
 	@Override

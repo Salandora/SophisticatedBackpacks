@@ -11,6 +11,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
@@ -41,9 +42,9 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("SLS")
 				.pattern("SCS")
 				.pattern("LLL")
-				.define('L', net.minecraft.world.item.Items.LEATHER)
+				.define('L', Items.LEATHER)
 				.define('C', Tags.Items.WOODEN_CHESTS)
-				.define('S', net.minecraft.world.item.Items.STRING)
+				.define('S', Items.STRING)
 				.unlockedBy("has_leather", hasLeather())
 				.save(consumer);
 
@@ -76,13 +77,31 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy("has_backpack", has(ModItems.BACKPACK))
 				.save(consumer);
 
+		ShapeBasedRecipeBuilder.shaped(ModItems.IRON_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
+				.pattern(" I ")
+				.pattern("IBI")
+				.pattern(" I ")
+				.define('I', ConventionalItemTags.IRON_INGOTS)
+				.define('B', ModItems.COPPER_BACKPACK)
+				.unlockedBy("has_copper_backpack", has(ModItems.COPPER_BACKPACK))
+				.save(consumer, new ResourceLocation(SophisticatedBackpacks.getRegistryName("iron_backpack_from_copper")));
+
+		ShapeBasedRecipeBuilder.shaped(ModItems.COPPER_BACKPACK, ModItems.BACKPACK_UPGRADE_RECIPE_SERIALIZER)
+				.pattern("CCC")
+				.pattern("CBC")
+				.pattern("CCC")
+				.define('C', ConventionalItemTags.COPPER_INGOTS)
+				.define('B', ModItems.BACKPACK)
+				.unlockedBy("has_backpack", has(ModItems.BACKPACK))
+				.save(consumer);
+
 		ShapeBasedRecipeBuilder.shaped(ModItems.PICKUP_UPGRADE)
 				.pattern(" P ")
 				.pattern("SBS")
 				.pattern("RRR")
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('S', net.minecraft.world.item.Items.STRING)
+				.define('S', Items.STRING)
 				.define('P', Blocks.STICKY_PISTON)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
@@ -91,9 +110,9 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("SIS")
 				.pattern("ILI")
 				.pattern("SIS")
-				.define('L', net.minecraft.world.item.Items.LEATHER)
+				.define('L', Items.LEATHER)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('S', net.minecraft.world.item.Items.STRING)
+				.define('S', Items.STRING)
 				.unlockedBy("has_leather", hasLeather())
 				.save(consumer);
 
@@ -114,7 +133,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("RSR")
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('S', net.minecraft.world.item.Items.STRING)
+				.define('S', Items.STRING)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -131,7 +150,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("EIE")
 				.pattern("IPI")
 				.pattern("R L")
-				.define('E', net.minecraft.world.item.Items.ENDER_PEARL)
+				.define('E', Items.ENDER_PEARL)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('L', ConventionalItemTags.LAPIS)
@@ -143,7 +162,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("EIE")
 				.pattern("IPI")
 				.pattern("R L")
-				.define('E', net.minecraft.world.item.Items.ENDER_PEARL)
+				.define('E', Items.ENDER_PEARL)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('L', ConventionalItemTags.LAPIS)
@@ -167,10 +186,10 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("ABM")
 				.pattern(" E ")
 				.define('B', ModItems.UPGRADE_BASE)
-				.define('C', net.minecraft.world.item.Items.GOLDEN_CARROT)
-				.define('A', net.minecraft.world.item.Items.GOLDEN_APPLE)
-				.define('M', net.minecraft.world.item.Items.GLISTERING_MELON_SLICE)
-				.define('E', net.minecraft.world.item.Items.ENDER_PEARL)
+				.define('C', Items.GOLDEN_CARROT)
+				.define('A', Items.GOLDEN_APPLE)
+				.define('M', Items.GLISTERING_MELON_SLICE)
+				.define('E', Items.ENDER_PEARL)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -180,7 +199,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("RPR")
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('P', net.minecraft.world.item.Items.PISTON)
+				.define('P', Items.PISTON)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
@@ -201,8 +220,8 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("OBO")
 				.pattern("ROR")
 				.define('B', ModItems.UPGRADE_BASE)
-				.define('E', net.minecraft.world.item.Items.ENDER_PEARL)
-				.define('O', net.minecraft.world.item.Items.OBSIDIAN)
+				.define('E', Items.ENDER_PEARL)
+				.define('O', Items.OBSIDIAN)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
@@ -226,7 +245,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('C', Tags.Items.WOODEN_CHESTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('P', net.minecraft.world.item.Items.STICKY_PISTON)
+				.define('P', Items.STICKY_PISTON)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -249,7 +268,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('C', Tags.Items.WOODEN_CHESTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('P', net.minecraft.world.item.Items.PISTON)
+				.define('P', Items.PISTON)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -272,7 +291,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('C', Tags.Items.WOODEN_CHESTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('E', net.minecraft.world.item.Items.ENDER_PEARL)
+				.define('E', Items.ENDER_PEARL)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -292,9 +311,9 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("DBD")
 				.pattern("EDE")
 				.define('B', ModItems.UPGRADE_BASE)
-				.define('S', net.minecraft.world.item.Items.NETHER_STAR)
+				.define('S', Items.NETHER_STAR)
 				.define('D', ConventionalItemTags.DIAMONDS)
-				.define('E', net.minecraft.world.item.Items.ENDER_EYE)
+				.define('E', Items.ENDER_EYE)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -303,8 +322,8 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("SBS")
 				.pattern("CSC")
 				.define('B', ModItems.UPGRADE_BASE)
-				.define('S', net.minecraft.world.item.Items.NETHER_STAR)
-				.define('C', net.minecraft.world.item.Items.END_CRYSTAL)
+				.define('S', Items.NETHER_STAR)
+				.define('C', Items.END_CRYSTAL)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -315,7 +334,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('F', net.minecraft.world.item.Items.FURNACE)
+				.define('F', Items.FURNACE)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -326,7 +345,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('D', ConventionalItemTags.DIAMONDS)
 				.define('G', ConventionalItemTags.GOLD_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('H', net.minecraft.world.item.Items.HOPPER)
+				.define('H', Items.HOPPER)
 				.define('S', ModItems.SMELTING_UPGRADE)
 				.unlockedBy(HAS_SMELTING_UPGRADE, has(ModItems.SMELTING_UPGRADE))
 				.save(consumer);
@@ -338,7 +357,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('C', ConventionalItemTags.CHESTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('T', net.minecraft.world.item.Items.CRAFTING_TABLE)
+				.define('T', Items.CRAFTING_TABLE)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -349,7 +368,16 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('S', net.minecraft.world.item.Items.STONECUTTER)
+				.define('S', Items.STONECUTTER)
+				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
+				.save(consumer);
+
+		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_STARTER_TIER)
+				.pattern("CCC")
+				.pattern("CBC")
+				.pattern("CCC")
+				.define('B', ModItems.UPGRADE_BASE)
+				.define('C', Tags.Items.STORAGE_BLOCKS_COPPER)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -358,16 +386,25 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("IBI")
 				.pattern("III")
 				.define('B', ModItems.UPGRADE_BASE)
-				.define('I', net.minecraft.world.item.Items.IRON_BLOCK)
+				.define('I', Tags.Items.STORAGE_BLOCKS_IRON)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
+
+		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_1)
+				.pattern(" I ")
+				.pattern("ISI")
+				.pattern(" I ")
+				.define('S', ModItems.STACK_UPGRADE_STARTER_TIER)
+				.define('I', Tags.Items.STORAGE_BLOCKS_IRON)
+				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
+				.save(consumer, new ResourceLocation(SophisticatedBackpacks.getRegistryName("stack_upgrade_tier_1_from_starter")));
 
 		ShapeBasedRecipeBuilder.shaped(ModItems.STACK_UPGRADE_TIER_2)
 				.pattern("GGG")
 				.pattern("GSG")
 				.pattern("GGG")
 				.define('S', ModItems.STACK_UPGRADE_TIER_1)
-				.define('G', net.minecraft.world.item.Items.GOLD_BLOCK)
+				.define('G', Tags.Items.STORAGE_BLOCKS_GOLD)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_1))
 				.save(consumer);
 
@@ -376,7 +413,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("DSD")
 				.pattern("DDD")
 				.define('S', ModItems.STACK_UPGRADE_TIER_2)
-				.define('D', net.minecraft.world.item.Items.DIAMOND_BLOCK)
+				.define('D', Tags.Items.STORAGE_BLOCKS_DIAMOND)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_2))
 				.save(consumer);
 
@@ -385,7 +422,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("NSN")
 				.pattern("NNN")
 				.define('S', ModItems.STACK_UPGRADE_TIER_3)
-				.define('N', net.minecraft.world.item.Items.NETHERITE_BLOCK)
+				.define('N', Tags.Items.STORAGE_BLOCKS_NETHERITE)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.STACK_UPGRADE_TIER_3))
 				.save(consumer);
 
@@ -396,7 +433,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('J', net.minecraft.world.item.Items.JUKEBOX)
+				.define('J', Items.JUKEBOX)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -405,10 +442,10 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("PBA")
 				.pattern("ISI")
 				.define('B', ModItems.UPGRADE_BASE)
-				.define('S', net.minecraft.world.item.Items.WOODEN_SHOVEL)
-				.define('P', net.minecraft.world.item.Items.WOODEN_PICKAXE)
-				.define('A', net.minecraft.world.item.Items.WOODEN_AXE)
-				.define('W', net.minecraft.world.item.Items.WOODEN_SWORD)
+				.define('S', Items.WOODEN_SHOVEL)
+				.define('P', Items.WOODEN_PICKAXE)
+				.define('A', Items.WOODEN_AXE)
+				.define('W', Items.WOODEN_SWORD)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
@@ -449,7 +486,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("GRG")
 				.pattern("RBR")
 				.pattern("GRG")
-				.define('R', net.minecraft.world.item.Items.REDSTONE_BLOCK)
+				.define('R', Items.REDSTONE_BLOCK)
 				.define('G', ConventionalItemTags.GOLD_INGOTS)
 				.define('B', ModItems.UPGRADE_BASE)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
@@ -459,10 +496,10 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("GUG")
 				.pattern("PBS")
 				.pattern("GUG")
-				.define('U', net.minecraft.world.item.Items.BUCKET)
+				.define('U', Items.BUCKET)
 				.define('G', ConventionalItemTags.GLASS_BLOCKS)
-				.define('P', net.minecraft.world.item.Items.PISTON)
-				.define('S', net.minecraft.world.item.Items.STICKY_PISTON)
+				.define('P', Items.PISTON)
+				.define('S', Items.STICKY_PISTON)
 				.define('B', ModItems.UPGRADE_BASE)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
@@ -471,7 +508,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("DID")
 				.pattern("GPG")
 				.pattern("RRR")
-				.define('I', net.minecraft.world.item.Items.DISPENSER)
+				.define('I', Items.DISPENSER)
 				.define('D', ConventionalItemTags.DIAMONDS)
 				.define('G', ConventionalItemTags.GOLD_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
@@ -484,8 +521,8 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("CPC")
 				.pattern("RER")
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('E', net.minecraft.world.item.Items.ENDER_EYE)
-				.define('C', net.minecraft.world.item.Items.EXPERIENCE_BOTTLE)
+				.define('E', Items.ENDER_EYE)
+				.define('C', Items.EXPERIENCE_BOTTLE)
 				.define('P', ModItems.ADVANCED_PUMP_UPGRADE)
 				.unlockedBy("has_advanced_pump_upgrade", has(ModItems.ADVANCED_PUMP_UPGRADE))
 				.save(consumer);
@@ -497,7 +534,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('S', net.minecraft.world.item.Items.SMOKER)
+				.define('S', Items.SMOKER)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -506,7 +543,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("LSL")
 				.pattern(" L ")
 				.define('S', ModItems.SMELTING_UPGRADE)
-				.define('L', net.minecraft.tags.ItemTags.LOGS)
+				.define('L', ItemTags.LOGS)
 				.unlockedBy(HAS_SMELTING_UPGRADE, has(ModItems.SMELTING_UPGRADE))
 				.save(consumer, SophisticatedBackpacks.getRL("smoking_upgrade_from_smelting_upgrade"));
 
@@ -517,7 +554,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('D', ConventionalItemTags.DIAMONDS)
 				.define('G', ConventionalItemTags.GOLD_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('H', net.minecraft.world.item.Items.HOPPER)
+				.define('H', Items.HOPPER)
 				.define('S', ModItems.SMOKING_UPGRADE)
 				.unlockedBy("has_smoking_upgrade", has(ModItems.SMOKING_UPGRADE))
 				.save(consumer);
@@ -527,7 +564,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("LSL")
 				.pattern(" L ")
 				.define('S', ModItems.AUTO_SMELTING_UPGRADE)
-				.define('L', net.minecraft.tags.ItemTags.LOGS)
+				.define('L', ItemTags.LOGS)
 				.unlockedBy("has_auto_smelting_upgrade", has(ModItems.AUTO_SMELTING_UPGRADE))
 				.save(consumer, SophisticatedBackpacks.getRL("auto_smoking_upgrade_from_auto_smelting_upgrade"));
 
@@ -538,7 +575,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('B', ModItems.UPGRADE_BASE)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('F', net.minecraft.world.item.Items.BLAST_FURNACE)
+				.define('F', Items.BLAST_FURNACE)
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
@@ -548,7 +585,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("TTT")
 				.define('S', ModItems.SMELTING_UPGRADE)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('T', net.minecraft.world.item.Items.SMOOTH_STONE)
+				.define('T', Items.SMOOTH_STONE)
 				.unlockedBy(HAS_SMELTING_UPGRADE, has(ModItems.SMELTING_UPGRADE))
 				.save(consumer, SophisticatedBackpacks.getRL("blasting_upgrade_from_smelting_upgrade"));
 
@@ -559,7 +596,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('D', ConventionalItemTags.DIAMONDS)
 				.define('G', ConventionalItemTags.GOLD_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('H', net.minecraft.world.item.Items.HOPPER)
+				.define('H', Items.HOPPER)
 				.define('S', ModItems.BLASTING_UPGRADE)
 				.unlockedBy("has_blasting_upgrade", has(ModItems.BLASTING_UPGRADE))
 				.save(consumer);
@@ -570,7 +607,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("TTT")
 				.define('S', ModItems.AUTO_SMELTING_UPGRADE)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
-				.define('T', net.minecraft.world.item.Items.SMOOTH_STONE)
+				.define('T', Items.SMOOTH_STONE)
 				.unlockedBy("has_auto_smelting_upgrade", has(ModItems.AUTO_SMELTING_UPGRADE))
 				.save(consumer, SophisticatedBackpacks.getRL("auto_blasting_upgrade_from_auto_smelting_upgrade"));
 
@@ -578,7 +615,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.pattern("ADA")
 				.pattern("IBI")
 				.pattern(" C ")
-				.define('A', net.minecraft.world.item.Items.ANVIL)
+				.define('A', Items.ANVIL)
 				.define('D', ConventionalItemTags.DIAMONDS)
 				.define('I', ConventionalItemTags.IRON_INGOTS)
 				.define('B', ModItems.UPGRADE_BASE)
@@ -587,7 +624,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.save(consumer);
 
 		new SmithingTransformRecipeBuilder(ModItems.SMITHING_BACKPACK_UPGRADE_RECIPE_SERIALIZER, Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(ModItems.DIAMOND_BACKPACK),
-				Ingredient.of(net.minecraft.world.item.Items.NETHERITE_INGOT), RecipeCategory.MISC, ModItems.NETHERITE_BACKPACK)
+				Ingredient.of(Items.NETHERITE_INGOT), RecipeCategory.MISC, ModItems.NETHERITE_BACKPACK)
 				.unlocks("has_diamond_backpack", has(ModItems.DIAMOND_BACKPACK))
 				.save(consumer, RegistryHelper.getItemKey(ModItems.NETHERITE_BACKPACK));
 
@@ -619,6 +656,6 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 	}
 
 	private static InventoryChangeTrigger.TriggerInstance hasLeather() {
-		return inventoryTrigger(ItemPredicate.Builder.item().of(net.minecraft.world.item.Items.LEATHER).build());
+		return inventoryTrigger(ItemPredicate.Builder.item().of(Items.LEATHER).build());
 	}
 }
