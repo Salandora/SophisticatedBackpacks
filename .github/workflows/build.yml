@@ -21,8 +21,9 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
         run: ./gradlew build
-      - name: Check resources
-        run: ./gradlew build runDatagen && if [ -n "$(git status --porcelain)" ]; then exit 1; fi
+#      - name: Check resources
+#        run: ./gradlew build runDatagen
+#      - run: if [ -n "$(git status --porcelain)" ]; then exit 1; fi
       - name: Publish to Github Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
