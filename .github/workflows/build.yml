@@ -14,7 +14,7 @@ jobs:
           java-version: 17
           distribution: zulu
           cache: gradle
-      - uses: gradle/wrapper-validation-action@v3
+      - uses: gradle/actions/wrapper-validation@v4
       - run: chmod +x ./gradlew
       - name: Build with Gradle
         env:
