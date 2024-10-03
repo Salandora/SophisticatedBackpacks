@@ -8,7 +8,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
-import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModLoot;
 
 public class SBLootEnabledCondition implements LootItemCondition {
 
@@ -17,12 +17,12 @@ public class SBLootEnabledCondition implements LootItemCondition {
 
 	@Override
 	public LootItemConditionType getType() {
-		return ModItems.LOOT_ENABLED_CONDITION;
+		return ModLoot.LOOT_ENABLED_CONDITION;
 	}
 
 	@Override
 	public boolean test(LootContext lootContext) {
-		return Boolean.TRUE.equals(Config.CLIENT.chestLootEnabled.get());
+		return Boolean.TRUE.equals(Config.COMMON.chestLootEnabled.get());
 	}
 
 	public static Builder builder() {

@@ -6,7 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
-import net.p3pp3rf1y.sophisticatedcore.client.render.ClientStorageContentsTooltipBase;
+import net.p3pp3rf1y.sophisticatedcore.client.render.ClientStorageContentsTooltip;
 import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 
 import java.util.UUID;
@@ -39,7 +39,7 @@ public class BackpackContentsMessage extends SimplePacketBase {
 			}
 
 			BackpackStorage.get().setBackpackContents(backpackUuid, backpackContents);
-			ClientStorageContentsTooltipBase.refreshContents();
+			ClientStorageContentsTooltip.refreshContents();
 		});
 		return true;
 	}

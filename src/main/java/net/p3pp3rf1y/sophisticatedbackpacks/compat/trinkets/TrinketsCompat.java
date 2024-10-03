@@ -93,7 +93,7 @@ public class TrinketsCompat implements ICompat {
 
 						for (int i = 0; i < trinketInventory.getContainerSize(); i++) {
 							SlotReference ref = new SlotReference(trinketInventory, i);
-							if (TrinketsApi.evaluatePredicateSet(slotType.getTooltipPredicates(), BACKPACK, ref, player)) {
+							if (TrinketsApi.evaluatePredicateSet(slotType.getValidatorPredicates(), BACKPACK, ref, player)) {
 								backpackTrinketIdentifiers.add(group.getKey() + "/" + inventory.getKey());
 							}
 						}

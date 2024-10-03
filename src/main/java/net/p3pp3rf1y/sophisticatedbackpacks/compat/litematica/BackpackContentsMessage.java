@@ -11,7 +11,6 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedcore.compat.litematica.LitematicaHelper;
 
 import java.util.UUID;
@@ -43,7 +42,6 @@ public class BackpackContentsMessage implements S2CPacket {
 			}
 
 			BackpackStorage.get().setBackpackContents(this.backpackUuid, this.backpackContents);
-			BackpackWrapperLookup.invalidateCache(this.backpackUuid);
 			LitematicaHelper.incrementReceived(1);
 		});
 	}

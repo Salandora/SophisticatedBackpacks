@@ -98,9 +98,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			if (bakedModel != null) {
 				builder.put(part, bakedModel);
 			}
-
 		});
-
 		return new BackpackBakedModel(builder.build(), modelTransform);
 	}
 
@@ -190,9 +188,9 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
 			List<BakedQuad> ret = new ArrayList<>(models.get(ModelPart.BASE).getQuads(state, side, rand));
 			if (state == null) {
-				addLeftSide(state, side, rand, ret, tankLeft);
-				addRightSide(state, side, rand, ret, tankRight);
-				addFront(state, side, rand, ret, battery);
+				addLeftSide(null, side, rand, ret, tankLeft);
+				addRightSide(null, side, rand, ret, tankRight);
+				addFront(null, side, rand, ret, battery);
 			} else {
 				addLeftSide(state, side, rand, ret, state.getValue(LEFT_TANK));
 				addRightSide(state, side, rand, ret, state.getValue(RIGHT_TANK));

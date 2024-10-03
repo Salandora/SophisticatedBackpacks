@@ -11,6 +11,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPButtonDefinitions;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.emi.EmiCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBJeiPlugin;
@@ -30,19 +31,19 @@ import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgrade
 
 public class ChippedCompat implements ICompat {
 	public static final BlockTransformationUpgradeItem BOTANIST_WORKBENCH_UPGRADE = ModItems.register("chipped/botanist_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.BOTANIST_WORKBENCH_TYPE));
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.BOTANIST_WORKBENCH_TYPE, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem GLASSBLOWER_WORKBENCH_UPGRADE = ModItems.register("chipped/glassblower_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.GLASSBLOWER_TYPE));
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.GLASSBLOWER_TYPE, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem CARPENTER_WORKBENCH_UPGRADE = ModItems.register("chipped/carpenter_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.CARPENTERS_TABLE_TYPE));
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.CARPENTERS_TABLE_TYPE, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem SHEPHERD_WORKBENCH_UPGRADE = ModItems.register("chipped/shepherd_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.LOOM_TABLE_TYPE));
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.LOOM_TABLE_TYPE, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem MASON_WORKBENCH_UPGRADE = ModItems.register("chipped/mason_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.MASON_TABLE_TYPE));
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.MASON_TABLE_TYPE, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem PHILOSOPHER_WORKBENCH_UPGRADE = ModItems.register("chipped/philosopher_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.ALCHEMY_BENCH_TYPE));
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.ALCHEMY_BENCH_TYPE, Config.SERVER.maxUpgradesPerStorage));
 	public static final BlockTransformationUpgradeItem TINKERER_WORKBENCH_UPGRADE = ModItems.register("chipped/tinkerer_workbench_upgrade",
-			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.TINKERING_TABLE_TYPE));
+			() -> new BlockTransformationUpgradeItem(ModItems.CREATIVE_TAB, ModRecipeTypes.TINKERING_TABLE_TYPE, Config.SERVER.maxUpgradesPerStorage));
 
 	@Override
 	public void init() {

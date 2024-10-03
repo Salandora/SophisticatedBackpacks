@@ -13,13 +13,18 @@ import net.minecraftforge.api.fml.event.config.ModConfigEvents;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.FilteredUpgradeConfig;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeCountLimitConfig;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeGroup;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.battery.BatteryUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.cooking.AutoCookingUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.cooking.CookingUpgradeConfig;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.cooking.ICookingUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.magnet.MagnetUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.pump.PumpUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeConfig;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.tank.TankUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeConfig;
@@ -38,16 +43,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("java:S1192") //don't complain about repeated config names if two upgrades happen to have the same setting
+@SuppressWarnings("java:S1192")
+//don't complain about repeated config names if two upgrades happen to have the same setting
 public class Config {
 	private static final Map<ModConfig.Type, BaseConfig> CONFIGS = new EnumMap<>(ModConfig.Type.class);
 
 	private static final String REGISTRY_NAME_MATCHER = "([a-z0-9_.-]+:[a-z0-9_/.-]+)";
 
-	private Config() {}
+	private Config() {
+	}
 
-	public static Common CLIENT = register(Common::new, ModConfig.Type.CLIENT);
-	public static Server COMMON = register(Server::new, ModConfig.Type.SERVER);
+	public static Common COMMON;
+	public static Server SERVER;
 
 	public static class BaseConfig {
 		public ForgeConfigSpec specification;
@@ -61,6 +68,7 @@ public class Config {
 		public final NoInteractionBlocks noInteractionBlocks;
 		public final NoConnectionBlocks noConnectionBlocks;
 		public final BackpackConfig leatherBackpack;
+		public final BackpackConfig copperBackpack;
 		public final BackpackConfig ironBackpack;
 		public final BackpackConfig goldBackpack;
 		public final BackpackConfig diamondBackpack;
@@ -103,11 +111,22 @@ public class Config {
 		public final PumpUpgradeConfig pumpUpgrade;
 		public final XpPumpUpgradeConfig xpPumpUpgrade;
 		public final NerfsConfig nerfsConfig;
+		public final MaxUgradesPerStorageConfig maxUpgradesPerStorage;
 
 		@Override
 		public void onConfigReload() {
+			clearCache();
+		}
+
+		@Override
+		public void onConfigLoad() {
+			clearCache();
+		}
+
+		private void clearCache() {
 			disallowedItems.initialized = false;
 			stackUpgrade.clearNonStackableItems();
+			maxUpgradesPerStorage.clearCache();
 		}
 
 		Server(ForgeConfigSpec.Builder builder) {
@@ -118,6 +137,7 @@ public class Config {
 			noConnectionBlocks = new NoConnectionBlocks(builder);
 
 			leatherBackpack = new BackpackConfig(builder, "Leather", 27, 1);
+			copperBackpack = new BackpackConfig(builder, "Copper", 45, 1);
 			ironBackpack = new BackpackConfig(builder, "Iron", 54, 2);
 			goldBackpack = new BackpackConfig(builder, "Gold", 81, 3);
 			diamondBackpack = new BackpackConfig(builder, "Diamond", 108, 5);
@@ -156,6 +176,13 @@ public class Config {
 			xpPumpUpgrade = new XpPumpUpgradeConfig(builder);
 			entityBackpackAdditions = new EntityBackpackAdditionsConfig(builder);
 			nerfsConfig = new NerfsConfig(builder);
+			maxUpgradesPerStorage = new MaxUgradesPerStorageConfig(builder,
+					Map.of(
+							StackUpgradeItem.UPGRADE_GROUP.name(), 3,
+							ICookingUpgrade.UPGRADE_GROUP.name(), 1,
+							ModItems.JUKEBOX_UPGRADE_NAME, 1
+					)
+			);
 
 			itemFluidHandlerEnabled = builder.comment("Turns on/off item fluid handler of backpack in its item form. There are some dupe bugs caused by default fluid handling implementation that manifest when backpack is drained / filled in its item form in another mod's tank and the only way to prevent them is disallowing drain/fill in item form altogether").define("itemFluidHandlerEnabled", true);
 			allowOpeningOtherPlayerBackpacks = builder.comment("Determines whether player can right click on backpack that another player is wearing to open it. If off will turn off that capability for everyone and remove related settings from backpack.").define("allowOpeningOtherPlayerBackpacks", true);
@@ -171,6 +198,7 @@ public class Config {
 			public final ForgeConfigSpec.IntValue maxNumberOfBackpacks;
 			public final ForgeConfigSpec.DoubleValue slownessLevelsPerAdditionalBackpack;
 			public final ForgeConfigSpec.BooleanValue onlyWornBackpackTriggersUpgrades;
+
 			public NerfsConfig(ForgeConfigSpec.Builder builder) {
 				builder.push("nerfs");
 				tooManyBackpacksSlowness = builder.comment("Determines if too many backpacks in player's inventory cause slowness to the player").define("tooManyBackpacksSlowness", false);
@@ -181,6 +209,7 @@ public class Config {
 			}
 
 		}
+
 		public static class EntityBackpackAdditionsConfig {
 			private static final String ENTITY_LOOT_MATCHER = "([a-z0-9_.-]+:[a-z0-9_/.-]+)\\|(null|[a-z0-9_.-]+:[a-z0-9/_.-]+)";
 			public final ForgeConfigSpec.DoubleValue chance;
@@ -319,7 +348,7 @@ public class Config {
 			}
 
 			public boolean isBlockInteractionDisallowed(Block block) {
-				if (!COMMON.specification.isLoaded()) {
+				if (!SERVER.specification.isLoaded()) {
 					return true;
 				}
 				if (!initialized) {
@@ -352,7 +381,7 @@ public class Config {
 			}
 
 			public boolean isBlockConnectionDisallowed(Block block) {
-				if (!COMMON.specification.isLoaded()) {
+				if (!SERVER.specification.isLoaded()) {
 					return true;
 				}
 				if (!initialized) {
@@ -387,7 +416,7 @@ public class Config {
 			}
 
 			public boolean isItemDisallowed(Item item) {
-				if (!COMMON.specification.isLoaded()) {
+				if (!SERVER.specification.isLoaded()) {
 					return true;
 				}
 
@@ -414,6 +443,58 @@ public class Config {
 				}
 			}
 		}
+
+		public static class MaxUgradesPerStorageConfig implements IUpgradeCountLimitConfig {
+			private final ForgeConfigSpec.ConfigValue<List<String>> maxUpgradesPerStorageList;
+
+			@Nullable
+			private Map<String, Integer> maxUpgradesPerStorage = null;
+
+			protected MaxUgradesPerStorageConfig(ForgeConfigSpec.Builder builder, Map<String, Integer> defaultUpgradesPerStorage) {
+				maxUpgradesPerStorageList = builder.comment("Maximum number of upgrades of type per backpack in format of \"UpgradeRegistryName[or UpgradeGroup]|MaxNumber\"").define("maxUpgradesPerStorage", convertToList(defaultUpgradesPerStorage));
+			}
+
+			private List<String> convertToList(Map<String, Integer> defaultUpgradesPerStorage) {
+				return defaultUpgradesPerStorage.entrySet().stream().map(e -> e.getKey() + "|" + e.getValue()).collect(Collectors.toList());
+			}
+
+			public void clearCache() {
+				maxUpgradesPerStorage = null;
+			}
+
+			@Override
+			public int getMaxUpgradesPerStorage(String storageType, @org.jetbrains.annotations.Nullable ResourceLocation upgradeRegistryName) {
+				if (maxUpgradesPerStorage == null) {
+					initMaxUpgradesPerStorage();
+				}
+				if (upgradeRegistryName == null) {
+					return Integer.MAX_VALUE;
+				}
+
+				return maxUpgradesPerStorage.getOrDefault(upgradeRegistryName.getPath(), Integer.MAX_VALUE);
+			}
+
+			private void initMaxUpgradesPerStorage() {
+				maxUpgradesPerStorage = new HashMap<>();
+				for (String mapping : maxUpgradesPerStorageList.get()) {
+					String[] upgradeMax = mapping.split("\\|");
+					if (upgradeMax.length < 2) {
+						continue;
+					}
+					String name = upgradeMax[0];
+					int max = Integer.parseInt(upgradeMax[1]);
+					maxUpgradesPerStorage.put(name, max);
+				}
+			}
+
+			@Override
+			public int getMaxUpgradesInGroupPerStorage(String storageType, UpgradeGroup upgradeGroup) {
+				if (maxUpgradesPerStorage == null) {
+					initMaxUpgradesPerStorage();
+				}
+				return maxUpgradesPerStorage.getOrDefault(upgradeGroup.name(), Integer.MAX_VALUE);
+			}
+		}
 	}
 
 	public static class Common extends BaseConfig {
@@ -438,15 +519,15 @@ public class Config {
 	}
 
 	public static void register() {
-		CLIENT = register(Common::new, ModConfig.Type.CLIENT);
-		COMMON = register(Server::new, ModConfig.Type.SERVER);
+		COMMON = register(Common::new, ModConfig.Type.CLIENT);
+		SERVER = register(Server::new, ModConfig.Type.SERVER);
 
 		for (Map.Entry<ModConfig.Type, BaseConfig> pair : CONFIGS.entrySet()) {
-			ModLoadingContext.registerConfig(SophisticatedBackpacks.ID, pair.getKey(), pair.getValue().specification);
+			ModLoadingContext.registerConfig(SophisticatedBackpacks.MOD_ID, pair.getKey(), pair.getValue().specification);
 		}
 
-		ModConfigEvents.loading(SophisticatedBackpacks.ID).register(Config::onConfigLoad);
-		ModConfigEvents.reloading(SophisticatedBackpacks.ID).register(Config::onConfigReload);
+		ModConfigEvents.loading(SophisticatedBackpacks.MOD_ID).register(Config::onConfigLoad);
+		ModConfigEvents.reloading(SophisticatedBackpacks.MOD_ID).register(Config::onConfigReload);
 	}
 
 	public static void onConfigLoad(ModConfig modConfig) {

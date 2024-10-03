@@ -33,10 +33,10 @@ public class SmithingBackpackUpgradeRecipe extends UpgradeRecipe implements IWra
 	}
 
 	@Override
-	public ItemStack assemble(Container inventory) {
+	public ItemStack assemble(Container inv) {
 		ItemStack upgradedBackpack = result.copy();
 		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
-			getBackpack(inventory).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
+			getBackpack(inv).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
 			BackpackWrapperLookup.get(upgradedBackpack)
 					.ifPresent(wrapper -> {
 						BackpackItem backpackItem = ((BackpackItem) upgradedBackpack.getItem());
