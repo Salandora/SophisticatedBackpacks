@@ -1,28 +1,19 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.mkb;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.Screen;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
 import committee.nova.mkb.api.IKeyBinding;
 import committee.nova.mkb.keybinding.KeyConflictContext;
 import committee.nova.mkb.keybinding.KeyModifier;
 
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.screens.Screen;
-import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
-
 import static com.mojang.blaze3d.platform.InputConstants.KEY_X;
 import static com.mojang.blaze3d.platform.InputConstants.KEY_Z;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.BACKPACK_OPEN_KEYBIND;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.BACKPACK_TOGGLE_UPGRADE_1;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.BACKPACK_TOGGLE_UPGRADE_2;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.INVENTORY_INTERACTION_KEYBIND;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.SORT_KEYBIND;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.TOOL_SWAP_KEYBIND;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.UPGRADE_SLOT_TOGGLE_KEYBINDS;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.sendBackpackOpenOrCloseMessage;
-import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.tryCallSort;
+import static net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler.*;
 
 public class ModernKeyBindingCompat implements ICompat {
 	@Override

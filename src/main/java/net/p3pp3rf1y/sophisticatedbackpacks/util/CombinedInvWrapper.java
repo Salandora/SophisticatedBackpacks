@@ -1,10 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
-import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
+import net.minecraft.world.item.ItemStack;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedSlottedStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
-import net.minecraft.world.item.ItemStack;
+import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
 
 import java.util.List;
 import java.util.Optional;

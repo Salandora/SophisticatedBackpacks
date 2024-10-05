@@ -2,7 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.registry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-
 import net.minecraft.util.GsonHelper;
 
 import java.util.HashSet;

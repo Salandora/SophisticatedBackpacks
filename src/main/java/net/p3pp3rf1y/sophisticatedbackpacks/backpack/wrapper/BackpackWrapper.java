@@ -1,12 +1,5 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
-import team.reborn.energy.api.EnergyStorage;
-
-import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
@@ -20,11 +13,18 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import team.reborn.energy.api.EnergyStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEnergyStorageUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IFluidHandlerWrapperUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
+import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
@@ -39,22 +39,11 @@ import net.p3pp3rf1y.sophisticatedcore.settings.nosort.NoSortSettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.tank.TankUpgradeItem;
-import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.InventorySorter;
-import net.p3pp3rf1y.sophisticatedcore.util.LootHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
+import net.p3pp3rf1y.sophisticatedcore.util.*;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.IntConsumer;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.IntConsumer;
 
 public class BackpackWrapper implements IBackpackWrapper {
 	public static final int DEFAULT_CLOTH_COLOR = 13394234;
@@ -106,11 +95,15 @@ public class BackpackWrapper implements IBackpackWrapper {
 	};
 
 	public static IBackpackWrapper fromData(ItemStack stack) {
-		return stack.getAttachedOrCreate(ModItems.BACKPACK_WRAPPER).setBackpackStack(stack);
+		return BackpackWrapperLookup.getOrCreate(stack).setBackpackStack(stack);
+		// TODO: Switch to this if fabric adds ItemStack attachments
+		// return stack.getAttachedOrCreate(ModItems.BACKPACK_WRAPPER).setBackpackStack(stack);
 	}
 
 	public static Optional<IBackpackWrapper> fromExistingData(ItemStack stack) {
-		return Optional.ofNullable(stack.getAttached(ModItems.BACKPACK_WRAPPER)).map(wrapper -> wrapper.setBackpackStack(stack));
+		return Optional.ofNullable(BackpackWrapperLookup.get(stack)).map(wrapper -> wrapper.setBackpackStack(stack));
+		// TODO: Switch to this if fabric adds ItemStack attachments
+		// return Optional.ofNullable(stack.getAttached(ModItems.BACKPACK_WRAPPER)).map(wrapper -> wrapper.setBackpackStack(stack));
 	}
 
 	@Override

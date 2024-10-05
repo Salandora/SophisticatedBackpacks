@@ -1,12 +1,11 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
 import team.reborn.energy.api.EnergyStorage;
-
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class InceptionEnergyStorage implements EnergyStorage {
 	@Nullable

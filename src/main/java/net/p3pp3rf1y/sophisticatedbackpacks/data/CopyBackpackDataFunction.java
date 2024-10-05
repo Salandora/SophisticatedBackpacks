@@ -2,7 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -15,10 +14,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 public class CopyBackpackDataFunction implements LootItemFunction {
 	private static final CopyBackpackDataFunction INSTANCE = new CopyBackpackDataFunction();
 	public static final Codec<CopyBackpackDataFunction> CODEC = MapCodec.unit(INSTANCE).stable().codec();
-
-	protected CopyBackpackDataFunction() {
-		super();
-	}
+	private CopyBackpackDataFunction() {}
 
 	@Override
 	public ItemStack apply(ItemStack stack, LootContext lootContext) {

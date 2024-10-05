@@ -2,9 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.registry.tool;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +15,8 @@ import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BaseRailBlock;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.loader.api.FabricLoader;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 
 import java.util.ArrayList;
@@ -87,7 +86,6 @@ public class Matchers {
 		BLOCK_MATCHER_FACTORIES.add(new TypedMatcherFactory<>("item_handler") {
 			@Override
 			protected Optional<Predicate<BlockContext>> getPredicateFromObject(JsonObject jsonObject) {
-				// TODO: return Optional.of(blockContext -> blockContext.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, blockContext.getPos(), null) != null);
 				return Optional.of(blockContext -> ItemStorage.SIDED.find(blockContext.getLevel(), blockContext.getPos(), null) != null);
 			}
 		});

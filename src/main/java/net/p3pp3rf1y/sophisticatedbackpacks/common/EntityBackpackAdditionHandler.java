@@ -1,8 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import com.google.common.primitives.Ints;
-
-import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
@@ -24,14 +22,11 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.RecordItem;
-import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
@@ -44,14 +39,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WeightedElement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class EntityBackpackAdditionHandler {
 	private static final int MAX_DIFFICULTY = 3;
@@ -220,16 +208,6 @@ public class EntityBackpackAdditionHandler {
 	private static Optional<SpawnEggItem> getSpawnEgg(EntityType<?> entityType) {
 		return Optional.ofNullable(SpawnEggItem.byId(entityType));
 	}
-
-/*	private static int getPrimaryColor(SpawnEggItem egg) {
-		Integer primaryColor = egg.getColor(0);
-		return primaryColor == null ? -1 : primaryColor;
-	}
-
-	private static int getSecondaryColor(SpawnEggItem egg) {
-		Integer secondaryColor = egg.getColor(1);
-		return secondaryColor == null ? -1 : secondaryColor;
-	}*/
 
 	private static final List<ApplicableEffect> APPLICABLE_EFFECTS = List.of(
 			new ApplicableEffect(List.of(MobEffects.DAMAGE_RESISTANCE, MobEffects.REGENERATION), 1),

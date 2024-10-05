@@ -1,11 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-
-import net.fabricmc.loader.api.FabricLoader;
-import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
 
 import java.util.List;
 import java.util.Set;

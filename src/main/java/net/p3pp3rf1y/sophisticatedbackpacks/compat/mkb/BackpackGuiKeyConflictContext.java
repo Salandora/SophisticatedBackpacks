@@ -1,9 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.mkb;
 
-import committee.nova.mkb.api.IKeyConflictContext;
-
 import net.minecraft.client.Minecraft;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
+import committee.nova.mkb.api.IKeyConflictContext;
 
 import static committee.nova.mkb.keybinding.KeyConflictContext.GUI;
 

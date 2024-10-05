@@ -1,8 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 
 import java.util.List;
 

@@ -23,7 +23,6 @@ public class SmithingBackpackUpgradeRecipeBuilder extends SmithingTransformRecip
 	public void save(RecipeOutput recipeOutput, ResourceLocation id) {
 		HoldingRecipeOutput holdingRecipeOutput = new HoldingRecipeOutput(recipeOutput.advancement());
 		super.save(holdingRecipeOutput, id);
-
 		if (!(holdingRecipeOutput.getRecipe() instanceof SmithingTransformRecipe compose)) {
 			return;
 		}

@@ -1,16 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.chipped;
 
-import earth.terrarium.chipped.common.compat.jei.WorkbenchCategory;
-import earth.terrarium.chipped.common.registry.ModBlocks;
-import earth.terrarium.chipped.common.registry.ModRecipeTypes;
-import me.shedaniel.rei.api.common.category.CategoryIdentifier;
-import me.shedaniel.rei.api.common.util.EntryStacks;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.emi.EmiCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBPPlugin;
@@ -23,6 +17,11 @@ import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
 import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.compat.chipped.BlockTransformationUpgradeWrapper;
+import earth.terrarium.chipped.common.compat.jei.WorkbenchCategory;
+import earth.terrarium.chipped.common.registry.ModBlocks;
+import earth.terrarium.chipped.common.registry.ModRecipeTypes;
+import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import me.shedaniel.rei.api.common.util.EntryStacks;
 
 public class ChippedCompat implements ICompat {
 

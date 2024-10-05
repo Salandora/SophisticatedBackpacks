@@ -6,7 +6,7 @@
     "description": "${mod_description}",
     "license": "${mod_license}",
     "icon": "${mod_logo_file}",
-    "authors": "mod_authors",
+    "authors": ["mod_authors"],
     "contact": {
         "homepage": "${mod_display_url}",
         "issues": "${mod_issue_tracker_url}",
@@ -14,6 +14,9 @@
     },
     "environment": "*",
     "entrypoints": {
+        "preLaunch": [
+            "net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacksPreLaunch"
+        ],
         "main": [
             "net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks"
         ],

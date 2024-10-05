@@ -1,21 +1,20 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.trinkets;
 
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.SlotType;
-import dev.emi.trinkets.api.TrinketInventory;
-import dev.emi.trinkets.api.TrinketsApi;
-import dev.emi.trinkets.api.client.TrinketRendererRegistry;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.SlotType;
+import dev.emi.trinkets.api.TrinketInventory;
+import dev.emi.trinkets.api.TrinketsApi;
+import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 
 import java.util.HashSet;
 import java.util.Map;

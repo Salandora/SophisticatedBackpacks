@@ -314,7 +314,7 @@ processResources {
         expand replaceProperties + [project: project]
 
         filter { String line ->
-            line = line.replace("\"mod_authors\"", mod_authors.toString())
+            line = line.replace("[\"mod_authors\"]", mod_authors.toString())
             line
         }
     }

@@ -4,17 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackClosePacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockPickPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockToolSwapPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.EntityToolSwapPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.InventoryInteractionPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestBackpackInventoryContentsPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SyncClientInfoPacket;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.UpgradeTogglePacket;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.*;
 
 public class ModPackets {
 	private ModPackets() {

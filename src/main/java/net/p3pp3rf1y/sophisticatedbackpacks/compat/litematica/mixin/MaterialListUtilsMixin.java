@@ -1,13 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica.mixin;
 
 import com.google.common.collect.Lists;
-import dev.emi.trinkets.api.TrinketsApi;
-import fi.dy.masa.litematica.materials.MaterialListUtils;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-
 import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -15,6 +8,12 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import dev.emi.trinkets.api.TrinketsApi;
+import fi.dy.masa.litematica.materials.MaterialListUtils;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.List;
 

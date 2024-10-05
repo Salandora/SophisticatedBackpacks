@@ -15,10 +15,10 @@ public class ModCompat {
 	}
 
 	public static void register() {
-		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.TRINKETS, null), () -> TrinketsCompat::new);
-		//CompatRegistry.registerCompat(new CompatInfo(CompatModIds.BOTANIA, null), () -> BotaniaCompat::new);
-		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.CHIPPED, null), () -> ChippedCompat::new);
-		CompatRegistry.registerCompat(new CompatInfo(LITEMATICA, null), () -> LitematicaCompat::new);
-		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.MKB, null), () -> ModernKeyBindingCompat::new);
+		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.TRINKETS, null), TrinketsCompat::new);
+		//CompatRegistry.registerCompat(new CompatInfo(CompatModIds.BOTANIA, null), BotaniaCompat::new);
+		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.CHIPPED, null), ChippedCompat::new);
+		CompatRegistry.registerCompat(new CompatInfo(LITEMATICA, null), LitematicaCompat::new);
+		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.MKB, null), ModernKeyBindingCompat::new);
 	}
 }

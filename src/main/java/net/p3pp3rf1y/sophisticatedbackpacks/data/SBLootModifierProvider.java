@@ -2,13 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
-import io.github.fabricators_of_create.porting_lib.loot.GlobalLootModifierProvider;
-import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
-import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
-import io.github.fabricators_of_create.porting_lib.loot.LootTableIdCondition;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -19,9 +12,15 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import io.github.fabricators_of_create.porting_lib.loot.GlobalLootModifierProvider;
+import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
+import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
+import io.github.fabricators_of_create.porting_lib.loot.LootTableIdCondition;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.LootTableAccessor;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -58,7 +57,6 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 						ResourceLocation.CODEC.fieldOf("loot_table_to_inject_into").forGetter(m -> m.lootTableToInjectInto)
 				)
 		).apply(inst, InjectLootModifier::new));
-
 		private final ResourceLocation lootTable;
 		private final ResourceLocation lootTableToInjectInto;
 		private BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
