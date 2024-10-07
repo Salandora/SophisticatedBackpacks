@@ -40,6 +40,7 @@
         "sophisticatedbackpacks.mixins.json",
         "compat/sophisticatedbackpacks.litematica.mixins.json"
     ],
+    "accessWidener": "sophisticatedbackpacks.accesswidener",
     "depends": {
         "fabricloader": ">=${loader_version}",
         "fabric-api": ">=${fabric_version}",

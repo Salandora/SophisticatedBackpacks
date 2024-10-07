@@ -1,38 +1,14 @@
 <code_scheme name="Salandora code style" version="173">
   <option name="RIGHT_MARGIN" value="160" />
-  <JSON>
-    <option name="OBJECT_WRAPPING" value="1" />
-    <option name="ARRAY_WRAPPING" value="1" />
-  </JSON>
   <JavaCodeStyleSettings>
     <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
-    <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="100" />
-    <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="100" />
-    <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
-      <value />
-    </option>
-    <option name="IMPORT_LAYOUT_TABLE">
-      <value>
-        <package name="" withSubpackages="true" static="false" />
-        <emptyLine />
-        <package name="io.github.fabricators_of_create.porting_lib" withSubpackages="true" static="false" />
-        <package name="net.fabricmc" withSubpackages="true" static="false" />
-        <package name="net.minecraft" withSubpackages="true" static="false" />
-        <package name="net.minecraftforge" withSubpackages="true" static="false" />
-        <package name="net.p3pp3rf1y" withSubpackages="true" static="false" />
-        <emptyLine />
-        <package name="java" withSubpackages="true" static="false" />
-        <package name="javax" withSubpackages="true" static="false" />
-        <package name="org.jetbrains.annotations" withSubpackages="true" static="false" />
-        <package name="org.slf4j" withSubpackages="true" static="false" />
-        <emptyLine />
-        <package name="" withSubpackages="true" static="true" />
-      </value>
-    </option>
   </JavaCodeStyleSettings>
   <JetCodeStyleSettings>
     <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
   </JetCodeStyleSettings>
+  <editorconfig>
+    <option name="ENABLED" value="false" />
+  </editorconfig>
   <codeStyleSettings language="JAVA">
     <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
     <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />

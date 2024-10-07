@@ -5,7 +5,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.AtomicDouble;
-
 import io.github.fabricators_of_create.porting_lib.extensions.extensions.IShearable;
 import io.github.fabricators_of_create.porting_lib.tool.ToolAction;
 import io.github.fabricators_of_create.porting_lib.tool.ToolActions;
@@ -51,24 +50,15 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.AXE_SCRAPE;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.AXE_STRIP;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.AXE_WAX_OFF;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.SHEARS_CARVE;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.SHEARS_HARVEST;
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.SHOVEL_FLATTEN;
+import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.*;
 
 public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpgradeWrapper, ToolSwapperUpgradeItem>
 		implements IBlockClickResponseUpgrade, IAttackEntityResponseUpgrade, IBlockToolSwapUpgrade, IEntityToolSwapUpgrade {
@@ -271,15 +261,21 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 			return true;
 		}
 
-		try(Transaction ctx = Transaction.openOuter()) {
-			backpackInventory.extract(ItemVariant.of(sword), sword.getCount(), ctx);
-			long inserted = backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), ctx);
-			if (inserted == mainHandItem.getCount()) {
-				player.setItemInHand(InteractionHand.MAIN_HAND, sword);
+		ItemStack swordCopy = sword.copy();
+		swordCopy.setCount(1);
+		InventoryHelper.extractFromInventory(swordCopy, backpackInventory, null);
+		if (StorageUtil.simulateInsert(backpackInventory, ItemVariant.of(mainHandItem), mainHandItem.getCount(), null) == mainHandItem.getCount()) {
+			player.setItemInHand(InteractionHand.MAIN_HAND, swordCopy);
+			try (Transaction ctx = Transaction.openOuter()) {
+				backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), ctx);
 				ctx.commit();
-				return true;
 			}
-
+			return true;
+		} else {
+			try (Transaction ctx = Transaction.openOuter()) {
+				backpackInventory.insert(ItemVariant.of(swordCopy), swordCopy.getCount(), ctx);
+				ctx.commit();
+			}
 			return false;
 		}
 	}
