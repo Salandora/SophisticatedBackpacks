@@ -567,7 +567,7 @@ modrinth {
         optional.project "emi"
         optional.project "rei"
         optional.project "trinkets"
-        optional.project "crafting-tweaks-fabric"
+        optional.project "crafting-tweaks"
         optional.project "modernkeybinding"
     }
     changelog = provider {
