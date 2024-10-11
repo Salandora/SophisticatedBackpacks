@@ -2,29 +2,30 @@ package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.anvil;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.ResultSlot;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.AnvilMenuAccessor;
+import net.p3pp3rf1y.sophisticatedcore.common.gui.SlotSuppliedHandler;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerBase;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
+
+import javax.annotation.Nullable;
 
 public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrapper, AnvilUpgradeContainer> {
 	private static final String DATA_SHIFT_CLICK_INTO_STORAGE = "shiftClickIntoStorage";
 	private final Slot resultSlot;
 
 	private PersistableAnvilMenu anvilMenuDelegate;
-	private Runnable slotsChangeListener = () -> {};
+	private Runnable nameChangeListener = () -> {};
 	private boolean processingOnTakeLogic = false;
 	public AnvilUpgradeContainer(Player player, int upgradeContainerId, AnvilUpgradeWrapper upgradeWrapper, UpgradeContainerType<AnvilUpgradeWrapper, AnvilUpgradeContainer> type) {
 		super(player, upgradeContainerId, upgradeWrapper, type);
-
-		anvilMenuDelegate = new PersistableAnvilMenu(new Inventory(player), upgradeWrapper);
+		anvilMenuDelegate = new PersistableAnvilMenu(new Inventory(player));
 
 		slots.add(anvilMenuDelegate.getSlot(0));
 		slots.add(anvilMenuDelegate.getSlot(1));
@@ -32,8 +33,8 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		slots.add(resultSlot);
 	}
 
-	public void setSlotsChangeListener(Runnable slotsChangeListener) {
-		this.slotsChangeListener = slotsChangeListener;
+	public void setNameChangeListener(Runnable nameChangeListener) {
+		this.nameChangeListener = nameChangeListener;
 	}
 
 	@Override
@@ -43,6 +44,14 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		} else if (data.contains("itemName")) {
 			setItemName(data.getString("itemName"));
 		}
+	}
+
+	@Override
+	public void setUpgradeWrapper(IUpgradeWrapper updatedUpgradeWrapper) {
+		super.setUpgradeWrapper(updatedUpgradeWrapper);
+		anvilMenuDelegate.setItemName(upgradeWrapper.getItemName());
+		anvilMenuDelegate.createResult();
+		nameChangeListener.run();
 	}
 
 	public boolean shouldShiftClickIntoStorage() {
@@ -78,37 +87,71 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		return anvilMenuDelegate.getCost();
 	}
 
+	@Nullable
 	public String getItemName() {
-		return anvilMenuDelegate.getItemName();
+		return upgradeWrapper.getItemName();
 	}
 
 	private class PersistableAnvilMenu extends AnvilMenu {
 
-		private final AnvilUpgradeWrapper wrapper;
-		private boolean initializing = true;
-		public PersistableAnvilMenu(Inventory playerInventory, AnvilUpgradeWrapper wrapper) {
+		public PersistableAnvilMenu(Inventory playerInventory) {
 			super(0, playerInventory, ContainerLevelAccess.create(playerInventory.player.level(), playerInventory.player.blockPosition()));
-			this.wrapper = wrapper;
-			inputSlots.setItem(0, wrapper.getInventory().getStackInSlot(0));
-			inputSlots.setItem(1, wrapper.getInventory().getStackInSlot(1));
-
-			super.setItemName(wrapper.getItemName());
-			initializing = false;
+			super.setItemName(upgradeWrapper.getItemName());
 		}
 
-		public String getItemName() {
-			return ((AnvilMenuAccessor) this).itemName();
+		@Override
+		protected void createInputSlots(ItemCombinerMenuSlotDefinition itemCombinerMenuSlotDefinition) {
+			for(final ItemCombinerMenuSlotDefinition.SlotDefinition slotDefinition : itemCombinerMenuSlotDefinition.getSlots()) {
+				this.addSlot(new SlotSuppliedHandler(upgradeWrapper::getInventory, slotDefinition.slotIndex(), 0, 0) {
+					@Override
+					public void setChanged() {
+						super.setChanged();
+						slotsChanged(inputSlots);
+						if (slotDefinition.slotIndex() == 0) {
+							if (upgradeWrapper.getItemName().isEmpty() != getItem().isEmpty()) {
+								String newItemName = getItem().isEmpty() ? "" : getItem().getHoverName().getString();
+								upgradeWrapper.setItemName(newItemName);
+								setItemName(newItemName);
+								nameChangeListener.run();
+							}
+							if (getItem().isEmpty()) {
+								setItemName("");
+								upgradeWrapper.setItemName("");
+							}
+						}
+					}
+
+					@Override
+					public boolean mayPlace(ItemStack p_267156_) {
+						return slotDefinition.mayPlace().test(p_267156_);
+					}
+				});
+			}
+		}
+
+		@Override
+		protected SimpleContainer createContainer(int p_267204_) {
+			return new SimpleContainer(p_267204_) {
+				public void setChanged() {
+					super.setChanged();
+					slotsChanged(this);
+				}
+
+				@Override
+				public ItemStack getItem(int pIndex) {
+					return upgradeWrapper.getInventory().getStackInSlot(pIndex);
+				}
+
+				@Override
+				public void setItem(int pIndex, ItemStack pStack) {
+					upgradeWrapper.getInventory().setStackInSlot(pIndex, pStack);
+				}
+			};
 		}
 
 		@Override
 		public void slotsChanged(Container pInventory) {
-			super.slotsChanged(pInventory);
-			if (initializing) {
-				return;
-			}
-			wrapper.getInventory().setStackInSlot(0, inputSlots.getItem(0));
-			wrapper.getInventory().setStackInSlot(1, inputSlots.getItem(1));
-			slotsChangeListener.run();
+			createResult();
 		}
 
 		@Override

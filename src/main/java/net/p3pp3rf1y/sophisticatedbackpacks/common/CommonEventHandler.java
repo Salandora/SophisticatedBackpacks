@@ -110,12 +110,10 @@ public class CommonEventHandler {
 		if (!isPointingAtBody || !isPointingAtBack) {
 			return InteractionResult.PASS;
 		}
-
 		if (targetPlayer.level().isClientSide) {
 			SBPPacketHandler.sendToServer(new AnotherPlayerBackpackOpenMessage(targetPlayer.getId()));
 			return InteractionResult.SUCCESS;
 		}
-
 		return InteractionResult.PASS;
 	}
 
@@ -197,7 +195,6 @@ public class CommonEventHandler {
 					}
 					return false;
 				}).orElse(false));
-
 		return InteractionResult.PASS;
 	}
 
@@ -205,7 +202,6 @@ public class CommonEventHandler {
 		if (level.isClientSide) {
 			return InteractionResult.PASS;
 		}
-
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
 				.map(wrapper -> {
 					for (IAttackEntityResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IAttackEntityResponseUpgrade.class)) {
@@ -215,14 +211,13 @@ public class CommonEventHandler {
 					}
 					return false;
 				}).orElse(false));
-
 		return InteractionResult.PASS;
 	}
 
 	private void onLivingSpecialSpawn(MobSpawnEvents.FinalizeSpawn event) {
 		Entity entity = event.getEntity();
 		if (entity instanceof Monster monster && monster.getItemBySlot(EquipmentSlot.CHEST).isEmpty()) {
-			EntityBackpackAdditionHandler.addBackpack(monster, event.getLevel(), event.getDifficulty().getEffectiveDifficulty());
+			EntityBackpackAdditionHandler.addBackpack(monster, event.getLevel(), event.getDifficulty());
 		}
 	}
 
@@ -238,9 +233,8 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 
-		Level world = player.getCommandSenderWorld();
-
 		AtomicReference<ItemStack> remainingStack = new AtomicReference<>(stack.copy());
+		Level world = player.getCommandSenderWorld();
 		try(Transaction ctx = Transaction.openOuter()) {
 			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
 					.map(wrapper -> {
@@ -255,7 +249,6 @@ public class CommonEventHandler {
 				return InteractionResult.SUCCESS;
 			}
 		}
-
 		return InteractionResult.PASS;
 	}
 }

@@ -31,7 +31,12 @@ public class TrinketsCompat implements ICompat {
 		return TrinketsApi.getTrinketComponent(player).map(comp -> {
 			String[] identifiers = identifier.split("/");
 			if (identifiers.length == 2) {
-				return getFromHandler.apply(comp.getInventory().get(identifiers[0]).get(identifiers[1]));
+				if (comp.getInventory().containsKey(identifiers[0])) {
+					Map<String, TrinketInventory> group = comp.getInventory().get(identifiers[0]);
+					if (group.containsKey(identifiers[1])) {
+						return getFromHandler.apply(group.get(identifiers[1]));
+					}
+				}
 			}
 			return defaultValue;
 		}).orElse(defaultValue);
@@ -88,7 +93,7 @@ public class TrinketsCompat implements ICompat {
 
 						for (int i = 0; i < trinketInventory.getContainerSize(); i++) {
 							SlotReference ref = new SlotReference(trinketInventory, i);
-							if (TrinketsApi.evaluatePredicateSet(slotType.getTooltipPredicates(), BACKPACK, ref, player)) {
+							if (TrinketsApi.evaluatePredicateSet(slotType.getValidatorPredicates(), BACKPACK, ref, player)) {
 								backpackTrinketIdentifiers.add(group.getKey() + "/" + inventory.getKey());
 							}
 						}

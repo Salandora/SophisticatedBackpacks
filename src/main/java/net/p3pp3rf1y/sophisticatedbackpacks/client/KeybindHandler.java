@@ -1,11 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import committee.nova.mkb.api.IKeyBinding;
-import committee.nova.mkb.api.IKeyConflictContext;
-import committee.nova.mkb.keybinding.KeyConflictContext;
-import committee.nova.mkb.keybinding.KeyModifier;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
@@ -21,7 +18,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.phys.BlockHitResult;
@@ -40,13 +36,10 @@ import net.p3pp3rf1y.sophisticatedbackpacks.network.InventoryInteractionMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.UpgradeToggleMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
-import net.p3pp3rf1y.sophisticatedcore.event.client.ClientRawInputEvent;
 import net.p3pp3rf1y.sophisticatedcore.mixin.client.accessor.AbstractContainerScreenAccessor;
 
 import java.util.Map;
 import java.util.Optional;
-
-import static committee.nova.mkb.keybinding.KeyConflictContext.GUI;
 
 public class KeybindHandler {
 	private KeybindHandler() {}
@@ -59,23 +52,17 @@ public class KeybindHandler {
 	private static final int MIDDLE_BUTTON = 2;
 	private static final int CHEST_SLOT_INDEX = 38;
 	private static final int OFFHAND_SLOT_INDEX = 40;
-
 	private static final String KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY = "keybind.sophisticatedbackpacks.category";
 	public static final KeyMapping BACKPACK_TOGGLE_UPGRADE_5 = new KeyMapping(SBPTranslationHelper.INSTANCE.translKeybind("toggle_upgrade_5"),
 			InputConstants.Type.KEYSYM.getOrCreate(KEY_UNKNOWN).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY);
-
 	public static final KeyMapping BACKPACK_TOGGLE_UPGRADE_4 = new KeyMapping(SBPTranslationHelper.INSTANCE.translKeybind("toggle_upgrade_4"),
 		    InputConstants.Type.KEYSYM.getOrCreate(KEY_UNKNOWN).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY);
-
 	public static final KeyMapping BACKPACK_TOGGLE_UPGRADE_3 = new KeyMapping(SBPTranslationHelper.INSTANCE.translKeybind("toggle_upgrade_3"),
 		    InputConstants.Type.KEYSYM.getOrCreate(KEY_UNKNOWN).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY);
-
 	public static final KeyMapping BACKPACK_TOGGLE_UPGRADE_2 = new KeyMapping(SBPTranslationHelper.INSTANCE.translKeybind("toggle_upgrade_2"),
 		    InputConstants.Type.KEYSYM.getOrCreate(KEY_X).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY);
-
 	public static final KeyMapping BACKPACK_TOGGLE_UPGRADE_1 = new KeyMapping(SBPTranslationHelper.INSTANCE.translKeybind("toggle_upgrade_1"),
 		    InputConstants.Type.KEYSYM.getOrCreate(KEY_Z).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY);
-
 
 	public static final Map<Integer, KeyMapping> UPGRADE_SLOT_TOGGLE_KEYBINDS = Map.of(
 			0, BACKPACK_TOGGLE_UPGRADE_1,
@@ -94,78 +81,59 @@ public class KeybindHandler {
 			InputConstants.Type.KEYSYM.getOrCreate(KEY_B).getValue(), KEYBIND_SOPHISTICATEDBACKPACKS_CATEGORY); // BackpackKeyConflictContext.INSTANCE
 
 	public static void register() {
-		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-			ScreenKeyboardEvents.allowKeyPress(screen).register(KeybindHandler::handleGuiKeyPress);
-			ScreenMouseEvents.allowMouseClick(screen).register(KeybindHandler::handleGuiMouseKeyPress);
-		});
+		if (!FabricLoader.getInstance().isModLoaded(CompatModIds.MKB)) {
+			ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+				ScreenKeyboardEvents.allowKeyPress(screen).register(KeybindHandler::handleGuiKeyPress);
+				ScreenMouseEvents.allowMouseClick(screen).register(KeybindHandler::handleGuiMouseKeyPress);
+			});
+		}
 
-		ClientRawInputEvent.KEY_PRESSED.register(KeybindHandler::handleKeyInputEvent);
+		ClientTickEvents.END_CLIENT_TICK.register(KeybindHandler::handleKeyInputEvent);
 	}
 
 	public static void registerKeyMappings() {
-		((IKeyBinding)TOOL_SWAP_KEYBIND).setKeyConflictContext(KeyConflictContext.IN_GAME);
-		((IKeyBinding)INVENTORY_INTERACTION_KEYBIND).setKeyConflictContext(KeyConflictContext.IN_GAME);
-		((IKeyBinding)BACKPACK_OPEN_KEYBIND).setKeyConflictContext(BackpackKeyConflictContext.INSTANCE);
-		((IKeyBinding)SORT_KEYBIND).setKeyConflictContext(BackpackGuiKeyConflictContext.INSTANCE);
-
 		KeyBindingHelper.registerKeyBinding(BACKPACK_OPEN_KEYBIND);
 		KeyBindingHelper.registerKeyBinding(INVENTORY_INTERACTION_KEYBIND);
 		KeyBindingHelper.registerKeyBinding(TOOL_SWAP_KEYBIND);
 		KeyBindingHelper.registerKeyBinding(SORT_KEYBIND);
-
-		((IKeyBinding)BACKPACK_TOGGLE_UPGRADE_1).setKeyModifierAndCode(KeyModifier.ALT, InputConstants.Type.KEYSYM.getOrCreate(KEY_Z));
-		((IKeyBinding)BACKPACK_TOGGLE_UPGRADE_2).setKeyModifierAndCode(KeyModifier.ALT, InputConstants.Type.KEYSYM.getOrCreate(KEY_Z));
-
-		UPGRADE_SLOT_TOGGLE_KEYBINDS.forEach((slot, keybind) -> {
-			((IKeyBinding)keybind).setKeyConflictContext(KeyConflictContext.UNIVERSAL);
-			KeyBindingHelper.registerKeyBinding(keybind);
-		});
+		UPGRADE_SLOT_TOGGLE_KEYBINDS.forEach((slot, keybind) -> KeyBindingHelper.registerKeyBinding(keybind));
 	}
 
 	public static boolean handleGuiKeyPress(Screen screen, int key, int scancode, int modifiers) {
-		InputConstants.Key input = InputConstants.getKey(key, scancode);
-		if (((IKeyBinding) SORT_KEYBIND).isActiveAndMatches(input) && tryCallSort(screen) || ((IKeyBinding) BACKPACK_OPEN_KEYBIND).isActiveAndMatches(input) && sendBackpackOpenOrCloseMessage()) {
+		if (SORT_KEYBIND.matches(key, scancode) && tryCallSort(screen)) {
+			return false;
+		} else if (BACKPACK_OPEN_KEYBIND.matches(key, scancode) && sendBackpackOpenOrCloseMessage()) {
 			return false;
 		}
 		return true;
 	}
 
 	public static boolean handleGuiMouseKeyPress(Screen screen, double mouseX, double mouseY, int button) {
-		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(button);
-		if (((IKeyBinding)SORT_KEYBIND).isActiveAndMatches(input) && tryCallSort(screen) || ((IKeyBinding)BACKPACK_OPEN_KEYBIND).isActiveAndMatches(input) && sendBackpackOpenOrCloseMessage()) {
+		if (SORT_KEYBIND.matchesMouse(button) && tryCallSort(screen)) {
+			return false;
+		} else if (BACKPACK_OPEN_KEYBIND.matchesMouse(button) && sendBackpackOpenOrCloseMessage()) {
 			return false;
 		}
-
         return true;
 	}
 
-	public static InteractionResult handleKeyInputEvent(Minecraft minecraft, int key, int scancode, int action, int mods) {
+	private static void handleKeyInputEvent(Minecraft minecraft) {
 		if (BACKPACK_OPEN_KEYBIND.consumeClick()) {
 			sendBackpackOpenOrCloseMessage();
-			return InteractionResult.SUCCESS;
 		} else if (INVENTORY_INTERACTION_KEYBIND.consumeClick()) {
 			sendInteractWithInventoryMessage();
-			return InteractionResult.SUCCESS;
 		} else if (TOOL_SWAP_KEYBIND.consumeClick()) {
 			sendToolSwapMessage();
-			return InteractionResult.SUCCESS;
 		} else {
-			boolean success = false;
 			for (Map.Entry<Integer, KeyMapping> slotKeybind : UPGRADE_SLOT_TOGGLE_KEYBINDS.entrySet()) {
 				if (slotKeybind.getValue().consumeClick()) {
 					SBPPacketHandler.sendToServer(new UpgradeToggleMessage(slotKeybind.getKey()));
-					success = true;
 				}
 			}
-			if (success) {
-				return InteractionResult.SUCCESS;
-			}
 		}
-
-		return InteractionResult.PASS;
 	}
 
-	private static boolean tryCallSort(Screen gui) {
+	public static boolean tryCallSort(Screen gui) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player != null && mc.player.containerMenu instanceof BackpackContainer container && gui instanceof BackpackScreen screen) {
 			MouseHandler mh = mc.mouseHandler;
@@ -217,8 +185,8 @@ public class KeybindHandler {
 		SBPPacketHandler.sendToServer(new InventoryInteractionMessage(pos, blockraytraceresult.getDirection()));
 	}
 
-	private static boolean sendBackpackOpenOrCloseMessage() {
-		if (!GUI.isActive()) {
+	public static boolean sendBackpackOpenOrCloseMessage() {
+		if (Minecraft.getInstance().screen == null) {
 			SBPPacketHandler.sendToServer(new BackpackOpenMessage());
 			return false;
 		}
@@ -261,33 +229,5 @@ public class KeybindHandler {
 		}
 
 		return Optional.empty();
-	}
-
-	private static class BackpackKeyConflictContext implements IKeyConflictContext {
-		public static final BackpackKeyConflictContext INSTANCE = new BackpackKeyConflictContext();
-
-		@Override
-		public boolean isActive() {
-			return !GUI.isActive() || Minecraft.getInstance().screen instanceof AbstractContainerScreen<?>;
-		}
-
-		@Override
-		public boolean conflicts(IKeyConflictContext other) {
-			return this == other;
-		}
-	}
-
-	private static class BackpackGuiKeyConflictContext implements IKeyConflictContext {
-		public static final BackpackGuiKeyConflictContext INSTANCE = new BackpackGuiKeyConflictContext();
-
-		@Override
-		public boolean isActive() {
-			return GUI.isActive() && Minecraft.getInstance().screen instanceof BackpackScreen;
-		}
-
-		@Override
-		public boolean conflicts(IKeyConflictContext other) {
-			return this == other;
-		}
 	}
 }

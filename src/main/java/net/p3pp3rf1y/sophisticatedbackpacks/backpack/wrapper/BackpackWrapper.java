@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +34,7 @@ import net.p3pp3rf1y.sophisticatedcore.settings.nosort.NoSortSettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.tank.TankUpgradeItem;
+import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.InventorySorter;
 import net.p3pp3rf1y.sophisticatedcore.util.LootHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
@@ -63,8 +65,10 @@ public class BackpackWrapper implements IBackpackWrapper {
 	private static final String COLUMNS_TAKEN_TAG = "columnsTaken";
 
 	private final ItemStack backpack;
-	private Runnable backpackSaveHandler = () -> {};
-	private Runnable inventorySlotChangeHandler = () -> {};
+	private Runnable backpackSaveHandler = () -> {
+	};
+	private Runnable inventorySlotChangeHandler = () -> {
+	};
 
 	@Nullable
 	private InventoryHandler handler = null;
@@ -85,10 +89,13 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	private final BackpackRenderInfo renderInfo;
 
-	private IntConsumer onSlotsChange = diff -> {};
+	private IntConsumer onSlotsChange = diff -> {
+	};
 
-	private Runnable onInventoryHandlerRefresh = () -> {};
-	private Runnable upgradeCachesInvalidatedHandler = () -> {};
+	private Runnable onInventoryHandlerRefresh = () -> {
+	};
+	private Runnable upgradeCachesInvalidatedHandler = () -> {
+	};
 
 	public BackpackWrapper(ItemStack backpack) {
 		this.backpack = backpack;
@@ -239,7 +246,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 					@Override
 					public boolean isItemValid(int slot, ItemVariant resource, int count) {
 						//noinspection ConstantConditions - by this time the upgrade has registryName, so it can't be null
-						return super.isItemValid(slot, resource, count) && (SophisticatedBackpacks.ID.equals(BuiltInRegistries.ITEM.getKey(resource.getItem()).getNamespace()) || resource.toStack(count).is(ModItems.BACKPACK_UPGRADE_TAG));
+						return super.isItemValid(slot, resource, count) && (SophisticatedBackpacks.MOD_ID.equals(BuiltInRegistries.ITEM.getKey(resource.getItem()).getNamespace()) || resource.toStack(count).is(ModItems.BACKPACK_UPGRADE_TAG));
 					}
 				};
 			} else {
@@ -364,6 +371,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 			case COUNT -> InventorySorter.BY_COUNT;
 			case TAGS -> InventorySorter.BY_TAGS;
 			case NAME -> InventorySorter.BY_NAME;
+			case MOD -> InventorySorter.BY_MOD;
 		};
 	}
 
@@ -380,13 +388,13 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	private void cloneSubbackpacks(IStorageWrapper wrapperCloned) {
 		InventoryHandler inventoryHandler = wrapperCloned.getInventoryHandler();
-		for (int slot = 0; slot < inventoryHandler.getSlotCount(); slot++) {
-			ItemStack stack = inventoryHandler.getStackInSlot(slot);
+		InventoryHelper.iterate(inventoryHandler, (slot, stack) -> {
 			if (!(stack.getItem() instanceof BackpackItem)) {
 				return;
 			}
-			inventoryHandler.setStackInSlot(slot, BackpackWrapperLookup.get(stack).map(this::cloneBackpack).orElse(ItemStack.EMPTY));
-		}
+			inventoryHandler.setStackInSlot(slot,
+					BackpackWrapperLookup.get(stack).map(this::cloneBackpack).orElse(ItemStack.EMPTY));
+		});
 	}
 
 	private ItemStack cloneBackpack(IBackpackWrapper originalWrapper) {
@@ -472,7 +480,8 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void unregisterOnSlotsChangeListener() {
-		onSlotsChange = diff -> {};
+		onSlotsChange = diff -> {
+		};
 	}
 
 	@Override
@@ -527,11 +536,22 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void unregisterOnInventoryHandlerRefreshListener() {
-		onInventoryHandlerRefresh = () -> {};
+		onInventoryHandlerRefresh = () -> {
+		};
 	}
 
 	@Override
 	public ItemStack getWrappedStorageStack() {
 		return getBackpack();
+	}
+
+	@Override
+	public String getStorageType() {
+		return "backpack";
+	}
+
+	@Override
+	public Component getDisplayName() {
+		return getBackpack().getHoverName();
 	}
 }

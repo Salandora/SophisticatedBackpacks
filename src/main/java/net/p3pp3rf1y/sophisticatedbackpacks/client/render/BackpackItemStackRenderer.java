@@ -33,17 +33,14 @@ public class BackpackItemStackRenderer implements BuiltinItemRendererRegistry.Dy
 			model.getTransforms().getTransform(mode).apply(leftHand, poseStack);
 		}
 		poseStack.translate(-0.5D, -0.5D, -0.5D);
-
 		RenderType rendertype = ItemBlockRenderTypes.getRenderType(stack, true);
 		VertexConsumer ivertexbuilder = ItemRenderer.getFoilBufferDirect(vertexConsumers, rendertype, true, stack.hasFoil());
 		((ItemRendererAccessor) itemRenderer).callRenderModelLists(model, stack, light, overlay, poseStack, ivertexbuilder);
 		BackpackWrapperLookup.get(stack).flatMap(backpackWrapper -> backpackWrapper.getRenderInfo().getItemDisplayRenderInfo().getDisplayItem()).ifPresent(displayItem -> {
-			poseStack.pushPose();
 			poseStack.translate(0.5, 0.6, 0.25);
 			poseStack.scale(0.5f, 0.5f, 0.5f);
 			poseStack.mulPose(Axis.ZP.rotationDegrees(displayItem.getRotation()));
 			itemRenderer.renderStatic(displayItem.getItem(), ItemDisplayContext.FIXED, light, overlay, poseStack, vertexConsumers, minecraft.level, 0);
-			poseStack.popPose();
 		});
 	}
 }

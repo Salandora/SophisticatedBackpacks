@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
 
 public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 	private CombinedInvWrapper<ITrackedContentsItemHandler> combinedInventories;
@@ -68,6 +69,7 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		return combinedInventories.getSlot(slot);
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int slot) {
 		return combinedInventories.getStackInSlot(slot);

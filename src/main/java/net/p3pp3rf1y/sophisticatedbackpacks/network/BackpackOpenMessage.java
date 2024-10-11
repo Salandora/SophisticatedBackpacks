@@ -73,17 +73,21 @@ public class BackpackOpenMessage extends SimplePacketBase {
 				BackpackContext backpackContext = contextAwareContainer.getBackpackContext();
 				openBackpack(player, backpackContext);
 			} else {
-				PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier1, slot) -> {
-					BackpackContext.Item backpackContext = new BackpackContext.Item(inventoryName, identifier1, slot);
-					player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext, backpack.getHoverName()));
-					return true;
-				});
+				findAndOpenFirstBackpack(player);
 			}
 		});
 		return true;
 	}
 
+	private static void findAndOpenFirstBackpack(ServerPlayer player) {
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier, slot) -> {
+			BackpackContext.Item backpackContext = new BackpackContext.Item(inventoryName, identifier, slot);
+			player.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext, backpack.getHoverName()));
+			return true;
+		});
+	}
+
 	private static void openBackpack(ServerPlayer player, BackpackContext backpackContext) {
-		player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext, backpackContext.getDisplayName(player)));
+		player.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext, backpackContext.getDisplayName(player)));
 	}
 }

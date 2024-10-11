@@ -118,8 +118,8 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public float getExplosionResistance(BlockState state, BlockGetter level, BlockPos pos, Explosion explosion) {
-		if (hasEverlastingUpgrade(level, pos)) {
+	public float getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
+		if (hasEverlastingUpgrade(world, pos)) {
 			return BEDROCK_RESISTANCE;
 		}
 		return super.getExplosionResistance();
@@ -162,7 +162,8 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 		}
 
 		BackpackContext.Block backpackContext = new BackpackContext.Block(pos);
-		player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackContainer(w, pl, bpc), backpackContext, getBackpackDisplayName(world, pos)));
+		player.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext,
+				getBackpackDisplayName(world, pos)));
 		return InteractionResult.SUCCESS;
 	}
 
@@ -201,7 +202,8 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 	private static void stopBackpackSounds(ItemStack backpack, Level world, BlockPos pos) {
 		BackpackWrapperLookup.get(backpack).flatMap(IStorageWrapper::getContentsUuid).ifPresent(uuid ->
-				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid));
+				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid)
+		);
 	}
 
 	public static InteractionResult playerInteract(Player player, Level level, InteractionHand hand, BlockHitResult hitResult) {

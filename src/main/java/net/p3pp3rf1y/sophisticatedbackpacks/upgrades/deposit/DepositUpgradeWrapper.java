@@ -35,8 +35,8 @@ public class DepositUpgradeWrapper extends UpgradeWrapperBase<DepositUpgradeWrap
 		if (filterLogic.getDepositFilterType() == DepositFilterType.INVENTORY) {
 			filterLogic.setInventory(itemHandler);
 		}
-
 		AtomicInteger stacksAdded = new AtomicInteger(0);
+
 		InventoryHelper.transfer(storageWrapper.getInventoryForUpgradeProcessing(),
 				new FilteredItemHandler<>(itemHandler, Collections.singletonList(filterLogic), Collections.emptyList()),
 				s -> stacksAdded.incrementAndGet(), null);

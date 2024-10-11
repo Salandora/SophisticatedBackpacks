@@ -1,0 +1,25 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_4"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "N": {
+      "tag": "c:netherite_blocks"
+    },
+    "S": {
+      "item": "sophisticatedbackpacks:stack_upgrade_tier_3"
+    }
+  },
+  "pattern": [
+    "NNN",
+    "NSN",
+    "NNN"
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:stack_upgrade_tier_4"
+  }
+}

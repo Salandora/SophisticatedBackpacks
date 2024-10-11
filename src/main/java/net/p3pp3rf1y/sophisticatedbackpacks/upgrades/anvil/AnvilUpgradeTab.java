@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.anvil;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -52,43 +51,27 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 				TextureBlitData textureBlitData = getContainer().getSlots().get(0).hasItem() ? EDIT_ITEM_NAME_BACKGROUND : EDIT_ITEM_NAME_BACKGROUND_DISABLED;
 
 				GuiHelper.blit(guiGraphics, getX() - 4, getY() - ((getHeight() - 8) / 2) - 1, textureBlitData, getWidth() + 12, getHeight() + 2);
-
 			}
 		};
+
 		itemNameTextBox.setTextColor(-1);
 		itemNameTextBox.setTextColorUneditable(-1);
 		itemNameTextBox.setBordered(false);
 		itemNameTextBox.setMaxLength(50);
 		itemNameTextBox.setResponder(this::onNameChanged);
-		itemNameTextBox.setValue(getInitialNameValue());
+		itemNameTextBox.setValue(getContainer().getItemName());
 		addHideableChild(itemNameTextBox);
 		itemNameTextBox.setEditable(!upgradeContainer.getSlots().get(0).getItem().isEmpty());
 
-		getContainer().setSlotsChangeListener(() -> {
-			ItemStack firstItem = getContainer().getSlots().get(0).getItem();
-			if (!ItemStack.matches(firstItem, firstItemCache) || itemNameTextBox.getValue().isEmpty() != firstItem.isEmpty()) {
-				firstItemCache = firstItem;
-				itemNameTextBox.setValue(firstItem.isEmpty() ? "" : firstItem.getHoverName().getString());
-				itemNameTextBox.setEditable(!firstItem.isEmpty());
-			}
+		getContainer().setNameChangeListener(() -> {
+			itemNameTextBox.setValue(getContainer().getItemName());
+			itemNameTextBox.setEditable(!getContainer().getSlots().get(0).getItem().isEmpty());
 		});
-	}
-
-	private String getInitialNameValue() {
-		ItemStack firstItem = getContainer().getSlots().get(0).getItem();
-		if (!firstItem.isEmpty() && !getContainer().getItemName().isEmpty()) {
-			return getContainer().getItemName();
-		}
-		return firstItem.isEmpty() ? "" : firstItem.getHoverName().getString();
 	}
 
 	private void onNameChanged(String name) {
 		if (getContainer().isProcessingOnTakeLogic()) {
 			return;
-		}
-		ItemStack firstItem = getContainer().getSlots().get(0).getItem();
-		if (!firstItem.hasCustomHoverName() && name.equals(firstItem.getHoverName().getString())) {
-			name = "";
 		}
 		getContainer().setItemName(name);
 	}

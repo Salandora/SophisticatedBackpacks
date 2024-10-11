@@ -35,6 +35,7 @@ public class RestockUpgradeWrapper extends UpgradeWrapperBase<RestockUpgradeWrap
 	@Override
 	public void onHandlerInteract(SlottedStorage<ItemVariant> itemHandler, Player player) {
 		AtomicInteger stacksAdded = new AtomicInteger(0);
+
 		InventoryHelper.transfer(itemHandler,
 				new FilteredItemHandler<>(storageWrapper.getInventoryForUpgradeProcessing(), Collections.singletonList(filterLogic), Collections.emptyList()),
 				s -> stacksAdded.incrementAndGet(), null);
