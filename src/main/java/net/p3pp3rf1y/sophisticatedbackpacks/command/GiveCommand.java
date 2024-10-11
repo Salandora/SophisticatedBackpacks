@@ -72,7 +72,7 @@ public class GiveCommand {
 			ItemEntity itementity = p.drop(backpack, false);
 			if (itementity != null) {
 				itementity.setNoPickUpDelay();
-				itementity.setThrower(p.getUUID());
+				itementity.setOwner(p.getUUID());
 			}
 		}
 

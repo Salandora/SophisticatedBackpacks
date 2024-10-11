@@ -75,5 +75,20 @@ public interface IBackpackWrapper extends IStorageWrapper {
 		public void copyDataTo(IStorageWrapper otherStorageWrapper) {
 			//noop
 		}
+
+		@Override
+		public void setSlotNumbers(int numberOfInventorySlots, int numberOfUpgradeSlots) {
+			//noop
+		}
+
+		@Override
+		public void setLoot(ResourceLocation lootTableName, float lootPercentage) {
+			//noop
+		}
+
+		@Override
+		public void setContentsUuid(UUID storageUuid) {
+			//noop
+		}
 	}
 }

@@ -31,6 +31,8 @@ import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -90,6 +92,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 			return;
 		}
 		if (entity instanceof Player player) {
+			PlayerInventoryStorage playerInvHandler = PlayerInventoryStorage.of(player);
 			FilterLogic.ObservableFilterItemStackHandler filterHandler = filterLogic.getFilterHandler();
 			for (int slot = 0; slot < filterHandler.getSlotCount(); slot++) {
 				ItemStack filter = filterHandler.getStackInSlot(slot);
@@ -97,7 +100,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 					return;
 				}
 
-				tryRefillFilter(entity, PlayerInventoryStorage.of(player), filter, getTargetSlots().getOrDefault(slot, TargetSlot.ANY));
+				tryRefillFilter(entity, playerInvHandler, filter, getTargetSlots().getOrDefault(slot, TargetSlot.ANY));
 			}
 		}
 		setCooldown(world, COOLDOWN);
@@ -141,28 +144,24 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 			return false;
 		}
 
-		int stashSlot = -1;
-		boolean hasItemInBackpack = false;
+		AtomicInteger stashSlot = new AtomicInteger(-1);
+		AtomicBoolean hasItemInBackpack = new AtomicBoolean(false);
 
 		ITrackedContentsItemHandler inventoryHandler = storageWrapper.getInventoryForUpgradeProcessing();
-		for (int slot = 0; slot < inventoryHandler.getSlotCount(); slot++) {
-			ItemStack stack = inventoryHandler.getStackInSlot(slot);
+		InventoryHelper.iterate(inventoryHandler, (slot, stack) -> {
 			if (ItemStackHelper.canItemStacksStack(stack, filter)) {
-				hasItemInBackpack = true;
-				if (stack.getCount() <= stack.getMaxStackSize()) {
-					stashSlot = slot;
-					break;
-				}
+				hasItemInBackpack.set(true);
+				stashSlot.set(slot);
 			}
-		}
+		}, () -> stashSlot.get() > -1);
 
 		ItemStack mainHandItem = player.getMainHandItem();
 		ItemVariant mainHandResource = ItemVariant.of(mainHandItem);
 
 		ItemVariant filterResource = ItemVariant.of(filter);
-		if (hasItemInBackpack && inventoryHandler.simulateExtract(filterResource, filter.getMaxStackSize(), null) > 0) {
-			if ((inventoryHandler.getStackInSlot(stashSlot).getCount() > filter.getMaxStackSize()	|| !inventoryHandler.isItemValid(stashSlot, mainHandResource))
-					&& inventoryHandler.simulateInsert(mainHandResource, mainHandItem.getCount(), null) > 0) {
+		if (hasItemInBackpack.get() && inventoryHandler.simulateExtract(filterResource, filter.getMaxStackSize(), null) > 0) {
+			if ((inventoryHandler.getStackInSlot(stashSlot.get()).getCount() > filter.getMaxStackSize()	|| !inventoryHandler.isItemValid(stashSlot.get(), mainHandResource))
+					&& !mainHandItem.isEmpty() && inventoryHandler.simulateInsert(mainHandResource, mainHandItem.getCount(), null) == 0) {
 				if (canMoveMainHandToInventory(player)) {
 					try (Transaction ctx = Transaction.openOuter()) {
 						long extracted = inventoryHandler.extract(filterResource, filter.getMaxStackSize(), ctx);
@@ -179,11 +178,12 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 					return false;
 				}
 			} else {
+				// TODO: Same problem as ToolSwapper?
 				try (Transaction ctx = Transaction.openOuter()) {
 					long extracted = inventoryHandler.extract(filterResource, filter.getMaxStackSize(), ctx);
 					if (extracted > 0) {
-						player.setItemInHand(InteractionHand.MAIN_HAND, filterResource.toStack((int) extracted));
 						inventoryHandler.insert(mainHandResource, mainHandItem.getCount(), ctx);
+						player.setItemInHand(InteractionHand.MAIN_HAND, filterResource.toStack((int) extracted));
 						ctx.commit();
 						return true;
 					}

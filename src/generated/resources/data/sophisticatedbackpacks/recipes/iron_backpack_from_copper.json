@@ -1,0 +1,25 @@
+{
+  "type": "sophisticatedbackpacks:backpack_upgrade",
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:iron_backpack"
+    }
+  ],
+  "key": {
+    "B": {
+      "item": "sophisticatedbackpacks:copper_backpack"
+    },
+    "I": {
+      "tag": "c:iron_ingots"
+    }
+  },
+  "pattern": [
+    " I ",
+    "IBI",
+    " I "
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:iron_backpack"
+  }
+}

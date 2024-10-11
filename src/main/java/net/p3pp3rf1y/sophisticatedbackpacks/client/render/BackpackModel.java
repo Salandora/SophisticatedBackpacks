@@ -54,8 +54,8 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 		entityTranslations.put(EntityType.ENDERMAN, new Vec3(0, -0.8, 0));
 	}
 
-	private static final ResourceLocation BACKPACK_ENTITY_TEXTURE = new ResourceLocation(SophisticatedBackpacks.ID, "textures/entity/backpack.png");
-	private static final ResourceLocation TANK_GLASS_TEXTURE = new ResourceLocation(SophisticatedBackpacks.ID, "textures/entity/tank_glass.png");
+	private static final ResourceLocation BACKPACK_ENTITY_TEXTURE = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "textures/entity/backpack.png");
+	private static final ResourceLocation TANK_GLASS_TEXTURE = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "textures/entity/tank_glass.png");
 	public static final float CHILD_Y_OFFSET = 0.3F;
 	public static final float CHILD_Z_OFFSET = 0.1F;
 	public static final float CHILD_SCALE = 0.55F;
@@ -239,25 +239,25 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 		);
 
 		partDefinition.addOrReplaceChild(FABRIC_FRONT_PART, CubeListBuilder.create()
-						.texOffs(0, 55).addBox(-0.75F, 3.0F, 1.0F, 8.0F, 1.0F, 2.0F, true)
+						.texOffs(12, 58).addBox(-0.75F, 3.0F, 1.0F, 8.0F, 1.0F, 2.0F, true)
 				, PartPose.offset(-3.25F, 16.0F, -6.0F)
 		);
 		partDefinition.addOrReplaceChild(FABRIC_RIGHT_PART, CubeListBuilder.create()
 						.texOffs(32, 49).addBox(8.25F, -2.0F, 3.5F, 1.0F, 1.0F, 5.0F, true)
-						.texOffs(8, 45).addBox(8.25F, 3.0F, 3.5F, 2.0F, 1.0F, 5.0F, true)
+						.texOffs(8, 48).addBox(8.25F, 3.0F, 3.5F, 2.0F, 1.0F, 5.0F, true)
 				, PartPose.offset(-3.25F, 16.0F, -6.0F)
 		);
 		partDefinition.addOrReplaceChild(FABRIC_LEFT_PART, CubeListBuilder.create()
 						.texOffs(32, 49).addBox(-2.75F, -2.0F, 3.5F, 1.0F, 1.0F, 5.0F)
-						.texOffs(8, 45).addBox(-3.75F, 3.0F, 3.5F, 2.0F, 1.0F, 5.0F)
+						.texOffs(8, 48).addBox(-3.75F, 3.0F, 3.5F, 2.0F, 1.0F, 5.0F)
 				, PartPose.offset(-3.25F, 16.0F, -6.0F)
 		);
 		partDefinition.addOrReplaceChild(FABRIC_PART, CubeListBuilder.create()
 						.texOffs(54, 0).addBox(1.25F, -4.75F, 5.75F, 1.0F, 1.0F, 1.0F)
 						.texOffs(58, 0).addBox(4.25F, -4.75F, 5.75F, 1.0F, 1.0F, 1.0F)
 						.texOffs(44, 0).addBox(1.25F, -5.75F, 5.75F, 4.0F, 1.0F, 1.0F, true)
-						.texOffs(16, 44).addBox(0.0F, -5.5F, 2.5F, 1.0F, 4.0F, 7.0F)
-						.texOffs(0, 44).addBox(5.5F, -5.5F, 2.5F, 1.0F, 4.0F, 7.0F)
+						.texOffs(16, 47).addBox(0.0F, -5.5F, 2.5F, 1.0F, 4.0F, 7.0F)
+						.texOffs(0, 47).addBox(5.5F, -5.5F, 2.5F, 1.0F, 4.0F, 7.0F)
 				, PartPose.offset(-3.25F, 16.0F, -6.0F)
 		);
 
@@ -310,7 +310,7 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 
 		for (int pixels = 1; pixels < 5; pixels++) {
 			partDefinition.addOrReplaceChild(BATTERY_CHARGE_PART + pixels, CubeListBuilder.create()
-							.texOffs(18, 55).addBox(-2.0F, 21F, -6.01F, pixels, 1.0F, 1.0F)
+							.texOffs(30, 58).addBox(-2.0F, 21F, -6.01F, pixels, 1.0F, 1.0F)
 					, PartPose.ZERO
 			);
 		}
@@ -327,10 +327,11 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 	private static Map<Integer, Item> getBackpackItems() {
 		return new LinkedHashMap<>(Map.of(
 				0, ModItems.BACKPACK,
-				1, ModItems.IRON_BACKPACK,
-				2, ModItems.GOLD_BACKPACK,
-				3, ModItems.DIAMOND_BACKPACK,
-				4, ModItems.NETHERITE_BACKPACK
+				1, ModItems.COPPER_BACKPACK,
+				2, ModItems.IRON_BACKPACK,
+				3, ModItems.GOLD_BACKPACK,
+				4, ModItems.DIAMOND_BACKPACK,
+				5, ModItems.NETHERITE_BACKPACK
 		));
 	}
 
@@ -509,9 +510,13 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 	}
 
 	private static void addBodyClips(PartDefinition partDefinition, Item backpackItem, int yTextureOffset) {
+		addBodyClips(partDefinition, backpackItem, 0, yTextureOffset);
+	}
+
+	private static void addBodyClips(PartDefinition partDefinition, Item backpackItem, int xTextureOffset, int yTextureOffset) {
 		partDefinition.addOrReplaceChild(getTierPartName(backpackItem, BODY_CLIPS_PART), CubeListBuilder.create()
-						.texOffs(22, yTextureOffset).addBox(-3.25F, -9.5F, -3.5F, 1.0F, 2.0F, 1.0F)
-						.texOffs(25, yTextureOffset).addBox(2.25F, -9.5F, -3.5F, 1.0F, 2.0F, 1.0F)
+						.texOffs(22 + xTextureOffset, yTextureOffset).addBox(-3.25F, -9.5F, -3.5F, 1.0F, 2.0F, 1.0F)
+						.texOffs(25 + xTextureOffset, yTextureOffset).addBox(2.25F, -9.5F, -3.5F, 1.0F, 2.0F, 1.0F)
 				, PartPose.offset(0.0F, 24.0F, 0.0F)
 		);
 	}

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.Slot;
@@ -45,12 +46,15 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 			}
 
 			@Override
-			protected void renderBg(PoseStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
-				super.renderBg(matrixStack, minecraft, mouseX, mouseY);
+			protected void renderBg(PoseStack poseStack, Minecraft minecraft, int mouseX, int mouseY) {
+				super.renderBg(poseStack, minecraft, mouseX, mouseY);
+				RenderSystem.setShader(GameRenderer::getPositionTexShader);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderTexture(0, GuiHelper.GUI_CONTROLS);
+
 				TextureBlitData textureBlitData = getContainer().getSlots().get(0).hasItem() ? EDIT_ITEM_NAME_BACKGROUND : EDIT_ITEM_NAME_BACKGROUND_DISABLED;
 
-				GuiHelper.blit(matrixStack, getX() - 4, getY() - ((getHeight() - 8) / 2) - 1, textureBlitData, getWidth() + 12, getHeight() + 2);
-
+				GuiHelper.blit(poseStack, getX() - 4, getY() - ((getHeight() - 8) / 2) - 1, textureBlitData, getWidth() + 12, getHeight() + 2);
 			}
 		};
 		itemNameTextBox.setTextColor(-1);
@@ -74,8 +78,9 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 
 	private String getInitialNameValue() {
 		ItemStack firstItem = getContainer().getSlots().get(0).getItem();
-		if (!firstItem.isEmpty() && !getContainer().getItemName().isEmpty()) {
-			return getContainer().getItemName();
+		String itemName = getContainer().getItemName();
+		if (!firstItem.isEmpty() && itemName != null && !itemName.isEmpty()) {
+			return itemName;
 		}
 		return firstItem.isEmpty() ? "" : firstItem.getHoverName().getString();
 	}
@@ -102,19 +107,19 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 		}
 	}
 
-	private void renderSlotBg(PoseStack matrixStack, Slot slot) {
-		GuiHelper.renderSlotsBackground(matrixStack, slot.x + screen.getGuiLeft() - 1, slot.y + screen.getGuiTop() - 1, 1, 1);
+	private void renderSlotBg(PoseStack poseStack, Slot slot) {
+		GuiHelper.renderSlotsBackground(poseStack, slot.x + screen.getGuiLeft() - 1, slot.y + screen.getGuiTop() - 1, 1, 1);
 	}
 
 	@Override
-	public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
+	public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+		super.renderWidget(poseStack, mouseX, mouseY, partialTicks);
 
 		if (!isOpen) {
 			return;
 		}
 
-		renderCost(matrixStack, x + 3, y + 62);
+		renderCost(poseStack, x + 3, y + 62);
 
 		Slot firstSlot = getContainer().getSlots().get(0);
 		int inputSlotsY = firstSlot.y + screen.getGuiTop();
@@ -123,13 +128,13 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 		Slot resultSlot = getContainer().getSlots().get(2);
 		int resultSlotX = resultSlot.x + screen.getGuiLeft();
 
-		GuiHelper.blit(matrixStack, firstInputSlotX + 18 + (secondInputSlotX - (firstInputSlotX + 18)) / 2 - PLUS_SIGN.getWidth() / 2 - 1, inputSlotsY + 2, PLUS_SIGN);
+		GuiHelper.blit(poseStack, firstInputSlotX + 18 + (secondInputSlotX - (firstInputSlotX + 18)) / 2 - PLUS_SIGN.getWidth() / 2 - 1, inputSlotsY + 2, PLUS_SIGN);
 		int arrowX = secondInputSlotX + 18 + (resultSlotX - (secondInputSlotX + 18)) / 2 - ARROW.getWidth() / 2 - 1;
 		int arrowY = inputSlotsY + 1;
-		GuiHelper.blit(matrixStack, arrowX, arrowY, ARROW);
+		GuiHelper.blit(poseStack, arrowX, arrowY, ARROW);
 
 		if (firstSlot.hasItem() && !resultSlot.hasItem()) {
-			GuiHelper.blit(matrixStack, arrowX, arrowY, RED_CROSS);
+			GuiHelper.blit(poseStack, arrowX, arrowY, RED_CROSS);
 		}
 	}
 
@@ -148,7 +153,7 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 		resultSlot.y = y + 42 - screen.getGuiTop() + 1;
 	}
 
-	protected void renderCost(PoseStack matrixStack, int x, int y) {
+	protected void renderCost(PoseStack poseStack, int x, int y) {
 		RenderSystem.disableBlend();
 		int i = getContainer().getCost();
 		if (i > 0) {
@@ -169,12 +174,12 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 			if (component != null) {
 				int maxWidth = getWidth() - 9;
 				List<FormattedCharSequence> lines = font.split(component, maxWidth);
-				fill(matrixStack, x, y, x + maxWidth, y + lines.size() * 12, 1325400064);
+				fill(poseStack, x, y, x + maxWidth, y + lines.size() * 12, 1325400064);
 
 				int yOffset = 0;
 				for (FormattedCharSequence line : lines) {
 					int width = font.width(line);
-					font.drawShadow(matrixStack, line, x + 2 + (float) (maxWidth - width) / 2, y + 2 + yOffset, color);
+					font.drawShadow(poseStack, line, x + 2 + (float) (maxWidth - width) / 2, y + 2 + yOffset, color);
 					yOffset += 12;
 				}
 			}

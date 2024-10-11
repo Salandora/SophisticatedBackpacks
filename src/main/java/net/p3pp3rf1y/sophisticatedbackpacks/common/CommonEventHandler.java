@@ -35,6 +35,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModLoot;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
@@ -62,6 +63,7 @@ public class CommonEventHandler {
 	public void registerHandlers() {
 		ModBlocks.registerEvents();
 		ModItems.register();
+		ModLoot.register();
 
 		ItemEntityEvents.CAN_PICKUP.register(this::onItemPickup);
 
@@ -96,7 +98,7 @@ public class CommonEventHandler {
 	private final Map<ResourceLocation, Long> nextBackpackCheckTime = new HashMap<>();
 
 	InteractionResult interactWithEntity(Player player, Level world, InteractionHand hand, Entity entity, @Nullable EntityHitResult hitResult) {
-		if (!(entity instanceof Player targetPlayer) || hitResult == null || Boolean.FALSE.equals(Config.COMMON.allowOpeningOtherPlayerBackpacks.get())) {
+		if (!(entity instanceof Player targetPlayer) || hitResult == null || Boolean.FALSE.equals(Config.SERVER.allowOpeningOtherPlayerBackpacks.get())) {
 			return InteractionResult.PASS;
 		}
 
@@ -121,8 +123,8 @@ public class CommonEventHandler {
 
 	private void onWorldTick(ServerLevel level) {
 		ResourceLocation dimensionKey = level.dimension().location();
-		boolean runSlownessLogic = Boolean.TRUE.equals(Config.COMMON.nerfsConfig.tooManyBackpacksSlowness.get());
-		boolean runDedupeLogic = Boolean.FALSE.equals(Config.COMMON.tickDedupeLogicDisabled.get());
+		boolean runSlownessLogic = Boolean.TRUE.equals(Config.SERVER.nerfsConfig.tooManyBackpacksSlowness.get());
+		boolean runDedupeLogic = Boolean.FALSE.equals(Config.SERVER.tickDedupeLogicDisabled.get());
 		if ((!runSlownessLogic && !runDedupeLogic)
 				|| nextBackpackCheckTime.getOrDefault(dimensionKey, 0L) > level.getGameTime()) {
 			return;
@@ -144,9 +146,9 @@ public class CommonEventHandler {
 				return false;
 			});
 			if (runSlownessLogic) {
-				int maxNumberOfBackpacks = Config.COMMON.nerfsConfig.maxNumberOfBackpacks.get();
+				int maxNumberOfBackpacks = Config.SERVER.nerfsConfig.maxNumberOfBackpacks.get();
 				if (numberOfBackpacks.get() > maxNumberOfBackpacks) {
-					int numberOfSlownessLevels = Math.min(10, (int) Math.ceil((numberOfBackpacks.get() - maxNumberOfBackpacks) * Config.COMMON.nerfsConfig.slownessLevelsPerAdditionalBackpack.get()));
+					int numberOfSlownessLevels = Math.min(10, (int) Math.ceil((numberOfBackpacks.get() - maxNumberOfBackpacks) * Config.SERVER.nerfsConfig.slownessLevelsPerAdditionalBackpack.get()));
 					player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, BACKPACK_CHECK_COOLDOWN * 2, numberOfSlownessLevels - 1, false, false));
 				}
 			}
@@ -222,7 +224,7 @@ public class CommonEventHandler {
 	private void onLivingSpecialSpawn(MobSpawnEvents.FinalizeSpawn event) {
 		Entity entity = event.getEntity();
 		if (entity instanceof Monster monster && monster.getItemBySlot(EquipmentSlot.CHEST).isEmpty()) {
-			EntityBackpackAdditionHandler.addBackpack(monster, event.getLevel(), event.getDifficulty().getEffectiveDifficulty());
+			EntityBackpackAdditionHandler.addBackpack(monster, event.getLevel(), event.getDifficulty());
 		}
 	}
 
@@ -246,7 +248,7 @@ public class CommonEventHandler {
 					.map(wrapper -> {
 						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(world, player, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
 						return remainingStack.get().isEmpty();
-					}).orElse(false), Config.COMMON.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
+					}).orElse(false), Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
 			);
 
 			if (remainingStack.get().getCount() != stack.getCount()) {

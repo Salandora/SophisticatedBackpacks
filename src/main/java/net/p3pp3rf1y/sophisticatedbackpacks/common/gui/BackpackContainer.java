@@ -97,7 +97,7 @@ public class BackpackContainer extends StorageContainerMenuBase<IBackpackWrapper
 			return;
 		}
 
-		player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackSettingsContainerMenu(w, pl, backpackContext), backpackContext,
+		player.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackSettingsContainerMenu(w, pl, backpackContext), backpackContext,
 				Component.translatable(SBPTranslationHelper.INSTANCE.translGui("settings.title"))));
 	}
 

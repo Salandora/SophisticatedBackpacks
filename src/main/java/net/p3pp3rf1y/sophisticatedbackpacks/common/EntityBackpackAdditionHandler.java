@@ -7,6 +7,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -15,7 +16,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -58,7 +58,7 @@ public class EntityBackpackAdditionHandler {
 	private EntityBackpackAdditionHandler() {}
 
 	private static final String SPAWNED_WITH_BACKPACK = "spawnedWithBackpack";
-	private static final String SPAWNED_WITH_JUKEBOX_UPGRADE = SophisticatedBackpacks.ID + ":jukebox";
+	private static final String SPAWNED_WITH_JUKEBOX_UPGRADE = SophisticatedBackpacks.MOD_ID + ":jukebox";
 
 	private static final List<WeightedElement<Item>> HELMET_CHANCES = List.of(
 			new WeightedElement<>(1, Items.NETHERITE_HELMET),
@@ -84,6 +84,7 @@ public class EntityBackpackAdditionHandler {
 
 	private static final Map<Item, Float> dropChanceMultiplier = Map.of(
 			ModItems.BACKPACK, 1F,
+			ModItems.COPPER_BACKPACK, 1.25F,
 			ModItems.IRON_BACKPACK, 1.5F,
 			ModItems.GOLD_BACKPACK, 3F,
 			ModItems.DIAMOND_BACKPACK, 4.5F,
@@ -99,6 +100,8 @@ public class EntityBackpackAdditionHandler {
 					HELMET_CHANCES.subList(1, 3), LEGGINGS_CHANCES.subList(1, 3), BOOTS_CHANCES.subList(1, 3))),
 			new WeightedElement<>(125, new BackpackAddition(ModItems.IRON_BACKPACK, 1,
 					HELMET_CHANCES.subList(2, 4), LEGGINGS_CHANCES.subList(2, 4), BOOTS_CHANCES.subList(2, 4))),
+			new WeightedElement<>(250, new BackpackAddition(ModItems.COPPER_BACKPACK, 1,
+					HELMET_CHANCES.subList(2, 4), LEGGINGS_CHANCES.subList(3, 5), BOOTS_CHANCES.subList(3, 5))),
 			new WeightedElement<>(625, new BackpackAddition(ModItems.BACKPACK, 0,
 					HELMET_CHANCES.subList(3, 5), LEGGINGS_CHANCES.subList(3, 5), BOOTS_CHANCES.subList(3, 5)))
 	);
@@ -109,38 +112,38 @@ public class EntityBackpackAdditionHandler {
 			2, BACKPACK_CHANCES.subList(2, 5)
 	);
 
-	static void addBackpack(Monster monster, LevelAccessor level, float localDifficulty) {
+	static void addBackpack(Monster monster, LevelAccessor level, DifficultyInstance difficultyInstance) {
 		RandomSource rnd = level.getRandom();
-		if (!Config.COMMON.entityBackpackAdditions.canWearBackpack(monster.getType())
-				|| rnd.nextInt((int) (1 / Config.COMMON.entityBackpackAdditions.chance.get())) != 0 || (monster instanceof Raider raider && raider.getCurrentRaid() != null)) {
+		if (!Config.SERVER.entityBackpackAdditions.canWearBackpack(monster.getType())
+				|| rnd.nextInt((int) (1 / Config.SERVER.entityBackpackAdditions.chance.get())) != 0 || (monster instanceof Raider raider && raider.getCurrentRaid() != null)) {
 			return;
 		}
 
 		//noinspection UnstableApiUsage
-		int index = Ints.constrainToRange((int) Math.floor(DIFFICULTY_BACKPACK_CHANCES.size() / MAX_LOCAL_DIFFICULTY * localDifficulty - 0.1f), 0, DIFFICULTY_BACKPACK_CHANCES.size());
+		int index = Ints.constrainToRange((int) Math.floor(DIFFICULTY_BACKPACK_CHANCES.size() / MAX_LOCAL_DIFFICULTY * difficultyInstance.getEffectiveDifficulty() - 0.1f), 0, DIFFICULTY_BACKPACK_CHANCES.size());
 
 		RandHelper.getRandomWeightedElement(rnd, DIFFICULTY_BACKPACK_CHANCES.get(index)).ifPresent(backpackAddition -> {
 			ItemStack backpack = new ItemStack(backpackAddition.getBackpackItem());
 			int minDifficulty = backpackAddition.getMinDifficulty();
 			int difficulty = Math.max(minDifficulty, rnd.nextInt(MAX_DIFFICULTY + 1));
-			equipBackpack(monster, backpack, difficulty, Boolean.TRUE.equals(Config.COMMON.entityBackpackAdditions.playJukebox.get()) && rnd.nextInt(4) == 0, level, rnd);
+			equipBackpack(monster, backpack, difficulty, Boolean.TRUE.equals(Config.SERVER.entityBackpackAdditions.playJukebox.get()) && rnd.nextInt(4) == 0, level, rnd);
 			applyPotions(monster, difficulty, minDifficulty, rnd);
 			raiseHealth(monster, minDifficulty);
-			if (Boolean.TRUE.equals(Config.COMMON.entityBackpackAdditions.equipWithArmor.get())) {
-				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getHelmetChances(), EquipmentSlot.HEAD, level);
-				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getLeggingsChances(), EquipmentSlot.LEGS, level);
-				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getBootsChances(), EquipmentSlot.FEET, level);
+			if (Boolean.TRUE.equals(Config.SERVER.entityBackpackAdditions.equipWithArmor.get())) {
+				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getHelmetChances(), EquipmentSlot.HEAD, level, difficultyInstance);
+				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getLeggingsChances(), EquipmentSlot.LEGS, level, difficultyInstance);
+				equipArmorPiece(monster, rnd, minDifficulty, backpackAddition.getBootsChances(), EquipmentSlot.FEET, level, difficultyInstance);
 			}
 			monster.addTag(SPAWNED_WITH_BACKPACK);
 		});
 	}
 
-	private static void equipArmorPiece(Monster monster, RandomSource rnd, int minDifficulty, List<WeightedElement<Item>> armorChances, EquipmentSlot slot, LevelAccessor level) {
+	private static void equipArmorPiece(Monster monster, RandomSource rnd, int minDifficulty, List<WeightedElement<Item>> armorChances, EquipmentSlot slot, LevelAccessor level, DifficultyInstance difficultyInstance) {
 		RandHelper.getRandomWeightedElement(rnd, armorChances).ifPresent(armorPiece -> {
 			if (armorPiece != Items.AIR) {
 				ItemStack armorStack = new ItemStack(armorPiece);
 				if (rnd.nextInt(6 - minDifficulty) == 0) {
-					float additionalDifficulty = level.getCurrentDifficultyAt(monster.blockPosition()).getSpecialMultiplier();
+					float additionalDifficulty = difficultyInstance.getSpecialMultiplier();
 					int enchantmentLevel = (int) (5F + additionalDifficulty * 18F + minDifficulty * 6);
 					EnchantmentHelper.enchantItem(rnd, armorStack, enchantmentLevel, true);
 				}
@@ -184,7 +187,7 @@ public class EntityBackpackAdditionHandler {
 			if (records == null) {
 				musicDiscs = new ArrayList<>();
 			} else {
-				Set<String> blockedDiscs = new HashSet<>(Config.COMMON.entityBackpackAdditions.discBlockList.get());
+				Set<String> blockedDiscs = new HashSet<>(Config.SERVER.entityBackpackAdditions.discBlockList.get());
 				musicDiscs = new ArrayList<>();
 				records.forEach((sound, musicDisc) -> {
 					//noinspection ConstantConditions - by this point the disc has registry name
@@ -199,7 +202,7 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void raiseHealth(Monster monster, int minDifficulty) {
-		if (Boolean.FALSE.equals(Config.COMMON.entityBackpackAdditions.buffHealth.get())) {
+		if (Boolean.FALSE.equals(Config.SERVER.entityBackpackAdditions.buffHealth.get())) {
 			return;
 		}
 		AttributeInstance maxHealth = monster.getAttribute(Attributes.MAX_HEALTH);
@@ -213,8 +216,7 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static Optional<SpawnEggItem> getSpawnEgg(EntityType<?> entityType) {
-		Map<EntityType<? extends Mob>, SpawnEggItem> eggs = SpawnEggItem.BY_ID;
-		return eggs == null ? Optional.empty() : Optional.ofNullable(eggs.get(entityType));
+		return Optional.ofNullable(SpawnEggItem.byId(entityType));
 	}
 
 	private static int getPrimaryColor(SpawnEggItem egg) {
@@ -241,13 +243,13 @@ public class EntityBackpackAdditionHandler {
 			return;
 		}
 
-		if (Boolean.TRUE.equals(Config.COMMON.entityBackpackAdditions.addLoot.get())) {
+		if (Boolean.TRUE.equals(Config.SERVER.entityBackpackAdditions.addLoot.get())) {
 			addLoot(monster, backpackWrapper, difficulty);
 		}
 	}
 
 	private static void applyPotions(Monster monster, int difficulty, int minDifficulty, RandomSource rnd) {
-		if (Boolean.TRUE.equals(Config.COMMON.entityBackpackAdditions.buffWithPotionEffects.get())) {
+		if (Boolean.TRUE.equals(Config.SERVER.entityBackpackAdditions.buffWithPotionEffects.get())) {
 			RandHelper.getNRandomElements(APPLICABLE_EFFECTS, difficulty + 2)
 					.forEach(applicableEffect -> {
 						int amplifier = Math.min(Math.max(minDifficulty, rnd.nextInt(difficulty + 1)), applicableEffect.getMaxAmplifier());
@@ -258,7 +260,7 @@ public class EntityBackpackAdditionHandler {
 
 	private static void addLoot(Monster monster, IBackpackWrapper backpackWrapper, int difficulty) {
 		if (difficulty != 0) {
-			Config.COMMON.entityBackpackAdditions.getLootTableName(monster.getType()).ifPresent(lootTableName -> {
+			Config.SERVER.entityBackpackAdditions.getLootTableName(monster.getType()).ifPresent(lootTableName -> {
 				float lootPercentage = (float) difficulty / MAX_DIFFICULTY;
 				backpackWrapper.setLoot(lootTableName, lootPercentage);
 			});
@@ -269,7 +271,7 @@ public class EntityBackpackAdditionHandler {
 	static boolean handleBackpackDrop(LivingEntity target, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit) {
 		if (target.getTags().contains(SPAWNED_WITH_BACKPACK)) {
 			ItemStack backpack = target.getItemBySlot(EquipmentSlot.CHEST);
-			Config.Server.EntityBackpackAdditionsConfig additionsConfig = Config.COMMON.entityBackpackAdditions;
+			Config.Server.EntityBackpackAdditionsConfig additionsConfig = Config.SERVER.entityBackpackAdditions;
 			if (shouldDropBackpack(source, additionsConfig, target, backpack, lootingLevel)) {
 				ItemEntity backpackEntity = new ItemEntity(target.getLevel(), target.getX(), target.getY(), target.getZ(), backpack);
 				drops.add(backpackEntity);
@@ -309,7 +311,8 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void removeContentsUuid(ItemStack stack) {
-		BackpackWrapperLookup.get(stack).flatMap(IStorageWrapper::getContentsUuid).ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid));
+		BackpackWrapperLookup.get(stack).flatMap(IStorageWrapper::getContentsUuid)
+				.ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid));
 	}
 
 	public static void onLivingUpdate(LivingEntity entity) {

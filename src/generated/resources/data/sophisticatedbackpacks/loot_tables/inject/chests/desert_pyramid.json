@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "sophisticatedbackpacks:copper_backpack",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "sophisticatedbackpacks:iron_backpack",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "sophisticatedbackpacks:gold_backpack"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "sophisticatedbackpacks:magnet_upgrade",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 89
+        }
+      ],
+      "name": "main",
+      "rolls": 1.0
+    }
+  ]
+}
