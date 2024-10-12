@@ -1,5 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.gui;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -22,6 +24,9 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (getFocused() != null) {
+			return super.keyPressed(keyCode, scanCode, modifiers);
+		}
 		if (keyCode == 256 || KeybindHandler.BACKPACK_OPEN_KEYBIND.isDown()) {
 			if (getMenu().isFirstLevelStorage() && (keyCode == 256 || mouseNotOverBackpack())) {
 				if (getMenu().getBackpackContext().wasOpenFromInventory()) {
@@ -47,5 +52,13 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 	@Override
 	protected String getStorageSettingsTabTooltip() {
 		return SBPTranslationHelper.INSTANCE.translGui("settings.tooltip");
+	}
+
+	@Override
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+		if (getMenu().getNumberOfStorageInventorySlots() == 0 && Minecraft.getInstance().player != null) {
+			Minecraft.getInstance().player.closeContainer();
+		}
 	}
 }

@@ -102,6 +102,8 @@ fabricApi {
 loom {
     runtimeOnlyLog4j = true
 
+    accessWidenerPath = file ("src/main/resources/${mod_id}.accesswidener")
+
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
@@ -334,12 +336,12 @@ tasks.register('fixIntelliJResources', Copy) {
         into it.toPath()
     }
 }
-rootProject.idea.project.settings {
+/*rootProject.idea.project.settings {
     taskTriggers {
         afterBuild tasks.getByName("fixIntelliJResources")
         afterRebuild tasks.getByName("fixIntelliJResources")
     }
-}
+}*/
 
 static def mavenVersionToFabric(String version) {
     StringBuilder builder = new StringBuilder()

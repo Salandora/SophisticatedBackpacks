@@ -1,0 +1,4 @@
+accessWidener v2 named
+
+extendable method net/minecraft/world/inventory/ItemCombinerMenu createContainer (I)Lnet/minecraft/world/SimpleContainer;
+extendable method net/minecraft/world/inventory/ItemCombinerMenu createInputSlots (Lnet/minecraft/world/inventory/ItemCombinerMenuSlotDefinition;)V

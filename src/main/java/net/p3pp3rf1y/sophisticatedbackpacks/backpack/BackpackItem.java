@@ -285,9 +285,8 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return Optional.of(new BackpackContentsTooltip(stack));
 	}
 
-	@Override
-	public ItemStack stash(ItemStack storageStack, ItemStack stack) {
-		try (Transaction inner = Transaction.openOuter()) {
+	public ItemStack stash(ItemStack storageStack, ItemStack stack, @Nullable Transaction ctx) {
+		try (Transaction inner = Transaction.openNested(ctx)) {
 			ItemStack stashResult = stack.copyWithCount(stack.getCount() - (int) BackpackWrapper.fromData(storageStack).getInventoryForUpgradeProcessing().insert(ItemVariant.of(stack), stack.getCount(), inner));
 			inner.commit();
 			return stashResult;
@@ -320,10 +319,20 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		}
 
 		ItemStack stackToStash = slot.getItem();
-		ItemStack stashResult = stash(storageStack, stackToStash);
-		if (stashResult.getCount() != stackToStash.getCount()) {
-			slot.set(stashResult);
-			slot.onTake(player, stashResult);
+		ItemStack stashResult;
+		try(Transaction simulate = Transaction.openOuter()) {
+			stashResult = stash(storageStack, stackToStash, simulate);
+		}
+		if (stashResult.getCount() < stackToStash.getCount()) {
+			int countToTake = stackToStash.getCount() - stashResult.getCount();
+			while (countToTake > 0) {
+				ItemStack takeResult = slot.safeTake(countToTake, countToTake, player);
+				if (takeResult.isEmpty()) {
+					break;
+				}
+				stash(storageStack, takeResult, null);
+				countToTake -= takeResult.getCount();
+			}
 			return true;
 		}
 
@@ -336,7 +345,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			return super.overrideOtherStackedOnMe(storageStack, otherStack, slot, action, player, carriedAccess);
 		}
 
-		ItemStack result = stash(storageStack, otherStack);
+		ItemStack result = stash(storageStack, otherStack, null);
 		if (result.getCount() != otherStack.getCount()) {
 			carriedAccess.set(result);
 			slot.set(storageStack);

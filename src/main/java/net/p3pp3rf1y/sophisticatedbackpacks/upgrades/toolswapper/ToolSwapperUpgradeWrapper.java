@@ -5,6 +5,13 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.AtomicDouble;
+import io.github.fabricators_of_create.porting_lib.extensions.extensions.IShearable;
+import io.github.fabricators_of_create.porting_lib.tool.ToolAction;
+import io.github.fabricators_of_create.porting_lib.tool.ToolActions;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,13 +34,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import io.github.fabricators_of_create.porting_lib.extensions.extensions.IShearable;
-import io.github.fabricators_of_create.porting_lib.tool.ToolAction;
-import io.github.fabricators_of_create.porting_lib.tool.ToolActions;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IAttackEntityResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
@@ -237,8 +237,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	private void updateBestWeapons(AtomicReference<ItemStack> bestAxe, AtomicDouble bestAxeDamage, AtomicReference<ItemStack> bestSword, AtomicDouble bestSwordDamage, ItemStack stack) {
-		AttributeInstance attribute = new AttributeInstance(Attributes.ATTACK_DAMAGE, a -> {
-		});
+		AttributeInstance attribute = new AttributeInstance(Attributes.ATTACK_DAMAGE, a -> {});
 		Multimap<Attribute, AttributeModifier> attributeModifiers = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
 		if (!attributeModifiers.containsKey(Attributes.ATTACK_DAMAGE)) {
 			return;
@@ -264,15 +263,21 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 			return true;
 		}
 
-		try(Transaction ctx = Transaction.openOuter()) {
-			backpackInventory.extract(ItemVariant.of(sword), sword.getCount(), ctx);
-			long inserted = backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), ctx);
-			if (inserted == mainHandItem.getCount()) {
-				player.setItemInHand(InteractionHand.MAIN_HAND, sword);
+		ItemStack swordCopy = sword.copy();
+		swordCopy.setCount(1);
+		InventoryHelper.extractFromInventory(swordCopy, backpackInventory, null);
+		if (StorageUtil.simulateInsert(backpackInventory, ItemVariant.of(mainHandItem), mainHandItem.getCount(), null) == mainHandItem.getCount()) {
+			player.setItemInHand(InteractionHand.MAIN_HAND, swordCopy);
+			try (Transaction ctx = Transaction.openOuter()) {
+				backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), ctx);
 				ctx.commit();
-				return true;
 			}
-
+			return true;
+		} else {
+			try (Transaction ctx = Transaction.openOuter()) {
+				backpackInventory.insert(ItemVariant.of(swordCopy), swordCopy.getCount(), ctx);
+				ctx.commit();
+			}
 			return false;
 		}
 	}
