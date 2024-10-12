@@ -1,68 +1,68 @@
 package net.p3pp3rf1y.sophisticatedbackpacks;
 
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
-import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
-import org.apache.commons.lang3.tuple.Pair;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.FilteredUpgradeConfig;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeCountLimitConfig;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeGroup;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.battery.BatteryUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.cooking.AutoCookingUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.cooking.CookingUpgradeConfig;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.cooking.ICookingUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.magnet.MagnetUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.pump.PumpUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeConfig;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.tank.TankUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeConfig;
+import fuzs.forgeconfigapiport.api.config.v3.ModConfigEvents;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@SuppressWarnings("java:S1192") //don't complain about repeated config names if two upgrades happen to have the same setting
+@SuppressWarnings("java:S1192")
+//don't complain about repeated config names if two upgrades happen to have the same setting
 public class Config {
-	private static final Map<ModConfig.Type, BaseConfig> CONFIGS = new EnumMap<>(ModConfig.Type.class);
 
 	private static final String REGISTRY_NAME_MATCHER = "([a-z0-9_.-]+:[a-z0-9_/.-]+)";
+	private static final String MAX_UPGRADES_MATCHER = "([a-z0-9_/.-]+\\|\\d+)";
 
-	private Config() {}
-
-	public static Server SERVER;
-
-	public static Common COMMON;
-
-
-	public static class BaseConfig {
-		public ForgeConfigSpec specification;
-
-		public void onConfigLoad() { }
-		public void onConfigReload() { }
+	private Config() {
 	}
 
-	public static class Server extends BaseConfig {
+	public static final Server SERVER;
+	public static final ModConfigSpec SERVER_SPEC;
+
+	public static final Common COMMON;
+	public static final ModConfigSpec COMMON_SPEC;
+
+	static {
+		final Pair<Server, ModConfigSpec> serverSpec = new ModConfigSpec.Builder().configure(Server::new);
+		SERVER_SPEC = serverSpec.getRight();
+		SERVER = serverSpec.getLeft();
+
+		final Pair<Common, ModConfigSpec> commonSpec = new ModConfigSpec.Builder().configure(Common::new);
+		COMMON_SPEC = commonSpec.getRight();
+		COMMON = commonSpec.getLeft();
+	}
+
+	public static class Server {
 		public final DisallowedItems disallowedItems;
 		public final NoInteractionBlocks noInteractionBlocks;
 		public final NoConnectionBlocks noConnectionBlocks;
 		public final BackpackConfig leatherBackpack;
+		public final BackpackConfig copperBackpack;
 		public final BackpackConfig ironBackpack;
 		public final BackpackConfig goldBackpack;
 		public final BackpackConfig diamondBackpack;
@@ -93,11 +93,11 @@ public class Config {
 		public final AutoCookingUpgradeConfig autoBlastingUpgrade;
 		public final InceptionUpgradeConfig inceptionUpgrade;
 		public final EntityBackpackAdditionsConfig entityBackpackAdditions;
-		public final ForgeConfigSpec.BooleanValue itemFluidHandlerEnabled;
-		public final ForgeConfigSpec.BooleanValue allowOpeningOtherPlayerBackpacks;
-		public final ForgeConfigSpec.BooleanValue itemDisplayDisabled;
-		public final ForgeConfigSpec.BooleanValue tickDedupeLogicDisabled;
-		public final ForgeConfigSpec.BooleanValue canBePlacedInContainerItems;
+		public final ModConfigSpec.BooleanValue itemFluidHandlerEnabled;
+		public final ModConfigSpec.BooleanValue allowOpeningOtherPlayerBackpacks;
+		public final ModConfigSpec.BooleanValue itemDisplayDisabled;
+		public final ModConfigSpec.BooleanValue tickDedupeLogicDisabled;
+		public final ModConfigSpec.BooleanValue canBePlacedInContainerItems;
 		public final FilteredUpgradeConfig toolSwapperUpgrade;
 		public final TankUpgradeConfig tankUpgrade;
 		public final BatteryUpgradeConfig batteryUpgrade;
@@ -105,14 +105,28 @@ public class Config {
 		public final PumpUpgradeConfig pumpUpgrade;
 		public final XpPumpUpgradeConfig xpPumpUpgrade;
 		public final NerfsConfig nerfsConfig;
+		public final MaxUgradesPerStorageConfig maxUpgradesPerStorage;
 
-		@Override
-		public void onConfigReload() {
-			disallowedItems.initialized = false;
-			stackUpgrade.clearNonStackableItems();
+		public void initListeners() {
+			ModConfigEvents.loading(SophisticatedBackpacks.MOD_ID).register(this::onConfigLoad);
+			ModConfigEvents.reloading(SophisticatedBackpacks.MOD_ID).register(this::onConfigReload);
 		}
 
-		Server(ForgeConfigSpec.Builder builder) {
+		public void onConfigReload(ModConfig modConfig) {
+			clearCache();
+		}
+
+		public void onConfigLoad(ModConfig modConfig) {
+			clearCache();
+		}
+
+		private void clearCache() {
+			disallowedItems.initialized = false;
+			stackUpgrade.clearNonStackableItems();
+			maxUpgradesPerStorage.clearCache();
+		}
+
+		Server(ModConfigSpec.Builder builder) {
 			builder.comment("Server Settings").push("server");
 
 			disallowedItems = new DisallowedItems(builder);
@@ -120,6 +134,7 @@ public class Config {
 			noConnectionBlocks = new NoConnectionBlocks(builder);
 
 			leatherBackpack = new BackpackConfig(builder, "Leather", 27, 1);
+			copperBackpack = new BackpackConfig(builder, "Copper", 45, 1);
 			ironBackpack = new BackpackConfig(builder, "Iron", 54, 2);
 			goldBackpack = new BackpackConfig(builder, "Gold", 81, 3);
 			diamondBackpack = new BackpackConfig(builder, "Diamond", 108, 5);
@@ -158,6 +173,13 @@ public class Config {
 			xpPumpUpgrade = new XpPumpUpgradeConfig(builder);
 			entityBackpackAdditions = new EntityBackpackAdditionsConfig(builder);
 			nerfsConfig = new NerfsConfig(builder);
+			maxUpgradesPerStorage = new MaxUgradesPerStorageConfig(builder,
+					Map.of(
+							StackUpgradeItem.UPGRADE_GROUP.name(), 3,
+							ICookingUpgrade.UPGRADE_GROUP.name(), 1,
+							ModItems.JUKEBOX_UPGRADE_NAME, 1
+					)
+			);
 
 			itemFluidHandlerEnabled = builder.comment("Turns on/off item fluid handler of backpack in its item form. There are some dupe bugs caused by default fluid handling implementation that manifest when backpack is drained / filled in its item form in another mod's tank and the only way to prevent them is disallowing drain/fill in item form altogether").define("itemFluidHandlerEnabled", true);
 			allowOpeningOtherPlayerBackpacks = builder.comment("Determines whether player can right click on backpack that another player is wearing to open it. If off will turn off that capability for everyone and remove related settings from backpack.").define("allowOpeningOtherPlayerBackpacks", true);
@@ -167,12 +189,14 @@ public class Config {
 
 			builder.pop();
 		}
+
 		public static class NerfsConfig {
-			public final ForgeConfigSpec.BooleanValue tooManyBackpacksSlowness;
-			public final ForgeConfigSpec.IntValue maxNumberOfBackpacks;
-			public final ForgeConfigSpec.DoubleValue slownessLevelsPerAdditionalBackpack;
-			public final ForgeConfigSpec.BooleanValue onlyWornBackpackTriggersUpgrades;
-			public NerfsConfig(ForgeConfigSpec.Builder builder) {
+			public final ModConfigSpec.BooleanValue tooManyBackpacksSlowness;
+			public final ModConfigSpec.IntValue maxNumberOfBackpacks;
+			public final ModConfigSpec.DoubleValue slownessLevelsPerAdditionalBackpack;
+			public final ModConfigSpec.BooleanValue onlyWornBackpackTriggersUpgrades;
+
+			public NerfsConfig(ModConfigSpec.Builder builder) {
 				builder.push("nerfs");
 				tooManyBackpacksSlowness = builder.comment("Determines if too many backpacks in player's inventory cause slowness to the player").define("tooManyBackpacksSlowness", false);
 				maxNumberOfBackpacks = builder.comment("Maximum number of backpacks in player's inventory that will not cause slowness").defineInRange("maxNumberOfBackpacks", 3, 1, 27);
@@ -182,23 +206,24 @@ public class Config {
 			}
 
 		}
+
 		public static class EntityBackpackAdditionsConfig {
 			private static final String ENTITY_LOOT_MATCHER = "([a-z0-9_.-]+:[a-z0-9_/.-]+)\\|(null|[a-z0-9_.-]+:[a-z0-9/_.-]+)";
-			public final ForgeConfigSpec.DoubleValue chance;
-			public final ForgeConfigSpec.BooleanValue addLoot;
-			public final ForgeConfigSpec.BooleanValue buffWithPotionEffects;
-			public final ForgeConfigSpec.BooleanValue buffHealth;
-			public final ForgeConfigSpec.BooleanValue equipWithArmor;
-			public final ForgeConfigSpec.BooleanValue playJukebox;
-			public final ForgeConfigSpec.BooleanValue dropToFakePlayers;
-			public final ForgeConfigSpec.DoubleValue backpackDropChance;
-			public final ForgeConfigSpec.DoubleValue lootingChanceIncreasePerLevel;
-			public final ForgeConfigSpec.ConfigValue<List<? extends String>> entityLootTableList;
-			public final ForgeConfigSpec.ConfigValue<List<? extends String>> discBlockList;
+			public final ModConfigSpec.DoubleValue chance;
+			public final ModConfigSpec.BooleanValue addLoot;
+			public final ModConfigSpec.BooleanValue buffWithPotionEffects;
+			public final ModConfigSpec.BooleanValue buffHealth;
+			public final ModConfigSpec.BooleanValue equipWithArmor;
+			public final ModConfigSpec.BooleanValue playJukebox;
+			public final ModConfigSpec.BooleanValue dropToFakePlayers;
+			public final ModConfigSpec.DoubleValue backpackDropChance;
+			public final ModConfigSpec.DoubleValue lootingChanceIncreasePerLevel;
+			public final ModConfigSpec.ConfigValue<List<? extends String>> entityLootTableList;
+			public final ModConfigSpec.ConfigValue<List<? extends String>> discBlockList;
 			@Nullable
 			private Map<EntityType<?>, ResourceLocation> entityLootTables = null;
 
-			public EntityBackpackAdditionsConfig(ForgeConfigSpec.Builder builder) {
+			public EntityBackpackAdditionsConfig(ModConfigSpec.Builder builder) {
 				builder.comment("Settings for Spawning Entities with Backpack").push("entityBackpackAdditions");
 				chance = builder.comment("Chance of an entity spawning with Backpack").defineInRange("chance", 0.01, 0, 1);
 				addLoot = builder.comment("Turns on/off addition of loot into backpacks").define("addLoot", true);
@@ -243,10 +268,8 @@ public class Config {
 					String entityRegistryName = entityLoot[0];
 					String lootTableName = entityLoot[1];
 
-					EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(entityRegistryName));
-					if (entityType != null) {
-						entityLootTables.put(entityType, lootTableName.equals("null") ? null : new ResourceLocation(lootTableName));
-					}
+					BuiltInRegistries.ENTITY_TYPE.getOptional(new ResourceLocation(entityRegistryName))
+							.ifPresent(entityType -> entityLootTables.put(entityType, lootTableName.equals("null") ? null : new ResourceLocation(lootTableName)));
 				}
 			}
 
@@ -285,10 +308,10 @@ public class Config {
 		}
 
 		public static class InceptionUpgradeConfig {
-			public final ForgeConfigSpec.BooleanValue upgradesUseInventoriesOfBackpacksInBackpack;
-			public final ForgeConfigSpec.BooleanValue upgradesInContainedBackpacksAreFunctional;
+			public final ModConfigSpec.BooleanValue upgradesUseInventoriesOfBackpacksInBackpack;
+			public final ModConfigSpec.BooleanValue upgradesInContainedBackpacksAreFunctional;
 
-			public InceptionUpgradeConfig(ForgeConfigSpec.Builder builder) {
+			public InceptionUpgradeConfig(ModConfigSpec.Builder builder) {
 				builder.comment("Inception Upgrade Settings").push("inceptionUpgrade");
 				upgradesUseInventoriesOfBackpacksInBackpack = builder.comment("Allows / Disallows backpack upgrades to work with inventories of Backpacks in the Backpack with Inception Upgrade")
 						.define("upgradesUseInventoriesOfBackpacksInBackpack", true);
@@ -299,10 +322,10 @@ public class Config {
 		}
 
 		public static class BackpackConfig {
-			public final ForgeConfigSpec.IntValue inventorySlotCount;
-			public final ForgeConfigSpec.IntValue upgradeSlotCount;
+			public final ModConfigSpec.IntValue inventorySlotCount;
+			public final ModConfigSpec.IntValue upgradeSlotCount;
 
-			public BackpackConfig(ForgeConfigSpec.Builder builder, String backpackPrefix, int inventorySlotCountDefault, int upgradeSlotCountDefault) {
+			public BackpackConfig(ModConfigSpec.Builder builder, String backpackPrefix, int inventorySlotCountDefault, int upgradeSlotCountDefault) {
 				builder.comment(backpackPrefix + " Backpack Settings").push(backpackPrefix.toLowerCase(Locale.ENGLISH) + "Backpack");
 				inventorySlotCount = builder.comment("Number of inventory slots in the backpack").defineInRange("inventorySlotCount", inventorySlotCountDefault, 1, 144);
 				upgradeSlotCount = builder.comment("Number of upgrade slots in the backpack").defineInRange("upgradeSlotCount", upgradeSlotCountDefault, 0, 10);
@@ -311,16 +334,16 @@ public class Config {
 		}
 
 		public static class NoInteractionBlocks {
-			private final ForgeConfigSpec.ConfigValue<List<String>> noInteractionBlocksList;
+			private final ModConfigSpec.ConfigValue<List<String>> noInteractionBlocksList;
 			private boolean initialized = false;
 			private Set<Block> noInteractionBlocksSet = null;
 
-			NoInteractionBlocks(ForgeConfigSpec.Builder builder) {
+			NoInteractionBlocks(ModConfigSpec.Builder builder) {
 				noInteractionBlocksList = builder.comment("List of blocks that inventory interaction upgrades can't interact with - e.g. \"minecraft:shulker_box\"").define("noInteractionBlocks", new ArrayList<>());
 			}
 
 			public boolean isBlockInteractionDisallowed(Block block) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!SERVER_SPEC.isLoaded()) {
 					return true;
 				}
 				if (!initialized) {
@@ -343,17 +366,17 @@ public class Config {
 		}
 
 		public static class NoConnectionBlocks {
-			private final ForgeConfigSpec.ConfigValue<List<? extends String>> noConnectionBlocksList;
+			private final ModConfigSpec.ConfigValue<List<? extends String>> noConnectionBlocksList;
 			private boolean initialized = false;
 			private Set<Block> noConnnectionBlocksSet = null;
 
-			NoConnectionBlocks(ForgeConfigSpec.Builder builder) {
+			NoConnectionBlocks(ModConfigSpec.Builder builder) {
 				noConnectionBlocksList = builder.comment("List of blocks that are not allowed to connect to backpacks - e.g. \"refinedstorage:external_storage\"")
 						.defineList("noConnectionBlocks", new ArrayList<>(), mapping -> ((String) mapping).matches(REGISTRY_NAME_MATCHER));
 			}
 
 			public boolean isBlockConnectionDisallowed(Block block) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!SERVER_SPEC.isLoaded()) {
 					return true;
 				}
 				if (!initialized) {
@@ -376,19 +399,19 @@ public class Config {
 		}
 
 		public static class DisallowedItems {
-			private final ForgeConfigSpec.BooleanValue containerItemsDisallowed;
-			private final ForgeConfigSpec.ConfigValue<List<String>> disallowedItemsList;
+			private final ModConfigSpec.BooleanValue containerItemsDisallowed;
+			private final ModConfigSpec.ConfigValue<List<String>> disallowedItemsList;
 			private boolean initialized = false;
 			private Set<Item> disallowedItemsSet = null;
 
-			DisallowedItems(ForgeConfigSpec.Builder builder) {
+			DisallowedItems(ModConfigSpec.Builder builder) {
 				disallowedItemsList = builder.comment("List of items that are not allowed to be put in backpacks - e.g. \"minecraft:shulker_box\"").define("disallowedItems", new ArrayList<>());
 				containerItemsDisallowed = builder.comment("Determines if container items (those that override canFitInsideContainerItems to false) are able to fit in backpacks")
 						.define("containerItemsDisallowed", false);
 			}
 
 			public boolean isItemDisallowed(Item item) {
-				if (!SERVER.specification.isLoaded()) {
+				if (!SERVER_SPEC.isLoaded()) {
 					return true;
 				}
 
@@ -409,56 +432,73 @@ public class Config {
 
 				for (String disallowedItemName : disallowedItemsList.get()) {
 					ResourceLocation registryName = new ResourceLocation(disallowedItemName);
-					if (BuiltInRegistries.ITEM.containsKey(registryName)) {
-						disallowedItemsSet.add(BuiltInRegistries.ITEM.get(registryName));
-					}
+					BuiltInRegistries.ITEM.getOptional(registryName).ifPresent(disallowedItemsSet::add);
 				}
+			}
+		}
+
+		public static class MaxUgradesPerStorageConfig implements IUpgradeCountLimitConfig {
+			private final ModConfigSpec.ConfigValue<List<? extends String>> maxUpgradesPerStorageList;
+
+			@Nullable
+			private Map<String, Integer> maxUpgradesPerStorage = null;
+
+			protected MaxUgradesPerStorageConfig(ModConfigSpec.Builder builder, Map<String, Integer> defaultUpgradesPerStorage) {
+				maxUpgradesPerStorageList = builder.comment("Maximum number of upgrades of type per backpack in format of \"UpgradeRegistryName[or UpgradeGroup]|MaxNumber\"")
+						.defineList("maxUpgradesPerStorage", convertToList(defaultUpgradesPerStorage), mapping -> ((String) mapping).matches(MAX_UPGRADES_MATCHER));
+			}
+
+			private List<String> convertToList(Map<String, Integer> defaultUpgradesPerStorage) {
+				return defaultUpgradesPerStorage.entrySet().stream().map(e -> e.getKey() + "|" + e.getValue()).collect(Collectors.toList());
+			}
+
+			public void clearCache() {
+				maxUpgradesPerStorage = null;
+			}
+
+			@Override
+			public int getMaxUpgradesPerStorage(String storageType, @org.jetbrains.annotations.Nullable ResourceLocation upgradeRegistryName) {
+				if (maxUpgradesPerStorage == null) {
+					initMaxUpgradesPerStorage();
+				}
+				if (upgradeRegistryName == null) {
+					return Integer.MAX_VALUE;
+				}
+
+				return maxUpgradesPerStorage.getOrDefault(upgradeRegistryName.getPath(), Integer.MAX_VALUE);
+			}
+
+			private void initMaxUpgradesPerStorage() {
+				maxUpgradesPerStorage = new HashMap<>();
+				for (String mapping : maxUpgradesPerStorageList.get()) {
+					String[] upgradeMax = mapping.split("\\|");
+					if (upgradeMax.length < 2) {
+						continue;
+					}
+					String name = upgradeMax[0];
+					int max = Integer.parseInt(upgradeMax[1]);
+					maxUpgradesPerStorage.put(name, max);
+				}
+			}
+
+			@Override
+			public int getMaxUpgradesInGroupPerStorage(String storageType, UpgradeGroup upgradeGroup) {
+				if (maxUpgradesPerStorage == null) {
+					initMaxUpgradesPerStorage();
+				}
+				return maxUpgradesPerStorage.getOrDefault(upgradeGroup.name(), Integer.MAX_VALUE);
 			}
 		}
 	}
 
-	public static class Common extends BaseConfig {
-		public final ForgeConfigSpec.BooleanValue chestLootEnabled;
+	public static class Common {
+		public final ModConfigSpec.BooleanValue chestLootEnabled;
 
-		Common(ForgeConfigSpec.Builder builder) {
+		Common(ModConfigSpec.Builder builder) {
 			builder.comment("Common Settings").push("common");
 
 			chestLootEnabled = builder.comment("Turns on/off loot added to various vanilla chest loot tables").define("chestLootEnabled", true);
 			builder.pop();
 		}
-	}
-
-
-	private static <T extends BaseConfig> T register(Function<ForgeConfigSpec.Builder, T> factory, ModConfig.Type side) {
-		Pair<T, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(factory);
-
-		T config = specPair.getLeft();
-		config.specification = specPair.getRight();
-		CONFIGS.put(side, config);
-		return config;
-	}
-
-	public static void register() {
-		COMMON = register(Common::new, ModConfig.Type.CLIENT);
-		SERVER = register(Server::new, ModConfig.Type.SERVER);
-
-		for (Map.Entry<ModConfig.Type, BaseConfig> pair : CONFIGS.entrySet()) {
-			ForgeConfigRegistry.INSTANCE.register(SophisticatedBackpacks.ID, pair.getKey(), pair.getValue().specification);
-		}
-
-		ModConfigEvents.loading(SophisticatedBackpacks.ID).register(Config::onConfigLoad);
-		ModConfigEvents.reloading(SophisticatedBackpacks.ID).register(Config::onConfigReload);
-	}
-
-	public static void onConfigLoad(ModConfig modConfig) {
-		for (Config.BaseConfig config : CONFIGS.values())
-			if (config.specification == modConfig.getSpec())
-				config.onConfigLoad();
-	}
-
-	public static void onConfigReload(ModConfig modConfig) {
-		for (Config.BaseConfig config : CONFIGS.values())
-			if (config.specification == modConfig.getSpec())
-				config.onConfigReload();
 	}
 }

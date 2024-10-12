@@ -1,0 +1,35 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:restock_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "sophisticatedbackpacks:upgrade_base"
+    },
+    "C": {
+      "tag": "c:wooden_chests"
+    },
+    "I": {
+      "tag": "c:iron_ingots"
+    },
+    "P": {
+      "item": "minecraft:sticky_piston"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    }
+  },
+  "pattern": [
+    " P ",
+    "IBI",
+    "RCR"
+  ],
+  "result": {
+    "id": "sophisticatedbackpacks:restock_upgrade"
+  }
+}

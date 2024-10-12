@@ -1,0 +1,40 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:advanced_refill_upgrade"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_refill_upgrade": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "sophisticatedbackpacks:refill_upgrade"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "sophisticatedbackpacks:advanced_refill_upgrade"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_refill_upgrade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "sophisticatedbackpacks:advanced_refill_upgrade"
+    ]
+  }
+}

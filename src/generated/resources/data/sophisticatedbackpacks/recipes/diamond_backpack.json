@@ -1,0 +1,26 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:diamond_backpack"
+    }
+  ],
+  "type": "sophisticatedbackpacks:backpack_upgrade",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "sophisticatedbackpacks:gold_backpack"
+    },
+    "D": {
+      "tag": "c:diamonds"
+    }
+  },
+  "pattern": [
+    "DDD",
+    "DBD",
+    "DDD"
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:diamond_backpack"
+  }
+}

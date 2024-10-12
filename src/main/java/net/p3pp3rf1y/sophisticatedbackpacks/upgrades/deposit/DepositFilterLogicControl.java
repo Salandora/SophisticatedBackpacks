@@ -14,9 +14,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogicControl;
 
 import java.util.Map;
 
-import static net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogicControlBase.MatchButton.DURABILITY;
-import static net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogicControlBase.MatchButton.NBT;
-import static net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogicControlBase.MatchButton.PRIMARY_MATCH;
+import static net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogicControlBase.MatchButton.*;
 
 public abstract class DepositFilterLogicControl extends FilterLogicControl<DepositFilterLogic, DepositFilterLogicContainer> {
 	public static final ButtonDefinition.Toggle<DepositFilterType> DEPOSIT_FILTER_TYPE = ButtonDefinitions.createToggleButtonDefinition(
@@ -39,7 +37,7 @@ public abstract class DepositFilterLogicControl extends FilterLogicControl<Depos
 	}
 
 	@Override
-	public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+	public void updateNarration(NarrationElementOutput narrationElementOutput) {
 		//TODO add narration
 	}
 

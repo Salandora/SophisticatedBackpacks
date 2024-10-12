@@ -1,0 +1,40 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:auto_smoking_upgrade"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_smoking_upgrade": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "sophisticatedbackpacks:smoking_upgrade"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "sophisticatedbackpacks:auto_smoking_upgrade"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_smoking_upgrade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "sophisticatedbackpacks:auto_smoking_upgrade"
+    ]
+  }
+}

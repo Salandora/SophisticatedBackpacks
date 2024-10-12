@@ -1,9 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-
+import com.mojang.serialization.Codec;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
@@ -11,6 +8,9 @@ import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 
 public class SBLootEnabledCondition implements LootItemCondition {
+
+	private static final SBLootEnabledCondition INSTANCE = new SBLootEnabledCondition();
+	public static final Codec<SBLootEnabledCondition> CODEC = Codec.unit(INSTANCE);
 
 	private SBLootEnabledCondition() {
 	}
@@ -32,18 +32,6 @@ public class SBLootEnabledCondition implements LootItemCondition {
 	public static class Builder implements LootItemCondition.Builder {
 		@Override
 		public LootItemCondition build() {
-			return new SBLootEnabledCondition();
-		}
-	}
-
-	public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<SBLootEnabledCondition> {
-		@Override
-		public void serialize(JsonObject object, SBLootEnabledCondition instance, JsonSerializationContext ctx) {
-			//nothing to serialize
-		}
-
-		@Override
-		public SBLootEnabledCondition deserialize(JsonObject object, JsonDeserializationContext ctx) {
 			return new SBLootEnabledCondition();
 		}
 	}

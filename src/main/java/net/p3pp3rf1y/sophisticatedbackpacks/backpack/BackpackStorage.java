@@ -12,29 +12,25 @@ import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackSettingsHandler;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BackpackStorage extends SavedData {
-	private static final String SAVED_DATA_NAME = SophisticatedBackpacks.ID;
+	private static final String SAVED_DATA_NAME = SophisticatedBackpacks.MOD_ID;
 
 	private final Map<UUID, CompoundTag> backpackContents = new HashMap<>();
 	private static final BackpackStorage clientStorageCopy = new BackpackStorage();
 	private final Map<UUID, AccessLogRecord> accessLogRecords = new HashMap<>();
 
-	private BackpackStorage() {}
+	private BackpackStorage() {
+	}
 
 	public static BackpackStorage get() {
 		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
 			ServerLevel overworld = SophisticatedCore.getCurrentServer().getLevel(Level.OVERWORLD);
 			//noinspection ConstantConditions - by this time overworld is loaded
 			DimensionDataStorage storage = overworld.getDataStorage();
-			return storage.computeIfAbsent(BackpackStorage::load, BackpackStorage::new, SAVED_DATA_NAME);
+			return storage.computeIfAbsent(new Factory<>(BackpackStorage::new, BackpackStorage::load, null), SAVED_DATA_NAME);
 		}
 		return clientStorageCopy;
 	}

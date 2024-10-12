@@ -1,18 +1,11 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,10 +31,14 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
+import net.fabricmc.loader.api.FabricLoader;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
@@ -51,7 +48,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.everlasting.EverlastingUpgr
 import net.p3pp3rf1y.sophisticatedbackpacks.util.InventoryInteractionHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.api.IStashStorageItem;
-import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.TranslationHelper;
 import net.p3pp3rf1y.sophisticatedcore.settings.memory.MemorySettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
@@ -61,13 +57,13 @@ import net.p3pp3rf1y.sophisticatedcore.util.ItemBase;
 import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import javax.annotation.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
@@ -97,7 +93,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 		for (DyeColor color : DyeColor.values()) {
 			ItemStack stack = new ItemStack(this);
-			new BackpackWrapper(stack).setColors(ColorHelper.getColor(color.getTextureDiffuseColors()), ColorHelper.getColor(color.getTextureDiffuseColors()));
+			new BackpackWrapper().setBackpackStack(stack).setColors(ColorHelper.getColor(color.getTextureDiffuseColors()), ColorHelper.getColor(color.getTextureDiffuseColors()));
 			itemConsumer.accept(stack);
 		}
 
@@ -109,16 +105,15 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		));
 
 		ItemStack stack = new ItemStack(this);
-		new BackpackWrapper(stack).setColors(clothColor, trimColor);
+		new BackpackWrapper().setBackpackStack(stack).setColors(clothColor, trimColor);
 		itemConsumer.accept(stack);
 	}
 
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		super.appendHoverText(stack, worldIn, tooltip, flagIn);
-		if (flagIn == TooltipFlag.Default.ADVANCED) {
-			BackpackWrapperLookup.get(stack)
-					.flatMap(IStorageWrapper::getContentsUuid)
+		if (flagIn == TooltipFlag.ADVANCED) {
+			BackpackWrapper.fromData(stack).getContentsUuid()
 					.ifPresent(uuid -> tooltip.add(Component.literal("UUID: " + uuid).withStyle(ChatFormatting.DARK_GRAY)));
 		}
 		if (!Screen.hasShiftDown()) {
@@ -131,38 +126,37 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 	@Override
 	public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-		TooltipComponent ret = null;
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-			Minecraft mc = Minecraft.getInstance();
-			if (Screen.hasShiftDown() || (mc.player != null && !mc.player.containerMenu.getCarried().isEmpty())) {
-				ret = new BackpackContentsTooltip(stack);
-			}
+			return Optional.ofNullable(BackpackItemClient.getTooltipImage(stack));
 		}
-		return Optional.ofNullable(ret);
+		return Optional.empty();
 	}
 
 	private boolean hasEverlastingUpgrade(ItemStack stack) {
-		return BackpackWrapperLookup.get(stack).map(w -> !w.getUpgradeHandler().getTypeWrappers(EverlastingUpgradeItem.TYPE).isEmpty()).orElse(false);
+		return !BackpackWrapper.fromData(stack).getUpgradeHandler().getTypeWrappers(EverlastingUpgradeItem.TYPE).isEmpty();
 	}
 
 	@Nullable
-	public Entity createCustomEntity(Level world, Entity entity, ItemStack itemstack) {
+	public Entity createEntity(Level level, Entity entity, ItemStack itemstack) {
 		if (!(entity instanceof ItemEntity itemEntity)) {
 			return null;
 		}
 
 		UUIDDeduplicator.dedupeBackpackItemEntityInArea(itemEntity);
-		return hasEverlastingUpgrade(itemstack) ? createEverlastingBackpack(world, (ItemEntity) entity, itemstack) : null;
+
+		return hasEverlastingUpgrade(itemstack) ? createEverlastingBackpack(level, (ItemEntity) entity, itemstack) : null;
 	}
 
 	@Nullable
-	private EverlastingBackpackItemEntity createEverlastingBackpack(Level world, ItemEntity itemEntity, ItemStack itemstack) {
-		EverlastingBackpackItemEntity backpackItemEntity = ModItems.EVERLASTING_BACKPACK_ITEM_ENTITY.create(world);
+	private EverlastingBackpackItemEntity createEverlastingBackpack(Level level, ItemEntity itemEntity, ItemStack itemstack) {
+		EverlastingBackpackItemEntity backpackItemEntity = ModItems.EVERLASTING_BACKPACK_ITEM_ENTITY.create(level);
 		if (backpackItemEntity != null) {
 			backpackItemEntity.setPos(itemEntity.getX(), itemEntity.getY(), itemEntity.getZ());
 			backpackItemEntity.setItem(itemstack);
 			backpackItemEntity.setPickUpDelay(((ItemEntityAccessor) itemEntity).getPickupDelay());
-			backpackItemEntity.setThrower(itemEntity.getOwner() != null ? itemEntity.getOwner().getUUID() : null);
+			if (itemEntity.getOwner() != null) {
+				backpackItemEntity.setThrower(itemEntity.getOwner());
+			}
 			backpackItemEntity.setDeltaMovement(itemEntity.getDeltaMovement());
 		}
 		return backpackItemEntity;
@@ -190,7 +184,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		if (!blockItemUseContext.canPlace()) {
 			return InteractionResult.FAIL;
 		}
-		Level world = blockItemUseContext.getLevel();
+		Level level = blockItemUseContext.getLevel();
 		BlockPos pos = blockItemUseContext.getClickedPos();
 
 		FluidState fluidstate = blockItemUseContext.getLevel().getFluidState(pos);
@@ -200,21 +194,21 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			return InteractionResult.FAIL;
 		}
 
-		if (world.setBlockAndUpdate(pos, placementState)) {
+		if (level.setBlockAndUpdate(pos, placementState)) {
 			ItemStack backpack = blockItemUseContext.getItemInHand();
-			WorldHelper.getBlockEntity(world, pos, BackpackBlockEntity.class).ifPresent(te -> {
-				te.setBackpack(getBackpackCopy(player, backpack));
-				te.refreshRenderState();
+			WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class).ifPresent(be -> {
+				be.setBackpack(getBackpackCopy(player, backpack));
+				be.refreshRenderState();
 
-				te.tryToAddToController();
+				be.tryToAddToController();
 			});
 
-			if (!world.isClientSide) {
-				stopBackpackSounds(backpack, world, pos);
+			if (!level.isClientSide) {
+				stopBackpackSounds(backpack, level, pos);
 			}
 
 			SoundType soundtype = placementState.getSoundType();
-			world.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+			level.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 			if (player == null || !player.isCreative()) {
 				backpack.shrink(1);
 			}
@@ -224,61 +218,47 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return InteractionResult.PASS;
 	}
 
-	private static void stopBackpackSounds(ItemStack backpack, Level world, BlockPos pos) {
-		BackpackWrapperLookup.get(backpack).flatMap(IStorageWrapper::getContentsUuid).ifPresent(uuid ->
-				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid));
+	private static void stopBackpackSounds(ItemStack backpack, Level level, BlockPos pos) {
+		BackpackWrapper.fromData(backpack)
+				.getContentsUuid()
+				.ifPresent(uuid -> ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) level, Vec3.atCenterOf(pos), uuid));
 	}
 
 	private ItemStack getBackpackCopy(@Nullable Player player, ItemStack backpack) {
 		if (player == null || !player.isCreative()) {
 			return backpack.copy();
 		}
-		return BackpackWrapperLookup.get(backpack)
-				.map(IBackpackWrapper::cloneBackpack).orElse(new ItemStack(ModItems.BACKPACK));
+		return BackpackWrapper.fromData(backpack).cloneBackpack();
 	}
 
 	protected boolean canPlace(BlockPlaceContext context, BlockState state) {
 		Player playerentity = context.getPlayer();
 		CollisionContext iselectioncontext = playerentity == null ? CollisionContext.empty() : CollisionContext.of(playerentity);
-		return state.canSurvive(context.getLevel(), context.getClickedPos()) && context.getLevel().isUnobstructed(state, context.getClickedPos(), iselectioncontext);
+		return (state.canSurvive(context.getLevel(), context.getClickedPos())) && context.getLevel().isUnobstructed(state, context.getClickedPos(), iselectioncontext);
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 
-		if (!world.isClientSide && player instanceof ServerPlayer) {
+		if (!level.isClientSide) {
 			String handlerName = hand == InteractionHand.MAIN_HAND ? PlayerInventoryProvider.MAIN_INVENTORY : PlayerInventoryProvider.OFFHAND_INVENTORY;
 			int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 0;
 			BackpackContext.Item context = new BackpackContext.Item(handlerName, slot);
-
-			player.openMenu(MenuProviderHelper.createMenuProvider((w, bpc, pl) -> new BackpackContainer(w, pl, context), context, stack.getHoverName()));
+			player.openMenu(MenuProviderHelper.createMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), context::toBuffer, stack.getHoverName()));
 		}
 		return InteractionResultHolder.success(stack);
 	}
 
 	@Override
-	public void onArmorTick(ItemStack stack, Level level, Player player) {
-		if (level.isClientSide || player.isSpectator() || player.isDeadOrDying() || Boolean.FALSE.equals(Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get())) {
+	public void inventoryTick(ItemStack stack, Level level, Entity entity, int itemSlot, boolean isSelected) {
+		if (level.isClientSide || !(entity instanceof Player player) || player.isSpectator() || player.isDeadOrDying() || (Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get() && itemSlot > -1)) {
 			return;
 		}
-		BackpackWrapperLookup.get(stack).ifPresent(
-				wrapper -> wrapper.getUpgradeHandler().getWrappersThatImplement(ITickableUpgrade.class)
-						.forEach(upgrade -> upgrade.tick(player, player.level(), player.blockPosition()))
-		);
-		super.onArmorTick(stack, level, player);
-	}
-
-	@Override
-	public void inventoryTick(ItemStack stack, Level level, Entity entityIn, int itemSlot, boolean isSelected) {
-		if (level.isClientSide || !(entityIn instanceof Player player) || player.isSpectator() || player.isDeadOrDying() || (Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get() && itemSlot > -1)) {
-			return;
-		}
-		BackpackWrapperLookup.get(stack).ifPresent(
-				wrapper -> wrapper.getUpgradeHandler().getWrappersThatImplement(ITickableUpgrade.class)
-						.forEach(upgrade -> upgrade.tick(player, player.level(), player.blockPosition()))
-		);
-		super.inventoryTick(stack, level, entityIn, itemSlot, isSelected);
+		BackpackWrapper.fromData(stack).getUpgradeHandler().getWrappersThatImplement(ITickableUpgrade.class)
+				.forEach(upgrade -> upgrade.tick(player, player.level(), player.blockPosition())
+				);
+		super.inventoryTick(stack, level, entity, itemSlot, isSelected);
 	}
 
 	public int getNumberOfSlots() {
@@ -289,11 +269,10 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		return numberOfUpgradeSlots.getAsInt();
 	}
 
-	// TODO: Is this implemented?
-/*	@Override
+	@Override
 	public boolean onDroppedByPlayer(ItemStack item, Player player) {
 		return !(player.containerMenu instanceof BackpackContainer backpackContainer && backpackContainer.getVisibleStorageItem().map(visibleStorageItem -> visibleStorageItem == item).orElse(false));
-	}*/
+	}
 
 	@Nullable
 	@Override
@@ -303,33 +282,29 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 	@Override
 	public Optional<TooltipComponent> getInventoryTooltip(ItemStack stack) {
-		return Optional.of(new BackpackItem.BackpackContentsTooltip(stack));
+		return Optional.of(new BackpackContentsTooltip(stack));
 	}
 
 	@Override
 	public ItemStack stash(ItemStack storageStack, ItemStack stack) {
-		return BackpackWrapperLookup.get(storageStack)
-				.map(wrapper -> {
-					try (Transaction ctx = Transaction.openOuter()) {
-						long inserted = wrapper.getInventoryForUpgradeProcessing().insert(ItemVariant.of(stack), stack.getCount(), ctx);
-						ctx.commit();
-						return stack.copyWithCount(stack.getCount() - (int) inserted);
-					}
-				}).orElse(stack);
+		try (Transaction inner = Transaction.openOuter()) {
+			ItemStack stashResult = stack.copyWithCount(stack.getCount() - (int) BackpackWrapper.fromData(storageStack).getInventoryForUpgradeProcessing().insert(ItemVariant.of(stack), stack.getCount(), inner));
+			inner.commit();
+			return stashResult;
+		}
 	}
 
 	@Override
 	public StashResult getItemStashable(ItemStack storageStack, ItemStack stack) {
-		return BackpackWrapperLookup.get(storageStack).map(wrapper -> {
-			if (StorageUtil.simulateInsert(wrapper.getInventoryForUpgradeProcessing(), ItemVariant.of(stack), stack.getCount(), null) == 0) {
-				return StashResult.NO_SPACE;
-			}
-			if (wrapper.getInventoryHandler().getSlotTracker().getItems().contains(stack.getItem()) || wrapper.getSettingsHandler().getTypeCategory(MemorySettingsCategory.class).matchesFilter(stack)) {
-				return StashResult.MATCH_AND_SPACE;
-			}
+		IBackpackWrapper wrapper = BackpackWrapper.fromData(storageStack);
+		if (StorageUtil.simulateInsert(wrapper.getInventoryForUpgradeProcessing(), ItemVariant.of(stack), stack.getCount(), null) == 0) {
+			return StashResult.NO_SPACE;
+		}
+		if (wrapper.getInventoryHandler().getSlotTracker().getItems().contains(stack.getItem()) || wrapper.getSettingsHandler().getTypeCategory(MemorySettingsCategory.class).matchesFilter(stack)) {
+			return StashResult.MATCH_AND_SPACE;
+		}
 
-			return StashResult.SPACE;
-		}).orElse(StashResult.NO_SPACE);
+		return StashResult.SPACE;
 	}
 
 	public record BackpackContentsTooltip(ItemStack backpack) implements TooltipComponent {

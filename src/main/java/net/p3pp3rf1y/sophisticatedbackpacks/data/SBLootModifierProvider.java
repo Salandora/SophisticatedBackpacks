@@ -2,13 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
-import io.github.fabricators_of_create.porting_lib.loot.GlobalLootModifierProvider;
-import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
-import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
-import io.github.fabricators_of_create.porting_lib.loot.LootTableIdCondition;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -18,16 +11,25 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import io.github.fabricators_of_create.porting_lib.loot.GlobalLootModifierProvider;
+import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
+import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
+import io.github.fabricators_of_create.porting_lib.loot.LootTableIdCondition;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.LootTableAccessor;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
 	SBLootModifierProvider(FabricDataOutput packOutput) {
-		super(packOutput, SophisticatedBackpacks.ID);
+		super(packOutput, SophisticatedBackpacks.MOD_ID);
 	}
 
 	@Override
@@ -47,7 +49,9 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 	}
 
 	public static class InjectLootModifier extends LootModifier {
-		public static final Codec<InjectLootModifier> CODEC = RecordCodecBuilder.create(inst -> LootModifier.codecStart(inst).and(
+		// Porting-Lib is not up to date for the LOOT_CONDITIONS_CODEC so we need to patch it here
+		static final Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = LootItemConditions.CODEC.listOf().xmap(list -> list.toArray(LootItemCondition[]::new), List::of);
+		public static final Codec<InjectLootModifier> CODEC = RecordCodecBuilder.create(inst -> inst.group(LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions)).and(
 				inst.group(
 						ResourceLocation.CODEC.fieldOf("loot_table").forGetter(m -> m.lootTable),
 						ResourceLocation.CODEC.fieldOf("loot_table_to_inject_into").forGetter(m -> m.lootTableToInjectInto)
@@ -77,13 +81,13 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
 		public void getRandomItemsRaw(LootTable table, LootContext context, Consumer<ItemStack> lootConsumer) {
 			if (compositeFunction == null) {
-				compositeFunction = LootItemFunctions.compose(table.functions);
+				compositeFunction = LootItemFunctions.compose(((LootTableAccessor) table).getFunctions());
 			}
 
 			LootContext.VisitedEntry<?> visitedEntry = LootContext.createVisitedEntry(table);
 			if (context.pushVisitedElement(visitedEntry)) {
 				Consumer<ItemStack> consumer = LootItemFunction.decorate(compositeFunction, lootConsumer, context);
-				for (LootPool lootPool : table.pools) {
+				for (LootPool lootPool : ((LootTableAccessor) table).getPools()) {
 					lootPool.addRandomItems(consumer, context);
 				}
 

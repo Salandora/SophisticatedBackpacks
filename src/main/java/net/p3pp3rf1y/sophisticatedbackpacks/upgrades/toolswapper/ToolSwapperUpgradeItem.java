@@ -1,23 +1,20 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper;
 
-import net.minecraft.world.item.ItemStack;
+import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
-import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
-import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeSlotChangeResult;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeItemBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeType;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class ToolSwapperUpgradeItem extends UpgradeItemBase<ToolSwapperUpgradeWrapper> {
 	private static final UpgradeType<ToolSwapperUpgradeWrapper> TYPE = new UpgradeType<>(ToolSwapperUpgradeWrapper::new);
+	public static final List<UpgradeConflictDefinition> UPGRADE_CONFLICT_DEFINITIONS = List.of(new UpgradeConflictDefinition(ToolSwapperUpgradeItem.class::isInstance, 0, SBPTranslationHelper.INSTANCE.translError("add.tool_swapper_exists")));
 	private final boolean hasSettingsTab;
 	private final boolean swapToolOnKeyPress;
 
 	public ToolSwapperUpgradeItem(boolean hasSettingsTab, boolean swapToolOnKeyPress) {
-		super();
+		super(Config.SERVER.maxUpgradesPerStorage);
 		this.hasSettingsTab = hasSettingsTab;
 		this.swapToolOnKeyPress = swapToolOnKeyPress;
 	}
@@ -36,16 +33,7 @@ public class ToolSwapperUpgradeItem extends UpgradeItemBase<ToolSwapperUpgradeWr
 	}
 
 	@Override
-	public UpgradeSlotChangeResult canAddUpgradeTo(IStorageWrapper storageWrapper, ItemStack upgradeStack, boolean firstLevelStorage, boolean isClientSide) {
-		Set<Integer> errorUpgradeSlots = new HashSet<>();
-		storageWrapper.getUpgradeHandler().getSlotWrappers().forEach((slot, wrapper) -> {
-			if (wrapper instanceof ToolSwapperUpgradeWrapper) {
-				errorUpgradeSlots.add(slot);
-			}
-		});
-		if (!errorUpgradeSlots.isEmpty()) {
-			return new UpgradeSlotChangeResult.Fail(SBPTranslationHelper.INSTANCE.translError("add.tool_swapper_exists"), errorUpgradeSlots, Collections.emptySet(), Collections.emptySet());
-		}
-		return new UpgradeSlotChangeResult.Success();
+	public List<UpgradeConflictDefinition> getUpgradeConflicts() {
+		return UPGRADE_CONFLICT_DEFINITIONS;
 	}
 }

@@ -1,0 +1,29 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:everlasting_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "sophisticatedbackpacks:upgrade_base"
+    },
+    "C": {
+      "item": "minecraft:end_crystal"
+    },
+    "S": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "CSC",
+    "SBS",
+    "CSC"
+  ],
+  "result": {
+    "id": "sophisticatedbackpacks:everlasting_upgrade"
+  }
+}

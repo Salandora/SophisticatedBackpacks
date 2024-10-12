@@ -1,0 +1,29 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:filter_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "sophisticatedbackpacks:upgrade_base"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    },
+    "S": {
+      "item": "minecraft:string"
+    }
+  },
+  "pattern": [
+    "RSR",
+    "SBS",
+    "RSR"
+  ],
+  "result": {
+    "id": "sophisticatedbackpacks:filter_upgrade"
+  }
+}

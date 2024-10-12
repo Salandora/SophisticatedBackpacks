@@ -1,14 +1,5 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -28,35 +19,40 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IAttackEntityResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenPacket;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.event.common.EntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.ItemEntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.LivingEntityEvents;
 import net.p3pp3rf1y.sophisticatedcore.event.common.MobSpawnEvents;
-import net.p3pp3rf1y.sophisticatedcore.network.PacketHandler;
-import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsMessage;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsPacket;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 
 public class CommonEventHandler {
 	public void registerHandlers() {
@@ -81,7 +77,7 @@ public class CommonEventHandler {
 
 		EntityEvents.ON_JOIN_WORLD.register((entity, world, loadedFromDisk) -> {
 			if (entity.getClass().equals(ItemEntity.class) && ((ItemEntity)entity).getItem().getItem() instanceof BackpackItem backpack) {
-				Entity newEntity = backpack.createCustomEntity(world, entity, ((ItemEntity)entity).getItem());
+				Entity newEntity = backpack.createEntity(world, entity, ((ItemEntity)entity).getItem());
 				if (newEntity != null) {
 					entity.discard();
 					world.addFreshEntity(newEntity);
@@ -110,12 +106,10 @@ public class CommonEventHandler {
 		if (!isPointingAtBody || !isPointingAtBack) {
 			return InteractionResult.PASS;
 		}
-
 		if (targetPlayer.level().isClientSide) {
-			SBPPacketHandler.sendToServer(new AnotherPlayerBackpackOpenMessage(targetPlayer.getId()));
+			PacketHelper.sendToServer(new AnotherPlayerBackpackOpenPacket(targetPlayer.getId()));
 			return InteractionResult.SUCCESS;
 		}
-
 		return InteractionResult.PASS;
 	}
 
@@ -138,8 +132,7 @@ public class CommonEventHandler {
 					numberOfBackpacks.incrementAndGet();
 				}
 				if (runDedupeLogic) {
-					BackpackWrapperLookup.get(backpack).ifPresent(backpackWrapper ->
-							addBackpackIdIfUniqueOrDedupe(backpackIds, backpackWrapper));
+					addBackpackIdIfUniqueOrDedupe(backpackIds, BackpackWrapper.fromData(backpack));
 				}
 				return false;
 			});
@@ -176,7 +169,7 @@ public class CommonEventHandler {
 
 	private void sendPlayerSettingsToClient(Player player) {
 		String playerTagName = BackpackMainSettingsCategory.SOPHISTICATED_BACKPACK_SETTINGS_PLAYER_TAG;
-		PacketHandler.sendToClient((ServerPlayer) player, new SyncPlayerSettingsMessage(playerTagName, SettingsManager.getPlayerSettingsTag(player, playerTagName)));
+		PacketHelper.sendToPlayer(new SyncPlayerSettingsPacket(playerTagName, SettingsManager.getPlayerSettingsTag(player, playerTagName)), (ServerPlayer) player);
 	}
 
 	private void onPlayerRespawn(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean alive) {
@@ -188,16 +181,15 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 
-		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
-				.map(wrapper -> {
-					for (IBlockClickResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IBlockClickResponseUpgrade.class)) {
-						if (upgrade.onBlockClick(player, pos)) {
-							return true;
-						}
-					}
-					return false;
-				}).orElse(false));
-
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
+			IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+			for (IBlockClickResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IBlockClickResponseUpgrade.class)) {
+				if (upgrade.onBlockClick(player, pos)) {
+					return true;
+				}
+			}
+			return false;
+		});
 		return InteractionResult.PASS;
 	}
 
@@ -206,23 +198,22 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 
-		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
-				.map(wrapper -> {
-					for (IAttackEntityResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IAttackEntityResponseUpgrade.class)) {
-						if (upgrade.onAttackEntity(player)) {
-							return true;
-						}
-					}
-					return false;
-				}).orElse(false));
-
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
+			IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+			for (IAttackEntityResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IAttackEntityResponseUpgrade.class)) {
+				if (upgrade.onAttackEntity(player)) {
+					return true;
+				}
+			}
+			return false;
+		});
 		return InteractionResult.PASS;
 	}
 
 	private void onLivingSpecialSpawn(MobSpawnEvents.FinalizeSpawn event) {
 		Entity entity = event.getEntity();
 		if (entity instanceof Monster monster && monster.getItemBySlot(EquipmentSlot.CHEST).isEmpty()) {
-			EntityBackpackAdditionHandler.addBackpack(monster, event.getLevel(), event.getDifficulty().getEffectiveDifficulty());
+			EntityBackpackAdditionHandler.addBackpack(monster, event.getLevel(), event.getDifficulty());
 		}
 	}
 
@@ -238,15 +229,14 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 
-		Level world = player.getCommandSenderWorld();
-
 		AtomicReference<ItemStack> remainingStack = new AtomicReference<>(stack.copy());
+		Level level = player.getCommandSenderWorld();
 		try(Transaction ctx = Transaction.openOuter()) {
-			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
-					.map(wrapper -> {
-						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(world, player, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
+			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
+						IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, player, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
 						return remainingStack.get().isEmpty();
-					}).orElse(false), Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
+					}, Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
 			);
 
 			if (remainingStack.get().getCount() != stack.getCount()) {
@@ -255,7 +245,6 @@ public class CommonEventHandler {
 				return InteractionResult.SUCCESS;
 			}
 		}
-
 		return InteractionResult.PASS;
 	}
 }

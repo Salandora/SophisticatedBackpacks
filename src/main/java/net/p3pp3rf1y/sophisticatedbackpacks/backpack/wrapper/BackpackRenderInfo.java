@@ -24,11 +24,6 @@ public class BackpackRenderInfo extends RenderInfo {
 	}
 
 	@Override
-	protected void deserialize() {
-		super.deserialize();
-	}
-
-	@Override
 	protected Optional<CompoundTag> getRenderInfoTag() {
 		return NBTHelper.getCompound(backpack, RENDER_INFO_TAG);
 	}

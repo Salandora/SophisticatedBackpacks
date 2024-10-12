@@ -1,0 +1,35 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:auto_smoking_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "c:diamonds"
+    },
+    "G": {
+      "tag": "c:gold_ingots"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    },
+    "S": {
+      "item": "sophisticatedbackpacks:smoking_upgrade"
+    }
+  },
+  "pattern": [
+    "DHD",
+    "RSH",
+    "GHG"
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:auto_smoking_upgrade"
+  }
+}

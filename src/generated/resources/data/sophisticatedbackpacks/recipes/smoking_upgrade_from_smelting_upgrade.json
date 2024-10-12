@@ -1,0 +1,26 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:smoking_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
+  "key": {
+    "L": {
+      "tag": "minecraft:logs"
+    },
+    "S": {
+      "item": "sophisticatedbackpacks:smelting_upgrade"
+    }
+  },
+  "pattern": [
+    " L ",
+    "LSL",
+    " L "
+  ],
+  "result": {
+    "id": "sophisticatedbackpacks:smoking_upgrade"
+  }
+}

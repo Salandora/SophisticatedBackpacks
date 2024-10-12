@@ -1,0 +1,29 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:backpack"
+    }
+  ],
+  "type": "sophisticatedbackpacks:basic_backpack",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:wooden_chests"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "S": {
+      "item": "minecraft:string"
+    }
+  },
+  "pattern": [
+    "SLS",
+    "SCS",
+    "LLL"
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:backpack"
+  }
+}

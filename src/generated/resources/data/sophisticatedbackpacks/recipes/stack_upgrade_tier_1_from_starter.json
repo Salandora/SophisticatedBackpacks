@@ -1,0 +1,26 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_1"
+    }
+  ],
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
+  "key": {
+    "I": {
+      "tag": "c:iron_blocks"
+    },
+    "S": {
+      "item": "sophisticatedbackpacks:stack_upgrade_starter_tier"
+    }
+  },
+  "pattern": [
+    " I ",
+    "ISI",
+    " I "
+  ],
+  "result": {
+    "id": "sophisticatedbackpacks:stack_upgrade_tier_1"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:advanced_feeding_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "c:diamonds"
+    },
+    "G": {
+      "tag": "c:gold_ingots"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    },
+    "V": {
+      "item": "sophisticatedbackpacks:feeding_upgrade"
+    }
+  },
+  "pattern": [
+    " D ",
+    "GVG",
+    "RRR"
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:advanced_feeding_upgrade"
+  }
+}

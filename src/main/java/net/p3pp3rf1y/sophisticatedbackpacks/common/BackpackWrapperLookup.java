@@ -1,42 +1,42 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import com.google.common.collect.MapMaker;
-import team.reborn.energy.api.EnergyStorage;
-
-import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.world.item.ItemStack;
+import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 
+import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACKS;
 
 public class BackpackWrapperLookup {
-    public static final ItemApiLookup<IBackpackWrapper, Void> ITEM = ItemApiLookup.get(SophisticatedBackpacks.getRL("item_backpack_wrapper"), IBackpackWrapper.class, Void.class);
-	private static final Map<ItemStack, BackpackWrapper> WRAPPERS = new MapMaker().weakKeys().weakValues().makeMap();
+	public static final ItemApiLookup<IBackpackWrapper, Boolean> ITEM = ItemApiLookup.get(SophisticatedBackpacks.getRL("item_backpack_wrapper"), IBackpackWrapper.class, Boolean.class);
 
-    public static Optional<IBackpackWrapper> get(ItemStack provider) {
-        return Optional.ofNullable(ITEM.find(provider, null));
+	public static IBackpackWrapper getOrCreate(ItemStack provider) {
+		return ITEM.find(provider, true);
     }
-
-	public static void invalidateCache(UUID uuid) {
-		Set<Map.Entry<ItemStack, BackpackWrapper>> entries = WRAPPERS.entrySet();
-		entries.stream().filter(entry -> entry.getValue().getContentsUuid().isPresent() && entry.getValue().getContentsUuid().get() == uuid).forEach(entries::remove);
+	@Nullable
+	public static IBackpackWrapper get(ItemStack provider) {
+		return ITEM.find(provider, false);
 	}
 
     static {
-		BackpackWrapperLookup.ITEM.registerForItems((itemStack, context) -> WRAPPERS.computeIfAbsent(itemStack, BackpackWrapper::new), BACKPACKS);
+		ItemApiLookup.ItemApiProvider<IBackpackWrapper, Boolean> provider = new ItemApiLookup.ItemApiProvider<>() {
+			final Map<ItemStack, IBackpackWrapper> wrapperMap = new MapMaker().weakKeys().weakValues().makeMap();
 
-        ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(ItemStorage.SIDED, direction), ModBlocks.BACKPACK_TILE_TYPE);
-        FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(FluidStorage.SIDED, direction), ModBlocks.BACKPACK_TILE_TYPE);
-        EnergyStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(EnergyStorage.SIDED, direction), ModBlocks.BACKPACK_TILE_TYPE);
-    }
+			@Override
+			public IBackpackWrapper find(ItemStack stack, Boolean create) {
+				if (create) {
+					return wrapperMap.computeIfAbsent(stack, ignored -> new BackpackWrapper());
+				} else {
+					return wrapperMap.get(stack);
+				}
+			}
+		};
+
+		ITEM.registerForItems(provider, BACKPACKS);
+	}
 }

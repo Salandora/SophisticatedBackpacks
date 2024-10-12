@@ -5,26 +5,20 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlockEntity;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.DIAMOND_BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.GOLD_BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.IRON_BACKPACK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.NETHERITE_BACKPACK;
+import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.BACKPACKS;
 
 public class ModBlockColors {
-	public static void register() {
-		registerBlockColorHandlers();
-	}
+	private ModBlockColors() {}
 
-	private static void registerBlockColorHandlers() {
+	public static void registerBlockColorHandlers() {
 		ColorProviderRegistry.BLOCK.register((state, blockDisplayReader, pos, tintIndex) -> {
 			if (tintIndex < 0 || tintIndex > 1 || pos == null) {
 				return -1;
 			}
 			return WorldHelper.getBlockEntity(blockDisplayReader, pos, BackpackBlockEntity.class)
-					.map(te -> tintIndex == 0 ? te.getBackpackWrapper().getMainColor() : te.getBackpackWrapper().getAccentColor())
+					.map(be -> tintIndex == 0 ? be.getBackpackWrapper().getMainColor() : be.getBackpackWrapper().getAccentColor())
 					.orElse(getDefaultColor(tintIndex));
-		}, BACKPACK, IRON_BACKPACK, GOLD_BACKPACK, DIAMOND_BACKPACK, NETHERITE_BACKPACK);
+		}, BACKPACKS);
 	}
 
 	private static int getDefaultColor(int tintIndex) {

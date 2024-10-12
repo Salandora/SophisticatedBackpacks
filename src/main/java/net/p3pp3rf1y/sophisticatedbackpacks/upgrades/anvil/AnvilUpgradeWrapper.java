@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.anvil;
 
 import net.minecraft.world.item.ItemStack;
-import net.p3pp3rf1y.porting_lib.transfer.items.SCItemStackHandler;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemStackHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
@@ -9,11 +9,11 @@ import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import java.util.function.Consumer;
 
 public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper, AnvilUpgradeItem> {
-	private final SCItemStackHandler inventory;
+	private final ItemStackHandler inventory;
 	protected AnvilUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
 		super(storageWrapper, upgrade, upgradeSaveHandler);
 
-		inventory = new SCItemStackHandler(2) {
+		inventory = new ItemStackHandler(2) {
 			@Override
 			protected void onContentsChanged(int slot) {
 				super.onContentsChanged(slot);
@@ -24,7 +24,7 @@ public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper,
 		NBTHelper.getCompound(upgrade, "craftingInventory").ifPresent(inventory::deserializeNBT);
 	}
 
-	public SCItemStackHandler getInventory() {
+	public ItemStackHandler getInventory() {
 		return inventory;
 	}
 

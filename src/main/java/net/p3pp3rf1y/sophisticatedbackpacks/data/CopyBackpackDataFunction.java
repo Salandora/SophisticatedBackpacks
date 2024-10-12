@@ -1,29 +1,26 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlockEntity;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 
-public class CopyBackpackDataFunction extends LootItemConditionalFunction {
-	protected CopyBackpackDataFunction(LootItemCondition[] conditionsIn) {
-		super(conditionsIn);
-	}
+public class CopyBackpackDataFunction implements LootItemFunction {
+	private static final CopyBackpackDataFunction INSTANCE = new CopyBackpackDataFunction();
+	public static final Codec<CopyBackpackDataFunction> CODEC = MapCodec.unit(INSTANCE).stable().codec();
+	private CopyBackpackDataFunction() {}
 
 	@Override
-	protected ItemStack run(ItemStack stack, LootContext context) {
-		BlockEntity te = context.getParamOrNull(LootContextParams.BLOCK_ENTITY);
-		if (te instanceof BackpackBlockEntity) {
-			return ((BackpackBlockEntity) te).getBackpackWrapper().getBackpack();
+	public ItemStack apply(ItemStack stack, LootContext lootContext) {
+		BlockEntity be = lootContext.getParamOrNull(LootContextParams.BLOCK_ENTITY);
+		if (be instanceof BackpackBlockEntity backpackBlockEntity) {
+			return backpackBlockEntity.getBackpackWrapper().getBackpack();
 		}
 
 		return stack;
@@ -34,27 +31,14 @@ public class CopyBackpackDataFunction extends LootItemConditionalFunction {
 		return ModItems.COPY_BACKPACK_DATA;
 	}
 
-	public static CopyBackpackDataFunction.Builder builder() {
-		return new CopyBackpackDataFunction.Builder();
+	public static Builder builder() {
+		return new Builder();
 	}
 
-	public static class Serializer extends LootItemConditionalFunction.Serializer<CopyBackpackDataFunction> {
-
-		@Override
-		public CopyBackpackDataFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootItemCondition[] conditionsIn) {
-			return new CopyBackpackDataFunction(conditionsIn);
-		}
-	}
-
-	public static class Builder extends LootItemConditionalFunction.Builder<CopyBackpackDataFunction.Builder> {
-		@Override
-		protected CopyBackpackDataFunction.Builder getThis() {
-			return this;
-		}
-
+	public static class Builder implements LootItemFunction.Builder {
 		@Override
 		public LootItemFunction build() {
-			return new CopyBackpackDataFunction(getConditions());
+			return new CopyBackpackDataFunction();
 		}
 	}
 }

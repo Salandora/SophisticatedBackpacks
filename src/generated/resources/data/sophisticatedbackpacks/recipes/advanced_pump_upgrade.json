@@ -1,0 +1,35 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:advanced_pump_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "c:diamonds"
+    },
+    "G": {
+      "tag": "c:gold_ingots"
+    },
+    "I": {
+      "item": "minecraft:dispenser"
+    },
+    "P": {
+      "item": "sophisticatedbackpacks:pump_upgrade"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    }
+  },
+  "pattern": [
+    "DID",
+    "GPG",
+    "RRR"
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:advanced_pump_upgrade"
+  }
+}

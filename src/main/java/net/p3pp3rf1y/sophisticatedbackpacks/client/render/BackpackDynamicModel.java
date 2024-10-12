@@ -6,30 +6,11 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.datafixers.util.Either;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
-
-import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
-import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
-import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -40,27 +21,30 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.client.accessor.VertexFormatAccessor;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedBatteryUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedTankUpgrade;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.function.Function;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Function;
 
-import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.BATTERY;
-import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.LEFT_TANK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.RIGHT_TANK;
+import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.*;
 
-@Environment(EnvType.CLIENT)
 public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicModel> {
 	public static int STRIDE = DefaultVertexFormat.BLOCK.getIntegerSize();
 	public static int POSITION = findOffset(DefaultVertexFormat.ELEMENT_POSITION);
@@ -76,7 +60,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 
 	private final Map<ModelPart, UnbakedModel> modelParts;
 
-	private BackpackDynamicModel(Map<ModelPart, UnbakedModel> modelParts) {
+	public BackpackDynamicModel(Map<ModelPart, UnbakedModel> modelParts) {
 		this.modelParts = modelParts;
 	}
 
@@ -101,7 +85,8 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		private static final ItemTransforms ITEM_TRANSFORMS = createItemTransforms();
 		private static final ResourceLocation BACKPACK_MODULES_TEXTURE = new ResourceLocation("sophisticatedbackpacks:block/backpack_modules");
 
-		@SuppressWarnings("java:S4738") //ItemTransforms require Guava ImmutableMap to be passed in so no way to change that to java Map
+		@SuppressWarnings("java:S4738")
+		//ItemTransforms require Guava ImmutableMap to be passed in so no way to change that to java Map
 		private static ItemTransforms createItemTransforms() {
 			return new ItemTransforms(new ItemTransform(
 					new Vector3f(85, -90, 0),
@@ -157,13 +142,14 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			this.modelTransform = modelTransform;
 		}
 
+		@Nonnull
 		@Override
 		public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
 			List<BakedQuad> ret = new ArrayList<>(models.get(ModelPart.BASE).getQuads(state, side, rand));
 			if (state == null) {
-				addLeftSide(null, side, rand, ret, tankLeft);
-				addRightSide(null, side, rand, ret, tankRight);
-				addFront(null, side, rand, ret, battery);
+				addLeftSide(state, side, rand, ret, tankLeft);
+				addRightSide(state, side, rand, ret, tankRight);
+				addFront(state, side, rand, ret, battery);
 			} else {
 				addLeftSide(state, side, rand, ret, state.getValue(LEFT_TANK));
 				addRightSide(state, side, rand, ret, state.getValue(RIGHT_TANK));
@@ -231,7 +217,6 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 
 			FluidVariant fluidVariant = fluidStack.getType();
 			TextureAtlasSprite still = FluidVariantRendering.getSprite(fluidVariant);
-
 			float bx1 = 0;
 			float bx2 = 5;
 			float by1 = 0;
@@ -239,7 +224,6 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			float bz1 = 0;
 			float bz2 = 5;
 
-			//noinspection DataFlowIssue
 			ret.add(createQuad(List.of(getVector(bounds.minX, bounds.maxY, bounds.minZ), getVector(bounds.minX, bounds.maxY, bounds.maxZ), getVector(bounds.maxX, bounds.maxY, bounds.maxZ), getVector(bounds.maxX, bounds.maxY, bounds.minZ)), tintIndex, still, Direction.UP, bx1, bx2, bz1, bz2));
 			ret.add(createQuad(List.of(getVector(bounds.maxX, bounds.maxY, bounds.minZ), getVector(bounds.maxX, bounds.minY, bounds.minZ), getVector(bounds.minX, bounds.minY, bounds.minZ), getVector(bounds.minX, bounds.maxY, bounds.minZ)), tintIndex, still, Direction.NORTH, bx1, bx2, by1, by2));
 			ret.add(createQuad(List.of(getVector(bounds.minX, bounds.maxY, bounds.maxZ), getVector(bounds.minX, bounds.minY, bounds.maxZ), getVector(bounds.maxX, bounds.minY, bounds.maxZ), getVector(bounds.maxX, bounds.maxY, bounds.maxZ)), tintIndex, still, Direction.SOUTH, bx1, bx2, by1, by2));
@@ -273,7 +257,8 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			return true;
 		}
 
-		@SuppressWarnings("java:S1874") //don't have model data to pass in here and just calling getParticleTexture of baked model that doesn't need model data
+		@SuppressWarnings("java:S1874")
+		//don't have model data to pass in here and just calling getParticleTexture of baked model that doesn't need model data
 		@Override
 		public TextureAtlasSprite getParticleIcon() {
 			return models.get(ModelPart.BASE).getParticleIcon();
@@ -350,9 +335,9 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 	}
 
 	private static class BackpackItemOverrideList extends ItemOverrides {
-		private final BackpackDynamicModel.BackpackBakedModel backpackModel;
+		private final BackpackBakedModel backpackModel;
 
-		public BackpackItemOverrideList(BackpackDynamicModel.BackpackBakedModel backpackModel) {
+		public BackpackItemOverrideList(BackpackBakedModel backpackModel) {
 			this.backpackModel = backpackModel;
 		}
 
@@ -362,22 +347,21 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			backpackModel.tankRight = false;
 			backpackModel.tankLeft = false;
 			backpackModel.battery = false;
-			BackpackWrapperLookup.get(stack).ifPresent(backpackWrapper -> {
-				RenderInfo renderInfo = backpackWrapper.getRenderInfo();
-				Map<TankPosition, IRenderedTankUpgrade.TankRenderInfo> tankRenderInfos = renderInfo.getTankRenderInfos();
-				tankRenderInfos.forEach((pos, info) -> {
-					if (pos == TankPosition.LEFT) {
-						backpackModel.tankLeft = true;
-						backpackModel.leftTankRenderInfo = info;
-					} else {
-						backpackModel.tankRight = true;
-						backpackModel.rightTankRenderInfo = info;
-					}
-				});
-				renderInfo.getBatteryRenderInfo().ifPresent(batteryRenderInfo -> {
-					backpackModel.battery = true;
-					backpackModel.batteryRenderInfo = batteryRenderInfo;
-				});
+			IBackpackWrapper backpackWrapper = BackpackWrapper.fromData(stack);
+			RenderInfo renderInfo = backpackWrapper.getRenderInfo();
+			Map<TankPosition, IRenderedTankUpgrade.TankRenderInfo> tankRenderInfos = renderInfo.getTankRenderInfos();
+			tankRenderInfos.forEach((pos, info) -> {
+				if (pos == TankPosition.LEFT) {
+					backpackModel.tankLeft = true;
+					backpackModel.leftTankRenderInfo = info;
+				} else {
+					backpackModel.tankRight = true;
+					backpackModel.rightTankRenderInfo = info;
+				}
+			});
+			renderInfo.getBatteryRenderInfo().ifPresent(batteryRenderInfo -> {
+				backpackModel.battery = true;
+				backpackModel.batteryRenderInfo = batteryRenderInfo;
 			});
 
 			return backpackModel;

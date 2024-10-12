@@ -1,12 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill;
 
 import com.google.common.collect.ImmutableMap;
-
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.StringTag;
@@ -17,6 +11,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockPickResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
@@ -25,15 +24,19 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogic;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IFilteredUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
+import net.p3pp3rf1y.sophisticatedcore.util.CapabilityHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 
 public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrapper, RefillUpgradeItem>
 		implements IFilteredUpgrade, ITickableUpgrade, IBlockPickResponseUpgrade {
@@ -85,25 +88,20 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	}
 
 	@Override
-	public void tick(@Nullable LivingEntity entity, Level world, BlockPos pos) {
-		if (entity == null /*not supported in block form*/ || isInCooldown(world)) {
+	public void tick(@Nullable LivingEntity entity, Level level, BlockPos pos) {
+		if (entity == null /*not supported in block form*/ || isInCooldown(level)) {
 			return;
 		}
-		if (entity instanceof Player player) {
-			FilterLogic.ObservableFilterItemStackHandler filterHandler = filterLogic.getFilterHandler();
-			for (int slot = 0; slot < filterHandler.getSlotCount(); slot++) {
-				ItemStack filter = filterHandler.getStackInSlot(slot);
-				if (filter.isEmpty()) {
-					return;
-				}
-
-				tryRefillFilter(entity, PlayerInventoryStorage.of(player), filter, getTargetSlots().getOrDefault(slot, TargetSlot.ANY));
+		CapabilityHelper.runOnItemHandler(entity, playerInvHandler -> InventoryHelper.iterate(filterLogic.getFilterHandler(), (slot, filter) -> {
+			if (filter.isEmpty()) {
+				return;
 			}
-		}
-		setCooldown(world, COOLDOWN);
+			tryRefillFilter(entity, playerInvHandler, filter, getTargetSlots().getOrDefault(slot, TargetSlot.ANY));
+		}));
+		setCooldown(level, COOLDOWN);
 	}
 
-	private void tryRefillFilter(LivingEntity entity, PlayerInventoryStorage playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
+	private void tryRefillFilter(@Nonnull LivingEntity entity, PlayerInventoryStorage playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
 		if (!(entity instanceof Player player)) {
 			return;
 		}
@@ -121,7 +119,6 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		if (extracted <= 0) {
 			return;
 		}
-
 		ItemStack remaining = targetSlot.filler.fill(player, playerInvHandler, resource.toStack((int) extracted));
 		if (remaining.getCount() != extracted) {
 			try (Transaction ctx = Transaction.openOuter()) {
@@ -141,28 +138,24 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 			return false;
 		}
 
-		int stashSlot = -1;
-		boolean hasItemInBackpack = false;
+		AtomicInteger stashSlot = new AtomicInteger(-1);
+		AtomicBoolean hasItemInBackpack = new AtomicBoolean(false);
 
 		ITrackedContentsItemHandler inventoryHandler = storageWrapper.getInventoryForUpgradeProcessing();
-		for (int slot = 0; slot < inventoryHandler.getSlotCount(); slot++) {
-			ItemStack stack = inventoryHandler.getStackInSlot(slot);
+		InventoryHelper.iterate(inventoryHandler, (slot, stack) -> {
 			if (ItemStack.isSameItemSameTags(stack, filter)) {
-				hasItemInBackpack = true;
-				if (stack.getCount() <= stack.getMaxStackSize()) {
-					stashSlot = slot;
-					break;
-				}
+				hasItemInBackpack.set(true);
+				stashSlot.set(slot);
 			}
-		}
+		}, () -> stashSlot.get() > -1);
 
 		ItemStack mainHandItem = player.getMainHandItem();
 		ItemVariant mainHandResource = ItemVariant.of(mainHandItem);
 
 		ItemVariant filterResource = ItemVariant.of(filter);
-		if (hasItemInBackpack && StorageUtil.simulateExtract(inventoryHandler, filterResource, filter.getMaxStackSize(), null) > 0) {
-			if ((inventoryHandler.getStackInSlot(stashSlot).getCount() > filter.getMaxStackSize() || !inventoryHandler.isItemValid(stashSlot, mainHandResource, mainHandItem.getCount()))
-					&& StorageUtil.simulateInsert(inventoryHandler, mainHandResource, mainHandItem.getCount(), null) > 0) {
+		if (hasItemInBackpack.get() && StorageUtil.simulateExtract(inventoryHandler, filterResource, filter.getMaxStackSize(), null) > 0) {
+			if ((inventoryHandler.getStackInSlot(stashSlot.get()).getCount() > filter.getMaxStackSize() || !inventoryHandler.isItemValid(stashSlot.get(), mainHandResource, mainHandItem.getCount()))
+					&& !mainHandItem.isEmpty() && StorageUtil.simulateInsert(inventoryHandler, mainHandResource, mainHandItem.getCount(), null) == 0) {
 				if (canMoveMainHandToInventory(player)) {
 					try (Transaction ctx = Transaction.openOuter()) {
 						long extracted = inventoryHandler.extract(filterResource, filter.getMaxStackSize(), ctx);
@@ -323,7 +316,6 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 				remaining -= playerInvHandler.insert(resource, remaining, outer);
 				outer.commit();
 			}
-
 			return resource.toStack((int) remaining);
 		}
 

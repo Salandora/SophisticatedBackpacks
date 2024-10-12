@@ -1,0 +1,35 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:magnet_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "minecraft:ender_pearl"
+    },
+    "I": {
+      "tag": "c:iron_ingots"
+    },
+    "L": {
+      "tag": "c:lapis"
+    },
+    "P": {
+      "item": "sophisticatedbackpacks:pickup_upgrade"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    }
+  },
+  "pattern": [
+    "EIE",
+    "IPI",
+    "R L"
+  ],
+  "result": {
+    "item": "sophisticatedbackpacks:magnet_upgrade"
+  }
+}

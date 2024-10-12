@@ -1,0 +1,26 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_2"
+    }
+  ],
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
+  "key": {
+    "G": {
+      "tag": "c:gold_blocks"
+    },
+    "S": {
+      "item": "sophisticatedbackpacks:stack_upgrade_tier_1"
+    }
+  },
+  "pattern": [
+    "GGG",
+    "GSG",
+    "GGG"
+  ],
+  "result": {
+    "id": "sophisticatedbackpacks:stack_upgrade_tier_2"
+  }
+}

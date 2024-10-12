@@ -1,0 +1,26 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:stack_upgrade_tier_3"
+    }
+  ],
+  "type": "sophisticatedcore:shaped_recipe",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "c:diamond_blocks"
+    },
+    "S": {
+      "item": "sophisticatedbackpacks:stack_upgrade_tier_2"
+    }
+  },
+  "pattern": [
+    "DDD",
+    "DSD",
+    "DDD"
+  ],
+  "result": {
+    "id": "sophisticatedbackpacks:stack_upgrade_tier_3"
+  }
+}

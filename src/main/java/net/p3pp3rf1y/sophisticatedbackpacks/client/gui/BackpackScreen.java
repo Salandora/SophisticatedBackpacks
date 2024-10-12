@@ -7,9 +7,9 @@ import net.minecraft.world.inventory.Slot;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenPacket;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
 
 public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 	public static BackpackScreen constructScreen(BackpackContainer screenContainer, Inventory inv, Component title) {
@@ -22,7 +22,7 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256 || KeybindHandler.BACKPACK_OPEN_KEYBIND.matches(keyCode, scanCode)) {
+		if (keyCode == 256 || KeybindHandler.BACKPACK_OPEN_KEYBIND.isDown()) {
 			if (getMenu().isFirstLevelStorage() && (keyCode == 256 || mouseNotOverBackpack())) {
 				if (getMenu().getBackpackContext().wasOpenFromInventory()) {
 					this.minecraft.player.closeContainer();
@@ -32,7 +32,7 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 				}
 				return true;
 			} else if (!getMenu().isFirstLevelStorage()) {
-				SBPPacketHandler.sendToServer(new BackpackOpenMessage());
+				PacketHelper.sendToServer(new BackpackOpenPacket());
 				return true;
 			}
 		}

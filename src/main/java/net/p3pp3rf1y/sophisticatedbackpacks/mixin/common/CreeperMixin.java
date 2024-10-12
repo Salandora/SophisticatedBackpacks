@@ -1,13 +1,12 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.mixin.common;
 
+import net.minecraft.world.entity.monster.Creeper;
+import net.p3pp3rf1y.sophisticatedbackpacks.common.EntityBackpackAdditionHandler;
+import net.p3pp3rf1y.sophisticatedcore.util.MixinHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.world.entity.monster.Creeper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.EntityBackpackAdditionHandler;
-import net.p3pp3rf1y.sophisticatedcore.util.MixinHelper;
 
 @Mixin(Creeper.class)
 public class CreeperMixin {

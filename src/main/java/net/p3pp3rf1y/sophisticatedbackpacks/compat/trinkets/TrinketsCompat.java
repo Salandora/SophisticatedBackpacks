@@ -1,21 +1,20 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.trinkets;
 
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.SlotType;
-import dev.emi.trinkets.api.TrinketInventory;
-import dev.emi.trinkets.api.TrinketsApi;
-import dev.emi.trinkets.api.client.TrinketRendererRegistry;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.SlotType;
+import dev.emi.trinkets.api.TrinketInventory;
+import dev.emi.trinkets.api.TrinketsApi;
+import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -31,7 +30,12 @@ public class TrinketsCompat implements ICompat {
 		return TrinketsApi.getTrinketComponent(player).map(comp -> {
 			String[] identifiers = identifier.split("/");
 			if (identifiers.length == 2) {
-				return getFromHandler.apply(comp.getInventory().get(identifiers[0]).get(identifiers[1]));
+				if (comp.getInventory().containsKey(identifiers[0])) {
+					Map<String, TrinketInventory> group = comp.getInventory().get(identifiers[0]);
+					if (group.containsKey(identifiers[1])) {
+						return getFromHandler.apply(group.get(identifiers[1]));
+					}
+				}
 			}
 			return defaultValue;
 		}).orElse(defaultValue);
@@ -88,7 +92,7 @@ public class TrinketsCompat implements ICompat {
 
 						for (int i = 0; i < trinketInventory.getContainerSize(); i++) {
 							SlotReference ref = new SlotReference(trinketInventory, i);
-							if (TrinketsApi.evaluatePredicateSet(slotType.getTooltipPredicates(), BACKPACK, ref, player)) {
+							if (TrinketsApi.evaluatePredicateSet(slotType.getValidatorPredicates(), BACKPACK, ref, player)) {
 								backpackTrinketIdentifiers.add(group.getKey() + "/" + inventory.getKey());
 							}
 						}

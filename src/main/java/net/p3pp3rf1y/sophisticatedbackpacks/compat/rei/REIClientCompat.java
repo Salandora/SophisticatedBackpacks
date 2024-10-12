@@ -1,5 +1,15 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.rei;
 
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
+import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
+import net.p3pp3rf1y.sophisticatedbackpacks.compat.common.DyeRecipesMaker;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedcore.compat.common.ClientRecipeHelper;
+import net.p3pp3rf1y.sophisticatedcore.compat.rei.StorageGhostIngredientHandler;
+import net.p3pp3rf1y.sophisticatedcore.crafting.UpgradeNextTierRecipe;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
@@ -10,17 +20,6 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import me.shedaniel.rei.plugin.common.BuiltinPlugin;
-
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
-import net.p3pp3rf1y.sophisticatedbackpacks.compat.common.DyeRecipesMaker;
-import net.p3pp3rf1y.sophisticatedbackpacks.crafting.BackpackUpgradeRecipe;
-import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
-import net.p3pp3rf1y.sophisticatedcore.compat.common.ClientRecipeHelper;
-import net.p3pp3rf1y.sophisticatedcore.compat.rei.StorageGhostIngredientHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,7 +72,7 @@ public class REIClientCompat implements REIClientPlugin {
     @Override
     public void registerDisplays(DisplayRegistry registry) {
         registerRecipes(registry, DyeRecipesMaker.getRecipes(), BuiltinPlugin.CRAFTING);
-        registerRecipes(registry, ClientRecipeHelper.getAndTransformAvailableRecipes(BackpackUpgradeRecipe.REGISTERED_RECIPES, ShapedRecipe.class, ClientRecipeHelper::copyShapedRecipe), BuiltinPlugin.CRAFTING);
+        registerRecipes(registry, ClientRecipeHelper.transformAllRecipesOfType(RecipeType.CRAFTING, UpgradeNextTierRecipe.class, ClientRecipeHelper::copyShapedRecipe), BuiltinPlugin.CRAFTING);
     }
 
     public static void registerRecipes(DisplayRegistry registry, Collection<?> recipes, CategoryIdentifier<?> identifier) {

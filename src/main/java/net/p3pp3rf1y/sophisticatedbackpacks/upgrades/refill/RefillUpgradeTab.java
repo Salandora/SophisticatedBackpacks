@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -140,7 +139,7 @@ public abstract class RefillUpgradeTab extends UpgradeSettingsTab<RefillUpgradeC
 					guiGraphics.drawString(font, targetSlot.getAcronym(),
 							getX() + (slotIndex % slotsInRow) * 18 + 10, getY() + (slotIndex / slotsInRow) * 18 + 2, DyeColor.GREEN.getTextColor());
 				}
-					});
+			});
 
 			poseStack.popPose();
 		}
@@ -163,7 +162,7 @@ public abstract class RefillUpgradeTab extends UpgradeSettingsTab<RefillUpgradeC
 		}
 
 		@Override
-		public boolean mouseScrolled(double mouseX, double mouseY, double pDelta) {
+		public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 			int slot = getSlot(mouseX, mouseY);
 
 			if (slotBeingChanged == -1) {
@@ -171,7 +170,7 @@ public abstract class RefillUpgradeTab extends UpgradeSettingsTab<RefillUpgradeC
 				targetSlotBeingChanged = getContainer().getTargetSlot(slot);
 			}
 
-			targetSlotBeingChanged = pDelta > 0 ? targetSlotBeingChanged.next() : targetSlotBeingChanged.previous();
+			targetSlotBeingChanged = scrollY > 0 ? targetSlotBeingChanged.next() : targetSlotBeingChanged.previous();
 
 			return true;
 		}

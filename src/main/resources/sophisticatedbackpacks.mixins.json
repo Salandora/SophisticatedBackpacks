@@ -9,20 +9,20 @@
         "common.EnderDragonMixin",
         "common.ExplosionDamageCalculatorMixin",
         "common.PiglinAiMixin",
-        "common.PlayerInventoryMixin",
         "common.WitherBossMixin",
         "common.WitherSkullMixin",
         "common.accessor.AnvilMenuAccessor",
         "common.accessor.ItemAccessor",
         "common.accessor.ItemEntityAccessor",
+        "common.accessor.LootTableAccessor",
         "common.accessor.RecordItemAccessor",
         "common.accessor.ShapedRecipeAccessor",
         "common.accessor.SmithingTransformRecipeAccessor"
     ],
     "client": [
-        "client.CreativeModeInventoryScreenSlotWrapperMixin",
         "client.ItemInHandRendererMixin",
-        "client.accessor.ItemRendererAccessor", "client.accessor.VertexFormatAccessor"
+        "client.accessor.ItemRendererAccessor",
+        "client.accessor.VertexFormatAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -16,8 +17,8 @@ public class EverlastingBackpackItemEntity extends ItemEntity {
 	// Add an age property here, so we can use the unlimited Lifetime and have the item rotation work normally
 	private int age;
 
-	public EverlastingBackpackItemEntity(EntityType<? extends ItemEntity> type, Level world) {
-		super(type, world);
+	public EverlastingBackpackItemEntity(EntityType<? extends ItemEntity> type, Level level) {
+		super(type, level);
 		age = 0;
 		setUnlimitedLifetime();
 		//lifespan = Integer.MAX_VALUE; //set to not despawn
@@ -29,9 +30,9 @@ public class EverlastingBackpackItemEntity extends ItemEntity {
 			double d0 = getX() + 0.5F - random.nextFloat();
 			double d1 = getY() + random.nextFloat() * 0.5F;
 			double d2 = getZ() + 0.5F - random.nextFloat();
-			ServerLevel serverWorld = (ServerLevel) level();
+			ServerLevel serverLevel = (ServerLevel) level();
 			if (random.nextInt(20) == 0) {
-				serverWorld.sendParticles(ParticleTypes.HAPPY_VILLAGER, d0, d1, d2, 0, 0, 0.1D, 0, 1f);
+				serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, d0, d1, d2, 0, 0, 0.1D, 0, 1f);
 			}
 		}
 		if (!isNoGravity()) {
@@ -58,7 +59,7 @@ public class EverlastingBackpackItemEntity extends ItemEntity {
 	}
 
 	@Override
-	public boolean ignoreExplosion() {
+	public boolean ignoreExplosion(Explosion explosion) {
 		return true;
 	}
 

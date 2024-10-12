@@ -5,18 +5,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class BackpackAccessLogger {
 	private static final int REFRESH_INTERVAL_SECONDS = 30;
 
-	private BackpackAccessLogger() {}
+	private BackpackAccessLogger() {
+	}
 
 	private static long lastCacheRefresh = 0;
 	private static final Map<String, Set<AccessLogRecord>> playerLogCache = new HashMap<>();

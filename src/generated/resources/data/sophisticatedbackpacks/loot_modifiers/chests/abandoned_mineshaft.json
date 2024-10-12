@@ -1,0 +1,14 @@
+{
+  "type": "sophisticatedbackpacks:inject_loot",
+  "conditions": [
+    {
+      "condition": "sophisticatedbackpacks:loot_enabled"
+    },
+    {
+      "condition": "porting_lib:loot_table_id",
+      "value": "minecraft:chests/abandoned_mineshaft"
+    }
+  ],
+  "loot_table": "sophisticatedbackpacks:inject/chests/abandoned_mineshaft",
+  "loot_table_to_inject_into": "minecraft:chests/abandoned_mineshaft"
+}

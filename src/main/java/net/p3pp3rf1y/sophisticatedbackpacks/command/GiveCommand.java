@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.command;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
-
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -14,14 +13,16 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackAccessLogger;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
 
 import java.util.Collection;
 import java.util.UUID;
 
 public class GiveCommand {
-	private GiveCommand() {}
+	private GiveCommand() {
+	}
 
 	@SuppressWarnings("java:S1452")
 	static ArgumentBuilder<CommandSourceStack, ?> register() {
@@ -40,11 +41,10 @@ public class GiveCommand {
 			if (!backpack.getHoverName().getString().equals(alr.getBackpackName())) {
 				backpack.setHoverName(Component.literal(alr.getBackpackName()));
 			}
-			BackpackWrapperLookup.get(backpack).ifPresent(backpackWrapper -> {
-				backpackWrapper.setColors(alr.getClothColor(), alr.getTrimColor());
-				backpackWrapper.setColumnsTaken(alr.getColumnsTaken(), false);
-				backpackWrapper.setContentsUuid(backpackUuid);
-			});
+			IBackpackWrapper backpackWrapper = BackpackWrapper.fromData(backpack);
+			backpackWrapper.setColors(alr.getClothColor(), alr.getTrimColor());
+			backpackWrapper.setColumnsTaken(alr.getColumnsTaken(), false);
+			backpackWrapper.setContentsUuid(backpackUuid);
 
 			players.forEach(p -> giveBackpackToPlayer(backpack, p));
 
@@ -72,7 +72,7 @@ public class GiveCommand {
 			ItemEntity itementity = p.drop(backpack, false);
 			if (itementity != null) {
 				itementity.setNoPickUpDelay();
-				itementity.setThrower(p.getUUID());
+				itementity.setThrower(p);
 			}
 		}
 

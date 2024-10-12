@@ -21,11 +21,11 @@ public interface IBlockToolSwapUpgrade {
 	/**
 	 * Called when player presses tool swap keybind over a block
 	 *
-	 * @param world      World
+	 * @param level      World
 	 * @param pos        Position of the block
 	 * @param blockState Its blockstate
 	 * @param player     Player that pressed the key
 	 * @return true if the keypress was handled by this upgrade and no other {@link IBlockToolSwapUpgrade} upgrades should process their logic
 	 */
-	boolean onBlockInteract(Level world, BlockPos pos, BlockState blockState, Player player);
+	boolean onBlockInteract(Level level, BlockPos pos, BlockState blockState, Player player);
 }

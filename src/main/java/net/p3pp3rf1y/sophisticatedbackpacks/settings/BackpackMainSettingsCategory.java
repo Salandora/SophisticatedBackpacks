@@ -1,8 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings;
 
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.p3pp3rf1y.sophisticatedcore.settings.MainSetting;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
 import net.p3pp3rf1y.sophisticatedcore.settings.main.MainSettingsCategory;
@@ -20,14 +20,14 @@ public class BackpackMainSettingsCategory extends MainSettingsCategory<BackpackM
 	static {
 		SettingsManager.addSetting(ANOTHER_PLAYER_CAN_OPEN);
 
-		ServerPlayerEvents.AFTER_RESPAWN.register(BackpackMainSettingsCategory::onPlayerClone);
+		ServerPlayerEvents.COPY_FROM.register(BackpackMainSettingsCategory::onPlayerClone);
 	}
 
 	public BackpackMainSettingsCategory(CompoundTag categoryNbt, Consumer<CompoundTag> saveNbt) {
 		super(categoryNbt, saveNbt, SOPHISTICATED_BACKPACK_SETTINGS_PLAYER_TAG);
 	}
 
-	private static void onPlayerClone(ServerPlayer newPlayer, ServerPlayer oldPlayer, boolean wasDeath) {
+	private static void onPlayerClone(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wasDeath) {
 		CompoundTag oldData = oldPlayer.getSophisticatedCustomData();
 		CompoundTag newData = newPlayer.getSophisticatedCustomData();
 
