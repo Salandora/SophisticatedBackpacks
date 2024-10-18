@@ -457,6 +457,8 @@ tasks.register('generateChangelog') {
         def features = []
         def fixes = []
         def compatibility = []
+        def mergedFeatures = []
+        def mergedFixes = []
         def cleanup = false
         commitMessages.each { String commitMessage ->
             commitMessage = removeHighUnicodeChars(commitMessage) // Remove high Unicode characters
@@ -472,6 +474,10 @@ tasks.register('generateChangelog') {
                 compatibility.add(commitMessage.replaceFirst('\\[Compatibility]: ', '').trim())
             } else if (commitMessage.startsWith('[Cleanup]: ')) {
                 cleanup = true
+            } else if (commitMessage.startsWith('feat: ')) {
+                mergedFeatures.add(commitMessage.replaceFirst('feat: ', '').trim())
+            } else if (commitMessage.startsWith('fix: ')) {
+                mergedFixes.add(commitMessage.replaceFirst('fix: ', '').trim())
             }
         }
 
@@ -505,6 +511,23 @@ tasks.register('generateChangelog') {
             changelog.append("### Compatibility\n")
             compatibility.each { comp -> changelog.append("- ${formatMultilineMessage(comp)}\n") }
             changelog.append("\n")
+        }
+
+        if (mergedFeatures || mergedFixes) {
+            changelog.append("\n")
+            changelog.append("## Merged from upstream\n")
+
+            if (mergedFeatures) {
+                changelog.append("### Features\n")
+                mergedFeatures.each { feature -> changelog.append("- ${formatMultilineMessage(feature)}\n") }
+                changelog.append("\n")
+            }
+
+            if (mergedFixes) {
+                changelog.append("### Fixes\n")
+                mergedFixes.each { fix -> changelog.append("- ${formatMultilineMessage(fix)}\n") }
+                changelog.append("\n")
+            }
         }
 
         // Store the changelog in a project property or an environment variable
