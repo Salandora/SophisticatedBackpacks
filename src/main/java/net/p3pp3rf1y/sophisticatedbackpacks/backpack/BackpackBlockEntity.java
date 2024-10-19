@@ -1,17 +1,15 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
+import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import team.reborn.energy.api.EnergyStorage;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
-import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
@@ -24,7 +22,9 @@ import net.p3pp3rf1y.sophisticatedcore.inventory.CachedFailedInsertInventoryHand
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
+import net.p3pp3rf1y.sophisticatedcore.util.RegistryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
+import team.reborn.energy.api.EnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -49,18 +49,11 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	private EnergyStorage externalEnergyStorage;
 
 	public BackpackBlockEntity(BlockPos pos, BlockState state) {
-		super(BACKPACK_TILE_TYPE, pos, state);
-
-		ServerChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> onChunkUnloaded());
-		ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((be, world) -> {
-			if (be == this) {
-				invalidateHandlers();
-			}
-		});
+		super(BACKPACK_TILE_TYPE.get(), pos, state);
 	}
 
 	public void setBackpack(ItemStack backpack) {
-		backpackWrapper = BackpackWrapper.fromData(backpack);
+		backpackWrapper = BackpackWrapper.fromStack(backpack);
 		backpackWrapper.setSaveHandler(() -> {
 			setChanged();
 			updateBlockRender = false;
@@ -71,11 +64,11 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void load(CompoundTag tag) {
-		super.load(tag);
+	public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.loadAdditional(tag, registries);
 		setBackpackFromNbt(tag);
 
-		// If updateBlockRender exists we are in a update packet load
+		// If updateBlockRender exists we are in an update packet load
 		if (tag.contains("updateBlockRender")) {
 			if (tag.getBoolean("updateBlockRender")) {
 				WorldHelper.notifyBlockUpdate(this);
@@ -99,26 +92,25 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	private void setBackpackFromNbt(CompoundTag nbt) {
-		setBackpack(ItemStack.of(nbt.getCompound("backpackData")));
+		RegistryHelper.getRegistryAccess().ifPresent(registryAccess -> setBackpack(ItemStack.parseOptional(registryAccess, nbt.getCompound("backpackData"))));
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag tag) {
-		super.saveAdditional(tag);
-		writeBackpack(tag);
+	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.saveAdditional(tag, registries);
+		writeBackpack(tag, registries);
 		saveControllerPos(tag);
 	}
 
-	private void writeBackpack(CompoundTag ret) {
+	private void writeBackpack(CompoundTag ret, HolderLookup.Provider registries) {
 		ItemStack backpackCopy = backpackWrapper.getBackpack().copy();
-		backpackCopy.setTag(backpackCopy.getTag());
-		ret.put("backpackData", backpackCopy.save(new CompoundTag()));
+		ret.put("backpackData", backpackCopy.save(registries));
 	}
 
 	@Override
-	public CompoundTag getUpdateTag() {
-		CompoundTag ret = super.getUpdateTag();
-		writeBackpack(ret);
+	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+		CompoundTag ret = super.getUpdateTag(registries);
+		writeBackpack(ret, registries);
 		ret.putBoolean("updateBlockRender", updateBlockRender);
 		updateBlockRender = true;
 		return ret;
@@ -129,6 +121,20 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	public ClientboundBlockEntityDataPacket getUpdatePacket() {
 		return ClientboundBlockEntityDataPacket.create(this);
 	}
+
+	/** This is inside {@link #loadAdditional} **/
+	/*@Override
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+		CompoundTag tag = pkt.getTag();
+		if (tag == null) {
+			return;
+		}
+
+		setBackpackFromNbt(tag);
+		if (tag.getBoolean("updateBlockRender")) {
+			WorldHelper.notifyBlockUpdate(this);
+		}
+	}*/
 
 	public IBackpackWrapper getBackpackWrapper() {
 		return backpackWrapper;
@@ -256,7 +262,9 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 		}
 	}
 
+	@Override
 	public void onChunkUnloaded() {
+		super.onChunkUnloaded();
 		chunkBeingUnloaded = true;
 	}
 

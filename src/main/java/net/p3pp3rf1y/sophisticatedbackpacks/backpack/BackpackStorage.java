@@ -1,9 +1,11 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -26,16 +28,19 @@ public class BackpackStorage extends SavedData {
 	}
 
 	public static BackpackStorage get() {
-		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
-			ServerLevel overworld = SophisticatedCore.getCurrentServer().getLevel(Level.OVERWORLD);
-			//noinspection ConstantConditions - by this time overworld is loaded
-			DimensionDataStorage storage = overworld.getDataStorage();
-			return storage.computeIfAbsent(new Factory<>(BackpackStorage::new, BackpackStorage::load, null), SAVED_DATA_NAME);
+		if (SophisticatedCore.isLogicalServerThread()) {
+			MinecraftServer server = SophisticatedCore.getCurrentServer();
+			if (server != null) {
+				ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+				//noinspection ConstantConditions - by this time overworld is loaded
+				DimensionDataStorage storage = overworld.getDataStorage();
+				return storage.computeIfAbsent(new Factory<>(BackpackStorage::new, BackpackStorage::load, null), SAVED_DATA_NAME);
+			}
 		}
 		return clientStorageCopy;
 	}
 
-	public static BackpackStorage load(CompoundTag nbt) {
+	public static BackpackStorage load(CompoundTag nbt, HolderLookup.Provider registries) {
 		BackpackStorage storage = new BackpackStorage();
 		readBackpackContents(nbt, storage);
 		readAccessLogs(nbt, storage);
@@ -59,7 +64,7 @@ public class BackpackStorage extends SavedData {
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag compound) {
+	public CompoundTag save(CompoundTag compound, HolderLookup.Provider registries) {
 		CompoundTag ret = new CompoundTag();
 		writeBackpackContents(ret);
 		writeAccessLogs(ret);

@@ -1,8 +1,15 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
+import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
+import io.github.fabricators_of_create.porting_lib.loot.LootTableIdCondition;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -11,25 +18,18 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import io.github.fabricators_of_create.porting_lib.loot.GlobalLootModifierProvider;
-import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
-import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
-import io.github.fabricators_of_create.porting_lib.loot.LootTableIdCondition;
+import net.p3pp3rf1y.porting_lib.loot.GlobalLootModifierProvider;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
-import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.LootTableAccessor;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class SBLootModifierProvider extends GlobalLootModifierProvider {
 
-	SBLootModifierProvider(FabricDataOutput packOutput) {
-		super(packOutput, SophisticatedBackpacks.MOD_ID);
+	SBLootModifierProvider(FabricDataOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
+		super(packOutput, registries, SophisticatedBackpacks.MOD_ID);
 	}
 
 	@Override
@@ -44,50 +44,49 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 		addInjectLootTableModifier(SBInjectLootSubProvider.NETHER_BRIDGE, BuiltInLootTables.NETHER_BRIDGE);
 	}
 
-	private void addInjectLootTableModifier(ResourceLocation lootTable, ResourceLocation lootTableToInjectInto) {
-		add(lootTableToInjectInto.getPath(), new InjectLootModifier(lootTable, lootTableToInjectInto));
+	private void addInjectLootTableModifier(ResourceKey<LootTable> lootTable, ResourceKey<LootTable> lootTableToInjectInto) {
+		add(lootTableToInjectInto.location().getPath(), new InjectLootModifier(lootTable, lootTableToInjectInto));
 	}
 
 	public static class InjectLootModifier extends LootModifier {
-		// Porting-Lib is not up to date for the LOOT_CONDITIONS_CODEC so we need to patch it here
-		static final Codec<LootItemCondition[]> LOOT_CONDITIONS_CODEC = LootItemConditions.CODEC.listOf().xmap(list -> list.toArray(LootItemCondition[]::new), List::of);
-		public static final Codec<InjectLootModifier> CODEC = RecordCodecBuilder.create(inst -> inst.group(LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions)).and(
+		public static final MapCodec<InjectLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> LootModifier.codecStart(inst).and(
 				inst.group(
-						ResourceLocation.CODEC.fieldOf("loot_table").forGetter(m -> m.lootTable),
-						ResourceLocation.CODEC.fieldOf("loot_table_to_inject_into").forGetter(m -> m.lootTableToInjectInto)
+						ResourceKey.codec(Registries.LOOT_TABLE).fieldOf("loot_table").forGetter(m -> m.lootTable),
+						ResourceKey.codec(Registries.LOOT_TABLE).fieldOf("loot_table_to_inject_into").forGetter(m -> m.lootTableToInjectInto)
 				)
 		).apply(inst, InjectLootModifier::new));
-		private final ResourceLocation lootTable;
-		private final ResourceLocation lootTableToInjectInto;
+		private final ResourceKey<LootTable> lootTable;
+		private final ResourceKey<LootTable> lootTableToInjectInto;
 		private BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
 
-		protected InjectLootModifier(LootItemCondition[] conditions, ResourceLocation lootTable, ResourceLocation lootTableToInjectInto) {
+		protected InjectLootModifier(LootItemCondition[] conditions, ResourceKey<LootTable> lootTable, ResourceKey<LootTable> lootTableToInjectInto) {
 			super(conditions);
 			this.lootTable = lootTable;
 			this.lootTableToInjectInto = lootTableToInjectInto;
 		}
 
-		protected InjectLootModifier(ResourceLocation lootTable, ResourceLocation lootTableToInjectInto) {
+		protected InjectLootModifier(ResourceKey<LootTable> lootTable, ResourceKey<LootTable>lootTableToInjectInto) {
 			this(new LootItemCondition[] {SBLootEnabledCondition.builder().build(),
-					LootTableIdCondition.builder(lootTableToInjectInto).build()}, lootTable, lootTableToInjectInto);
+					LootTableIdCondition.builder(lootTableToInjectInto.location()).build()}, lootTable, lootTableToInjectInto);
 		}
 
 		@Override
 		protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-			LootTable table = context.getResolver().getLootTable(lootTable);
-			getRandomItemsRaw(table, context, generatedLoot::add);
+			context.getResolver().get(Registries.LOOT_TABLE, lootTable).ifPresent(extraTable -> {
+				getRandomItemsRaw(extraTable.value(), context, LootTable.createStackSplitter(context.getLevel(), generatedLoot::add));
+			});
 			return generatedLoot;
 		}
 
 		public void getRandomItemsRaw(LootTable table, LootContext context, Consumer<ItemStack> lootConsumer) {
 			if (compositeFunction == null) {
-				compositeFunction = LootItemFunctions.compose(((LootTableAccessor) table).getFunctions());
+				compositeFunction = LootItemFunctions.compose(table.functions);
 			}
 
 			LootContext.VisitedEntry<?> visitedEntry = LootContext.createVisitedEntry(table);
 			if (context.pushVisitedElement(visitedEntry)) {
 				Consumer<ItemStack> consumer = LootItemFunction.decorate(compositeFunction, lootConsumer, context);
-				for (LootPool lootPool : ((LootTableAccessor) table).getPools()) {
+				for (LootPool lootPool : table.pools) {
 					lootPool.addRandomItems(consumer, context);
 				}
 
@@ -99,8 +98,8 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 		}
 
 		@Override
-		public Codec<? extends IGlobalLootModifier> codec() {
-			return ModItems.INJECT_LOOT;
+		public MapCodec<? extends IGlobalLootModifier> codec() {
+			return ModItems.INJECT_LOOT.get();
 		}
 	}
 }

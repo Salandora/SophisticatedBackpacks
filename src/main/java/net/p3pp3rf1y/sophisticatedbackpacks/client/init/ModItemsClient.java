@@ -52,8 +52,8 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeTab;
 
 public class ModItemsClient {
 	public static void registerScreens() {
-		MenuScreens.register(ModItems.BACKPACK_CONTAINER_TYPE, BackpackScreen::constructScreen);
-		MenuScreens.register(ModItems.SETTINGS_CONTAINER_TYPE, BackpackSettingsScreen::constructScreen);
+		MenuScreens.register(ModItems.BACKPACK_CONTAINER_TYPE.get(), BackpackScreen::constructScreen);
+		MenuScreens.register(ModItems.SETTINGS_CONTAINER_TYPE.get(), BackpackSettingsScreen::constructScreen);
 
 		UpgradeGuiManager.registerTab(ModItems.PICKUP_BASIC_TYPE, (ContentsFilteredUpgradeContainer<PickupUpgradeWrapper> uc, Position p, StorageScreenBase<?> s) ->
 				new PickupUpgradeTab.Basic(uc, p, s, Config.SERVER.pickupUpgrade.slotsInRow.get(), SBPButtonDefinitions.BACKPACK_CONTENTS_FILTER_TYPE));
@@ -114,5 +114,6 @@ public class ModItemsClient {
 		UpgradeGuiManager.registerTab(ModItems.XP_PUMP_TYPE, (XpPumpUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) ->
 				new XpPumpUpgradeTab(upgradeContainer, position, screen, Config.SERVER.xpPumpUpgrade.mendingOn.get()));
 		UpgradeGuiManager.registerTab(ModItems.ANVIL_TYPE, AnvilUpgradeTab::new);
+
 	}
 }

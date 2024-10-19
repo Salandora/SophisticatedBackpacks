@@ -14,9 +14,6 @@
     },
     "environment": "*",
     "entrypoints": {
-        "preLaunch": [
-            "net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacksPreLaunch"
-        ],
         "main": [
             "net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks"
         ],
@@ -53,7 +50,7 @@
         "team_reborn_energy": ">=${energy_version}",
         "porting_lib_loot": ">=${port_lib_version}",
         "porting_lib_model_loader": ">=${port_lib_version}",
-        "porting_lib_tool_actions": ">=${port_lib_version}",
+        "porting_lib_item_abilities": ">=${port_lib_version}",
         "porting_lib_transfer": ">=${port_lib_version}"
     },
     "suggests": {

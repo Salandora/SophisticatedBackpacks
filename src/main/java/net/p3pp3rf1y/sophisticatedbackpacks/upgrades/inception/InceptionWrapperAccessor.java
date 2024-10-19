@@ -3,7 +3,11 @@ package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeWrapperAccessor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InceptionWrapperAccessor implements IUpgradeWrapperAccessor {
 	private final Map<Class<?>, List<?>> interfaceWrappers = new HashMap<>();

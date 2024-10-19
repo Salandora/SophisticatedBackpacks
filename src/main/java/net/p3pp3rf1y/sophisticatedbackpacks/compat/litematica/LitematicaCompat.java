@@ -2,17 +2,18 @@ package net.p3pp3rf1y.sophisticatedbackpacks.compat.litematica;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsPacket;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.compat.ICompat;
 import net.p3pp3rf1y.sophisticatedcore.compat.litematica.LitematicaCompat.LitematicaWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.InventoryHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeHandler;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACKS;
 import static net.p3pp3rf1y.sophisticatedcore.compat.litematica.LitematicaCompat.LITEMATICA_CAPABILITY;
 
 public class LitematicaCompat implements ICompat {
@@ -34,6 +35,9 @@ public class LitematicaCompat implements ICompat {
 
 	@Override
 	public void setup() {
-		LITEMATICA_CAPABILITY.registerForItems((stack, context) -> new LitematicaWrapper(BackpackWrapper.fromData(stack), (uuid) -> new BackpackContentsPacket(uuid, getBackpackTag(uuid))), BACKPACKS);
+		LITEMATICA_CAPABILITY.registerForItems(
+				(stack, context) -> new LitematicaWrapper(BackpackWrapper.fromStack(stack), (uuid) -> new LitematicaBackpackContentsPayload(uuid, getBackpackTag(uuid))),
+				ModItems.BACKPACKS.stream().map(Supplier::get).toArray(BackpackItem[]::new)
+		);
 	}
 }

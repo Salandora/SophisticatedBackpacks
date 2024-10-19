@@ -1,13 +1,21 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.Codec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
+import net.p3pp3rf1y.sophisticatedcore.util.StreamCodecHelper;
 
 import java.util.Map;
 
 public enum InventoryOrder implements StringRepresentable {
 	MAIN_FIRST("main_first"),
 	INCEPTED_FIRST("incepted_first");
+
+
+	public static final Codec<InventoryOrder> CODEC = StringRepresentable.fromEnum(InventoryOrder::values);
+	public static final StreamCodec<FriendlyByteBuf, InventoryOrder> STREAM_CODEC = StreamCodecHelper.enumCodec(InventoryOrder.class);
 
 	private final String name;
 

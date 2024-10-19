@@ -75,7 +75,7 @@ public class InceptionFluidHandler implements IStorageFluidHandler {
 					return drainedStack;
 				}
 				if (!drainedStack.isEmpty()) {
-					stackToDrain = new FluidStack(drainedStack, maxDrain - drainedStack.getAmount());
+					stackToDrain = new FluidStack(drainedStack.getFluid(), maxDrain - drainedStack.getAmount());
 				}
 			} else {
 				long amountDrained = fluidHandler.extract(stackToDrain, ctx, ignoreInOutLimit).getAmount();
@@ -99,12 +99,13 @@ public class InceptionFluidHandler implements IStorageFluidHandler {
 			if (drained == resource.getAmount()) {
 				return resource;
 			}
-			toDrain = new FluidStack(toDrain, resource.getAmount() - drained);
+			toDrain = new FluidStack(toDrain.getFluid(), resource.getAmount() - drained);
 		}
 
-		return drained == 0 ? FluidStack.EMPTY : new FluidStack(resource, drained);
+		return drained == 0 ? FluidStack.EMPTY : new FluidStack(resource.getFluid(), drained);
 	}
 
+	@Nonnull
 	@Override
 	public FluidStack extract(int maxDrain, TransactionContext ctx, boolean ignoreInOutLimit) {
 		for (IStorageFluidHandler fluidHandler : fluidHandlers) {
@@ -128,7 +129,6 @@ public class InceptionFluidHandler implements IStorageFluidHandler {
 
 		return maxDrain - remaining;
 	}
-
 
 	@Nonnull
 	@Override

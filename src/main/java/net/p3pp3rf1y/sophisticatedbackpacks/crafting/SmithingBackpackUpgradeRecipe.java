@@ -1,15 +1,14 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.crafting;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.world.Container;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
-import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.SmithingTransformRecipeAccessor;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.crafting.IWrapperRecipe;
 import net.p3pp3rf1y.sophisticatedcore.crafting.RecipeWrapperSerializer;
@@ -20,7 +19,7 @@ public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe imple
 	private final SmithingTransformRecipe compose;
 
 	public SmithingBackpackUpgradeRecipe(SmithingTransformRecipe compose) {
-		super(((SmithingTransformRecipeAccessor) compose).getTemplate(), ((SmithingTransformRecipeAccessor) compose).getBase(), ((SmithingTransformRecipeAccessor) compose).getAddition(), ((SmithingTransformRecipeAccessor) compose).getResult());
+		super(compose.template, compose.base, compose.addition, compose.result);
 		this.compose = compose;
 	}
 
@@ -30,18 +29,18 @@ public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe imple
 	}
 
 	@Override
-	public ItemStack assemble(Container inv, RegistryAccess registryAccess) {
-		ItemStack upgradedBackpack = ((SmithingTransformRecipeAccessor) this).getResult().copy();
-		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
-			getBackpack(inv).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
-			IBackpackWrapper wrapper = BackpackWrapper.fromData(upgradedBackpack);
+	public ItemStack assemble(SmithingRecipeInput inv, HolderLookup.Provider registryAccess) {
+		ItemStack upgradedBackpack = result.copy();
+		if (SophisticatedCore.isLogicalServerThread()) {
+			getBackpack(inv).map(ItemStack::getComponents).ifPresent(upgradedBackpack::applyComponents);
+			IBackpackWrapper wrapper = BackpackWrapper.fromStack(upgradedBackpack);
 			BackpackItem backpackItem = ((BackpackItem) upgradedBackpack.getItem());
 			wrapper.setSlotNumbers(backpackItem.getNumberOfSlots(), backpackItem.getNumberOfUpgradeSlots());
 		}
 		return upgradedBackpack;
 	}
 
-	private Optional<ItemStack> getBackpack(Container inv) {
+	private Optional<ItemStack> getBackpack(SmithingRecipeInput inv) {
 		ItemStack slotStack = inv.getItem(1);
 		if (slotStack.getItem() instanceof BackpackItem) {
 			return Optional.of(slotStack);
@@ -51,7 +50,7 @@ public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe imple
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return ModItems.SMITHING_BACKPACK_UPGRADE_RECIPE_SERIALIZER;
+		return ModItems.SMITHING_BACKPACK_UPGRADE_RECIPE_SERIALIZER.get();
 	}
 
 	@Override

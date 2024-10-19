@@ -21,7 +21,7 @@ public class BackpackAccessLogger {
 			return;
 		}
 		//noinspection ConstantConditions - at this point the registry name of item exists for sure otherwise the player wouldn't be able to open the backpack
-		BackpackStorage.get().putAccessLog(new AccessLogRecord(BuiltInRegistries.ITEM.getKey(backpackItem), backpackUuid, player.getDisplayName().getString(), backpackName, clothColor, trimColor, Util.getEpochMillis(), columnsTaken));
+		BackpackStorage.get().putAccessLog(new AccessLogRecord(BuiltInRegistries.ITEM.getKey(backpackItem), backpackUuid, player.getGameProfile().getName(), backpackName, clothColor, trimColor, Util.getEpochMillis(), columnsTaken));
 	}
 
 	public static Set<String> getPlayerNames() {

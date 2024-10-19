@@ -7,7 +7,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.AnvilMenuAccessor;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SlotSuppliedHandler;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerBase;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
@@ -20,7 +19,7 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 	private static final String DATA_SHIFT_CLICK_INTO_STORAGE = "shiftClickIntoStorage";
 	private final Slot resultSlot;
 
-	private PersistableAnvilMenu anvilMenuDelegate;
+	private final PersistableAnvilMenu anvilMenuDelegate;
 	private Runnable nameChangeListener = () -> {};
 	private boolean processingOnTakeLogic = false;
 	public AnvilUpgradeContainer(Player player, int upgradeContainerId, AnvilUpgradeWrapper upgradeWrapper, UpgradeContainerType<AnvilUpgradeWrapper, AnvilUpgradeContainer> type) {
@@ -130,8 +129,8 @@ public class AnvilUpgradeContainer extends UpgradeContainerBase<AnvilUpgradeWrap
 		}
 
 		@Override
-		protected SimpleContainer createContainer(int p_267204_) {
-			return new SimpleContainer(p_267204_) {
+		protected SimpleContainer createContainer(int size) {
+			return new SimpleContainer(size) {
 				public void setChanged() {
 					super.setChanged();
 					slotsChanged(this);

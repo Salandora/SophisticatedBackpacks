@@ -1,15 +1,15 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
-import net.minecraft.world.item.ItemStack;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedSlottedStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
-import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
+import net.minecraft.world.item.ItemStack;
+import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 
 import java.util.List;
 import java.util.Optional;
 
-public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedSlottedStorage<ItemVariant, S> implements SlottedStackStorage {
+public class CombinedInvWrapper<S extends IItemHandlerSimpleInserter> extends CombinedSlottedStorage<ItemVariant, S> implements IItemHandlerSimpleInserter {
     protected final int[] baseIndex;
     protected final int slotCount;
 
@@ -31,8 +31,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
     }
 
     // returns the handler index for the slot
-    protected int getIndexForSlot(int slot)
-    {
+    protected int getIndexForSlot(int slot) {
         if (slot < 0)
             return -1;
 
@@ -46,8 +45,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
         return -1;
     }
 
-    protected Optional<SlottedStackStorage> getHandlerFromIndex(int index)
-    {
+    protected Optional<S> getHandlerFromIndex(int index) {
         if (index < 0 || index >= parts.size())
         {
             return Optional.empty();
@@ -55,8 +53,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
         return Optional.of(parts.get(index));
     }
 
-    protected int getSlotFromIndex(int slot, int index)
-    {
+    protected int getSlotFromIndex(int slot, int index) {
         if (index <= 0 || index >= baseIndex.length)
         {
             return slot;
@@ -72,7 +69,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
     @Override
     public void setStackInSlot(int slot, ItemStack stack) {
         int index = getIndexForSlot(slot);
-        Optional<SlottedStackStorage> handler = getHandlerFromIndex(index);
+        Optional<S> handler = getHandlerFromIndex(index);
         if (handler.isEmpty()) {
             return;
         }
@@ -83,7 +80,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
     @Override
     public ItemStack getStackInSlot(int slot) {
         int index = getIndexForSlot(slot);
-        Optional<SlottedStackStorage> handler = getHandlerFromIndex(index);
+        Optional<S> handler = getHandlerFromIndex(index);
         if (handler.isEmpty()) {
             return ItemStack.EMPTY;
         }
@@ -94,7 +91,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
     @Override
     public int getSlotLimit(int slot) {
         int index = getIndexForSlot(slot);
-        Optional<SlottedStackStorage> handler = getHandlerFromIndex(index);
+        Optional<S> handler = getHandlerFromIndex(index);
         if (handler.isEmpty()) {
             return 0;
         }
@@ -105,7 +102,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
     @Override
     public boolean isItemValid(int slot, ItemVariant resource, int count) {
         int index = getIndexForSlot(slot);
-        Optional<SlottedStackStorage> handler = getHandlerFromIndex(index);
+        Optional<S> handler = getHandlerFromIndex(index);
         if (handler.isEmpty()) {
             return false;
         }
@@ -116,7 +113,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
     @Override
     public long insertSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext ctx) {
         int index = getIndexForSlot(slot);
-        Optional<SlottedStackStorage> handler = getHandlerFromIndex(index);
+        Optional<S> handler = getHandlerFromIndex(index);
         if (handler.isEmpty()) {
             return 0;
         }
@@ -127,7 +124,7 @@ public class CombinedInvWrapper<S extends SlottedStackStorage> extends CombinedS
     @Override
     public long extractSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext ctx) {
         int index = getIndexForSlot(slot);
-        Optional<SlottedStackStorage> handler = getHandlerFromIndex(index);
+        Optional<S> handler = getHandlerFromIndex(index);
         if (handler.isEmpty()) {
             return 0;
         }

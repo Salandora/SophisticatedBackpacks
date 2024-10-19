@@ -12,7 +12,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
-import net.p3pp3rf1y.sophisticatedbackpacks.compat.common.DyeRecipesMaker;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.SettingsScreen;
 import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiGridMenuInfo;
@@ -67,17 +66,17 @@ public class EmiCompat implements EmiPlugin {
 		registerCraftingRecipes(registry, DyeRecipesMaker.getRecipes());
 
 		Comparison compareColor = Comparison.of((a, b) -> {
-			IBackpackWrapper wrapperA = BackpackWrapper.fromData(a.getItemStack());
-			IBackpackWrapper wrapperB = BackpackWrapper.fromData(b.getItemStack());
+			IBackpackWrapper wrapperA = BackpackWrapper.fromStack(a.getItemStack());
+			IBackpackWrapper wrapperB = BackpackWrapper.fromStack(b.getItemStack());
 			return wrapperA.getMainColor() == wrapperB.getMainColor() && wrapperA.getAccentColor() == wrapperB.getAccentColor();
 		});
 
-        registry.setDefaultComparison(EmiStack.of(ModItems.BACKPACK), compareColor);
+        registry.setDefaultComparison(EmiStack.of(ModItems.BACKPACK.get()), compareColor);
 
-        registry.addRecipeHandler(ModItems.BACKPACK_CONTAINER_TYPE, new EmiGridMenuInfo<>());
+        registry.addRecipeHandler(ModItems.BACKPACK_CONTAINER_TYPE.get(), new EmiGridMenuInfo<>());
 
-		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, EmiStack.of(ModItems.CRAFTING_UPGRADE));
-		registry.addWorkstation(VanillaEmiRecipeCategories.STONECUTTING, EmiStack.of(ModItems.STONECUTTER_UPGRADE));
+		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, EmiStack.of(ModItems.CRAFTING_UPGRADE.get()));
+		registry.addWorkstation(VanillaEmiRecipeCategories.STONECUTTING, EmiStack.of(ModItems.STONECUTTER_UPGRADE.get()));
 
 		List<WorkstationEntry> entries = new ArrayList<>();
 		WORKSTATIONS.invoker().additionalWorkstations(entries::add);

@@ -1,11 +1,14 @@
 package net.p3pp3rf1y.sophisticatedbackpacks;
 
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeModConfigEvents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
@@ -24,7 +27,6 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.tank.TankUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeConfig;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeConfig;
-import fuzs.forgeconfigapiport.api.config.v3.ModConfigEvents;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -108,8 +110,8 @@ public class Config {
 		public final MaxUgradesPerStorageConfig maxUpgradesPerStorage;
 
 		public void initListeners() {
-			ModConfigEvents.loading(SophisticatedBackpacks.MOD_ID).register(this::onConfigLoad);
-			ModConfigEvents.reloading(SophisticatedBackpacks.MOD_ID).register(this::onConfigReload);
+			NeoForgeModConfigEvents.loading(SophisticatedBackpacks.MOD_ID).register(this::onConfigLoad);
+			NeoForgeModConfigEvents.reloading(SophisticatedBackpacks.MOD_ID).register(this::onConfigReload);
 		}
 
 		public void onConfigReload(ModConfig modConfig) {
@@ -268,8 +270,8 @@ public class Config {
 					String entityRegistryName = entityLoot[0];
 					String lootTableName = entityLoot[1];
 
-					BuiltInRegistries.ENTITY_TYPE.getOptional(new ResourceLocation(entityRegistryName))
-							.ifPresent(entityType -> entityLootTables.put(entityType, lootTableName.equals("null") ? null : new ResourceLocation(lootTableName)));
+					BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(entityRegistryName))
+							.ifPresent(entityType -> entityLootTables.put(entityType, lootTableName.equals("null") ? null : ResourceLocation.parse(lootTableName)));
 				}
 			}
 
@@ -281,11 +283,11 @@ public class Config {
 			}
 
 			private List<String> getDefaultEntityLootTableList() {
-				return getDefaultEntityLootMapping().entrySet().stream().map(e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getKey()) + "|" + e.getValue()).collect(Collectors.toList());
+				return getDefaultEntityLootMapping().entrySet().stream().map(e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getKey()) + "|" + e.getValue().location()).collect(Collectors.toList());
 			}
 
-			private Map<EntityType<?>, ResourceLocation> getDefaultEntityLootMapping() {
-				Map<EntityType<?>, ResourceLocation> mapping = new LinkedHashMap<>();
+			private Map<EntityType<?>, ResourceKey<LootTable>> getDefaultEntityLootMapping() {
+				Map<EntityType<?>, ResourceKey<LootTable>> mapping = new LinkedHashMap<>();
 				mapping.put(EntityType.CREEPER, BuiltInLootTables.DESERT_PYRAMID);
 				mapping.put(EntityType.DROWNED, BuiltInLootTables.SHIPWRECK_TREASURE);
 				mapping.put(EntityType.ENDERMAN, BuiltInLootTables.END_CITY_TREASURE);
@@ -357,7 +359,7 @@ public class Config {
 				noInteractionBlocksSet = new HashSet<>();
 
 				for (String disallowedItemName : noInteractionBlocksList.get()) {
-					ResourceLocation registryName = new ResourceLocation(disallowedItemName);
+					ResourceLocation registryName = ResourceLocation.parse(disallowedItemName);
 					if (BuiltInRegistries.BLOCK.containsKey(registryName)) {
 						noInteractionBlocksSet.add(BuiltInRegistries.BLOCK.get(registryName));
 					}
@@ -390,7 +392,7 @@ public class Config {
 				noConnnectionBlocksSet = new HashSet<>();
 
 				for (String disallowedItemName : noConnectionBlocksList.get()) {
-					ResourceLocation registryName = new ResourceLocation(disallowedItemName);
+					ResourceLocation registryName = ResourceLocation.parse(disallowedItemName);
 					if (BuiltInRegistries.BLOCK.containsKey(registryName)) {
 						noConnnectionBlocksSet.add(BuiltInRegistries.BLOCK.get(registryName));
 					}
@@ -431,7 +433,7 @@ public class Config {
 				disallowedItemsSet = new HashSet<>();
 
 				for (String disallowedItemName : disallowedItemsList.get()) {
-					ResourceLocation registryName = new ResourceLocation(disallowedItemName);
+					ResourceLocation registryName = ResourceLocation.parse(disallowedItemName);
 					BuiltInRegistries.ITEM.getOptional(registryName).ifPresent(disallowedItemsSet::add);
 				}
 			}

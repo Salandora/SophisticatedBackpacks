@@ -1,30 +1,41 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.anvil;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
-import io.github.fabricators_of_create.porting_lib.transfer.item.ItemStackHandler;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
+import net.p3pp3rf1y.sophisticatedcore.util.ComponentItemHandler;
 
 import java.util.function.Consumer;
 
 public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper, AnvilUpgradeItem> {
-	private final ItemStackHandler inventory;
+	private final ComponentItemHandler inventory;
+
 	protected AnvilUpgradeWrapper(IStorageWrapper storageWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
 		super(storageWrapper, upgrade, upgradeSaveHandler);
 
-		inventory = new ItemStackHandler(2) {
+		inventory = new ComponentItemHandler(upgrade, DataComponents.CONTAINER, 2) {
 			@Override
-			protected void onContentsChanged(int slot) {
-				super.onContentsChanged(slot);
-				upgrade.addTagElement("craftingInventory", serializeNBT());
+			protected void onContentsChanged(int slot, ItemStack oldStack, ItemStack newStack) {
+				super.onContentsChanged(slot, oldStack, newStack);
 				save();
 			}
+
+			@Override
+			public int getSlotLimit(int slot) {
+				return 64;
+			}
+
+			@Override
+			public boolean isItemValid(int slot, ItemStack stack) {
+				return true;
+			}
 		};
-		NBTHelper.getCompound(upgrade, "craftingInventory").ifPresent(inventory::deserializeNBT);
 	}
 
-	public ItemStackHandler getInventory() {
+	public ComponentItemHandler getInventory() {
 		return inventory;
 	}
 
@@ -34,20 +45,20 @@ public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper,
 	}
 
 	public boolean shouldShiftClickIntoStorage() {
-		return NBTHelper.getBoolean(upgrade, "shiftClickIntoStorage").orElse(true);
+		return upgrade.getOrDefault(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, true);
 	}
 
 	public void setShiftClickIntoStorage(boolean shiftClickIntoStorage) {
-		NBTHelper.setBoolean(upgrade, "shiftClickIntoStorage", shiftClickIntoStorage);
+		upgrade.set(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, shiftClickIntoStorage);
 		save();
 	}
 
 	public String getItemName() {
-		return NBTHelper.getString(upgrade, "itemName").orElse("");
+		return upgrade.getOrDefault(ModDataComponents.ITEM_NAME, "");
 	}
 
 	public void setItemName(String itemName) {
-		NBTHelper.putString(upgrade.getOrCreateTag(), "itemName", itemName);
+		upgrade.set(ModDataComponents.ITEM_NAME, itemName);
 		save();
 	}
 }

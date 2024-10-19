@@ -1,0 +1,36 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:feeding_upgrade"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:golden_apple"
+    },
+    "B": {
+      "item": "sophisticatedbackpacks:upgrade_base"
+    },
+    "C": {
+      "item": "minecraft:golden_carrot"
+    },
+    "E": {
+      "tag": "c:ender_pearls"
+    },
+    "M": {
+      "item": "minecraft:glistering_melon_slice"
+    }
+  },
+  "pattern": [
+    " C ",
+    "ABM",
+    " E "
+  ],
+  "result": {
+    "count": 1,
+    "id": "sophisticatedbackpacks:feeding_upgrade"
+  }
+}

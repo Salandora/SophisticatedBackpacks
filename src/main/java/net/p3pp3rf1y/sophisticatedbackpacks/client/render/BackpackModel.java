@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -44,8 +45,8 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 		entityTranslations.put(EntityType.ENDERMAN, new Vec3(0, -0.8, 0));
 	}
 
-	private static final ResourceLocation BACKPACK_ENTITY_TEXTURE = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "textures/entity/backpack.png");
-	private static final ResourceLocation TANK_GLASS_TEXTURE = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "textures/entity/tank_glass.png");
+	private static final ResourceLocation BACKPACK_ENTITY_TEXTURE = ResourceLocation.fromNamespaceAndPath(SophisticatedBackpacks.MOD_ID, "textures/entity/backpack.png");
+	private static final ResourceLocation TANK_GLASS_TEXTURE = ResourceLocation.fromNamespaceAndPath(SophisticatedBackpacks.MOD_ID, "textures/entity/tank_glass.png");
 	public static final float CHILD_Y_OFFSET = 0.3F;
 	public static final float CHILD_Z_OFFSET = 0.1F;
 	public static final float CHILD_SCALE = 0.55F;
@@ -162,15 +163,15 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partDefinition = meshdefinition.getRoot();
 		partDefinition.addOrReplaceChild(LEFT_TANK_GLASS_PART, CubeListBuilder.create()
-						.texOffs(18, 5).addBox(-15F, 3.5F, -2.5F, 4.0F, 10.0F, 0.0F)
-						.texOffs(0, 0).addBox(-15F, 3.5F, -2.5F, 0.0F, 10.0F, 5.0F)
-						.texOffs(10, 5).addBox(-15F, 3.5F, 2.5F, 4.0F, 10.0F, 0.0F)
+						.texOffs(18, 5).addBox(-15F, 3.5F, -2.5F, 4.0F, 10.0F, 0.01F)
+						.texOffs(0, 0).addBox(-15F, 3.5F, -2.5F, 0.01F, 10.0F, 5.0F)
+						.texOffs(10, 5).addBox(-15F, 3.5F, 2.5F, 4.0F, 10.0F, 0.01F)
 				, PartPose.offset(0.0F, 24.0F, 0.0F)
 		);
 		partDefinition.addOrReplaceChild(RIGHT_TANK_GLASS_PART, CubeListBuilder.create()
-						.texOffs(18, 5).addBox(11F, 3.5F, -2.5F, 4.0F, 10.0F, 0.0F, true)
-						.texOffs(0, 0).addBox(15F, 3.5F, -2.5F, 0.0F, 10.0F, 5.0F, true)
-						.texOffs(10, 5).addBox(11F, 3.5F, 2.5F, 4.0F, 10.0F, 0.0F, true)
+						.texOffs(18, 5).addBox(11F, 3.5F, -2.5F, 4.0F, 10.0F, 0.01F, true)
+						.texOffs(0, 0).addBox(15F, 3.5F, -2.5F, 0.01F, 10.0F, 5.0F, true)
+						.texOffs(10, 5).addBox(11F, 3.5F, 2.5F, 4.0F, 10.0F, 0.01F, true)
 				, PartPose.offset(0.0F, 24.0F, 0.0F)
 		);
 		return partDefinition.bake(32, 32);
@@ -317,12 +318,12 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 
 	private static Map<Integer, Item> getBackpackItems() {
 		return new LinkedHashMap<>(Map.of(
-				0, ModItems.BACKPACK,
-				1, ModItems.COPPER_BACKPACK,
-				2, ModItems.IRON_BACKPACK,
-				3, ModItems.GOLD_BACKPACK,
-				4, ModItems.DIAMOND_BACKPACK,
-				5, ModItems.NETHERITE_BACKPACK
+				0, ModItems.BACKPACK.get(),
+				1, ModItems.COPPER_BACKPACK.get(),
+				2, ModItems.IRON_BACKPACK.get(),
+				3, ModItems.GOLD_BACKPACK.get(),
+				4, ModItems.DIAMOND_BACKPACK.get(),
+				5, ModItems.NETHERITE_BACKPACK.get()
 		));
 	}
 
@@ -334,67 +335,66 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 		boolean showRightTank = tankPositions.contains(TankPosition.RIGHT);
 		Optional<IRenderedBatteryUpgrade.BatteryRenderInfo> batteryRenderInfo = renderInfo.getBatteryRenderInfo();
 
-		float borderRed = (borderColor >> 16 & 255) / 255.0F;
-		float borderGreen = (borderColor >> 8 & 255) / 255.0F;
-		float borderBlue = (borderColor & 255) / 255.0F;
-		float clothRed = (clothColor >> 16 & 255) / 255.0F;
-		float clothGreen = (clothColor >> 8 & 255) / 255.0F;
-		float clothBlue = (clothColor & 255) / 255.0F;
-
 		if (showLeftTank) {
 			leftTank.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
-			leftTankBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderRed, borderGreen, borderBlue, 1);
+			leftTankBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderColor);
 		} else {
 			fabricLeft.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
 			clipsLeftPouches.get(backpackItem).render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
-			leftPouches.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, clothRed, clothGreen, clothBlue, 1);
-			leftPouchesBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderRed, borderGreen, borderBlue, 1);
+			leftPouches.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, clothColor);
+			leftPouchesBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderColor);
 		}
 
 		if (showRightTank) {
 			rightTank.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
-			rightTankBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderRed, borderGreen, borderBlue, 1);
+			rightTankBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderColor);
 		} else {
 			fabricRight.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
 			clipsRightPouches.get(backpackItem).render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
-			rightPouches.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, clothRed, clothGreen, clothBlue, 1);
-			rightPouchesBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderRed, borderGreen, borderBlue, 1);
+			rightPouches.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, clothColor);
+			rightPouchesBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderColor);
 		}
 
 		if (batteryRenderInfo.isPresent()) {
 			battery.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
-			batteryBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderRed, borderGreen, borderBlue, 1);
+			batteryBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderColor);
 			clipsBattery.get(backpackItem).render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
-			batteryRenderInfo.ifPresent(info -> renderBatteryCharge(poseStack, buffer, packedLight, info.getChargeRatio()));
 		} else {
 			fabricFront.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
 			clipsFrontPouch.get(backpackItem).render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
-			frontPouch.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, clothRed, clothGreen, clothBlue, 1);
-			frontPouchBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderRed, borderGreen, borderBlue, 1);
+			frontPouch.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, clothColor);
+			frontPouchBorder.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderColor);
 		}
 
 		fabric.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
 		clipsBody.get(backpackItem).render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
 
-		cloth.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, clothRed, clothGreen, clothBlue, 1);
+		cloth.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, clothColor);
 
-		border.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderRed, borderGreen, borderBlue, 1);
+		border.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, borderColor);
 
 		poseStack.pushPose();
 		poseStack.scale(1 / 2f, 6 / 10f, 1 / 2f);
 		if (showLeftTank) {
 			vertexBuilder = buffer.getBuffer(RenderType.entityCutoutNoCull(TANK_GLASS_TEXTURE));
 			leftTankGlass.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
-			IRenderedTankUpgrade.TankRenderInfo tankRenderInfo = renderInfo.getTankRenderInfos().get(TankPosition.LEFT);
-			tankRenderInfo.getFluid().ifPresent(f -> renderFluid(poseStack, buffer, packedLight, f, tankRenderInfo.getFillRatio(), true));
 		}
 		if (showRightTank) {
 			vertexBuilder = buffer.getBuffer(RenderType.entityCutoutNoCull(TANK_GLASS_TEXTURE));
 			rightTankGlass.render(poseStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY);
+		}
+		if (showLeftTank) {
+			IRenderedTankUpgrade.TankRenderInfo tankRenderInfo = renderInfo.getTankRenderInfos().get(TankPosition.LEFT);
+			tankRenderInfo.getFluid().ifPresent(f -> renderFluid(poseStack, buffer, packedLight, f, tankRenderInfo.getFillRatio(), true));
+		}
+		if (showRightTank) {
 			IRenderedTankUpgrade.TankRenderInfo tankRenderInfo = renderInfo.getTankRenderInfos().get(TankPosition.RIGHT);
 			tankRenderInfo.getFluid().ifPresent(f -> renderFluid(poseStack, buffer, packedLight, f, tankRenderInfo.getFillRatio(), false));
 		}
 		poseStack.popPose();
+		if (batteryRenderInfo.isPresent()) {
+			batteryRenderInfo.ifPresent(info -> renderBatteryCharge(poseStack, buffer, packedLight, info.getChargeRatio()));
+		}
 	}
 
 	@Override
@@ -413,6 +413,11 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 			return;
 		}
 
+		/*
+		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluidStack.getFluid());
+		ResourceLocation texture = renderProperties.getStillTexture(fluidStack);
+		TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
+		*/
 		FluidVariant fluidVariant = FluidVariant.of(fluidStack.getFluid());
 		TextureAtlasSprite still = FluidVariantRendering.getSprite(fluidVariant);
 		if (still == null) {
@@ -422,10 +427,7 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 		VertexConsumer vertexBuilder = buffer.getBuffer(RenderType.entityTranslucent(InventoryMenu.BLOCK_ATLAS));
 		ModelPart fluidBox = getFluidBar(still, (int) (fill * 10), left);
 		int color = FluidVariantRendering.getColor(fluidVariant);
-		float red = (color >> 16 & 255) / 255.0F;
-		float green = (color >> 8 & 255) / 255.0F;
-		float blue = (color & 255) / 255.0F;
-		fluidBox.render(matrixStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, red, green, blue, 1);
+		fluidBox.render(matrixStack, vertexBuilder, packedLight, OverlayTexture.NO_OVERLAY, color);
 	}
 
 	private ModelPart getFluidBar(TextureAtlasSprite still, int fill, boolean left) {
@@ -549,7 +551,7 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+	public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
 		//noop
 	}
 

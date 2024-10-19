@@ -5,17 +5,18 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 public class PlayerInventoryHandler {
 	public static final Set<String> SINGLE_IDENTIFIER = Collections.singleton("");
-	private final IdentifierGetter identifiersGetter;
+	private final BiFunction<Player,Long, Set<String>> identifiersGetter;
 	private final SlotCountGetter slotCountGetter;
 	private final SlotStackGetter slotStackGetter;
 	private final boolean visibleInGui;
 	private final boolean ownRenderer;
 	private final boolean accessibleByAnotherPlayer;
 
-	public PlayerInventoryHandler(IdentifierGetter identifiersGetter, SlotCountGetter slotCountGetter, SlotStackGetter slotStackGetter, boolean visibleInGui, boolean ownRenderer, boolean accessibleByAnotherPlayer) {
+	public PlayerInventoryHandler(BiFunction<Player,Long, Set<String>> identifiersGetter, SlotCountGetter slotCountGetter, SlotStackGetter slotStackGetter, boolean visibleInGui, boolean ownRenderer, boolean accessibleByAnotherPlayer) {
 		this.identifiersGetter = identifiersGetter;
 		this.slotCountGetter = slotCountGetter;
 		this.slotStackGetter = slotStackGetter;
@@ -38,7 +39,7 @@ public class PlayerInventoryHandler {
 
 	// Need player parameter for Trinket
 	public Set<String> getIdentifiers(Player player, long gameTime) {
-		return identifiersGetter.getIdentifiers(player, gameTime);
+		return identifiersGetter.apply(player, gameTime);
 	}
 
 	public boolean hasItsOwnRenderer() {
@@ -47,10 +48,6 @@ public class PlayerInventoryHandler {
 
 	public boolean isAccessibleByAnotherPlayer() {
 		return accessibleByAnotherPlayer;
-	}
-
-	public interface IdentifierGetter {
-		Set<String> getIdentifiers(Player player, Long gameTime);
 	}
 
 	public interface SlotCountGetter {

@@ -1,3 +1,4 @@
+/*
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.mkb;
 
 import net.minecraft.client.Minecraft;
@@ -19,3 +20,4 @@ public class BackpackKeyConflictContext  implements IKeyConflictContext {
 		return this == other;
 	}
 }
+*/

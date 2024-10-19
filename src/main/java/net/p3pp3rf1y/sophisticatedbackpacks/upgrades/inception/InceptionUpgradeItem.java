@@ -31,12 +31,12 @@ public class InceptionUpgradeItem extends UpgradeItemBase<InceptionUpgradeWrappe
 	@Override
 	public UpgradeSlotChangeResult canAddUpgradeTo(IStorageWrapper storageWrapper, ItemStack upgradeStack, boolean firstLevelStorage, boolean isClientSide) {
 		UpgradeSlotChangeResult result = super.canAddUpgradeTo(storageWrapper, upgradeStack, firstLevelStorage, isClientSide);
-		if (!result.isSuccessful()) {
+		if (!result.successful()) {
 			return result;
 		}
 
 		if (!firstLevelStorage) {
-			return new UpgradeSlotChangeResult.Fail(SBPTranslationHelper.INSTANCE.translError("add.inception_sub_backpack"), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+			return UpgradeSlotChangeResult.fail(SBPTranslationHelper.INSTANCE.translError("add.inception_sub_backpack"), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
 		}
 
 		Set<Integer> errorUpgradeSlots = new HashSet<>();
@@ -47,10 +47,10 @@ public class InceptionUpgradeItem extends UpgradeItemBase<InceptionUpgradeWrappe
 		});
 
 		if (!errorUpgradeSlots.isEmpty()) {
-			return new UpgradeSlotChangeResult.Fail(SBPTranslationHelper.INSTANCE.translError("add.inception_exists"), errorUpgradeSlots, Collections.emptySet(), Collections.emptySet());
+			return UpgradeSlotChangeResult.fail(SBPTranslationHelper.INSTANCE.translError("add.inception_exists"), errorUpgradeSlots, Collections.emptySet(), Collections.emptySet());
 		}
 
-		return new UpgradeSlotChangeResult.Success();
+		return UpgradeSlotChangeResult.success();
 	}
 
 	@Override
@@ -62,15 +62,15 @@ public class InceptionUpgradeItem extends UpgradeItemBase<InceptionUpgradeWrappe
 	public UpgradeSlotChangeResult canRemoveUpgradeFrom(IStorageWrapper storageWrapper, boolean isClientSide) {
 		Set<Integer> slots = InventoryHelper.getItemSlots(storageWrapper.getInventoryHandler(), stack -> stack.getItem() instanceof BackpackItem);
 		if (!slots.isEmpty()) {
-			return new UpgradeSlotChangeResult.Fail(SBPTranslationHelper.INSTANCE.translError("remove.inception_sub_backpack"), Collections.emptySet(), slots, Collections.emptySet());
+			return UpgradeSlotChangeResult.fail(SBPTranslationHelper.INSTANCE.translError("remove.inception_sub_backpack"), Collections.emptySet(), slots, Collections.emptySet());
 		}
-		return new UpgradeSlotChangeResult.Success();
+		return UpgradeSlotChangeResult.success();
 	}
 
 	@Override
 	public UpgradeSlotChangeResult canSwapUpgradeFor(ItemStack upgradeStackToPut, int upgradeSlot, IStorageWrapper storageWrapper, boolean isClientSide) {
 		if (upgradeStackToPut.getItem() == this) {
-			return new UpgradeSlotChangeResult.Success();
+			return UpgradeSlotChangeResult.success();
 		}
 
 		return canRemoveUpgradeFrom(storageWrapper, isClientSide);

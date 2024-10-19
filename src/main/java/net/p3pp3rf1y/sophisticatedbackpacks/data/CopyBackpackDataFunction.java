@@ -1,6 +1,5 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -13,7 +12,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 
 public class CopyBackpackDataFunction implements LootItemFunction {
 	private static final CopyBackpackDataFunction INSTANCE = new CopyBackpackDataFunction();
-	public static final Codec<CopyBackpackDataFunction> CODEC = MapCodec.unit(INSTANCE).stable().codec();
+	public static final MapCodec<CopyBackpackDataFunction> CODEC = MapCodec.unit(INSTANCE).stable();
 	private CopyBackpackDataFunction() {}
 
 	@Override
@@ -27,8 +26,8 @@ public class CopyBackpackDataFunction implements LootItemFunction {
 	}
 
 	@Override
-	public LootItemFunctionType getType() {
-		return ModItems.COPY_BACKPACK_DATA;
+	public LootItemFunctionType<CopyBackpackDataFunction> getType() {
+		return ModItems.COPY_BACKPACK_DATA.get();
 	}
 
 	public static Builder builder() {

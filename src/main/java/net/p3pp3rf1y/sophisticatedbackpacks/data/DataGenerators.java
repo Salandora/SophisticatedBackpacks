@@ -9,8 +9,8 @@ public class DataGenerators implements DataGeneratorEntrypoint {
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator generator) {
 		FabricDataGenerator.Pack pack = generator.createPack();
-		pack.addProvider(SBLootModifierProvider::new);
 		pack.addProvider(SBLootTableProvider::new);
+		pack.addProvider(SBLootModifierProvider::new);
 		pack.addProvider(SBPRecipeProvider::new);
 	}
 }

@@ -9,9 +9,9 @@ import net.minecraft.world.inventory.Slot;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.KeybindHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenPacket;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenPayload;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
-import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketDistributor;
 
 public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 	public static BackpackScreen constructScreen(BackpackContainer screenContainer, Inventory inv, Component title) {
@@ -37,7 +37,7 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 				}
 				return true;
 			} else if (!getMenu().isFirstLevelStorage()) {
-				PacketHelper.sendToServer(new BackpackOpenPacket());
+				PacketDistributor.sendToServer(new BackpackOpenPayload());
 				return true;
 			}
 		}
@@ -45,7 +45,7 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 	}
 
 	private boolean mouseNotOverBackpack() {
-		Slot selectedSlot = this.hoveredSlot;
+		Slot selectedSlot = getSlotUnderMouse();
 		return selectedSlot == null || !(selectedSlot.getItem().getItem() instanceof BackpackItem);
 	}
 

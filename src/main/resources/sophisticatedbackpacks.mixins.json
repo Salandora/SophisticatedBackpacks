@@ -10,19 +10,10 @@
         "common.ExplosionDamageCalculatorMixin",
         "common.PiglinAiMixin",
         "common.WitherBossMixin",
-        "common.WitherSkullMixin",
-        "common.accessor.AnvilMenuAccessor",
-        "common.accessor.ItemAccessor",
-        "common.accessor.ItemEntityAccessor",
-        "common.accessor.LootTableAccessor",
-        "common.accessor.RecordItemAccessor",
-        "common.accessor.ShapedRecipeAccessor",
-        "common.accessor.SmithingTransformRecipeAccessor"
+        "common.WitherSkullMixin"
     ],
     "client": [
-        "client.ItemInHandRendererMixin",
-        "client.accessor.ItemRendererAccessor",
-        "client.accessor.VertexFormatAccessor"
+        "client.ItemInHandRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

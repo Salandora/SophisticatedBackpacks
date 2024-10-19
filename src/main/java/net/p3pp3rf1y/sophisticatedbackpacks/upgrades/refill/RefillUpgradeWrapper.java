@@ -1,38 +1,43 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.Codec;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockPickResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
+import net.p3pp3rf1y.sophisticatedcore.inventory.PlayerInventoryStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogic;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IFilteredUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.CapabilityHelper;
+import net.p3pp3rf1y.sophisticatedcore.util.CodecHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
+import net.p3pp3rf1y.sophisticatedcore.util.StreamCodecHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -42,14 +47,17 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		implements IFilteredUpgrade, ITickableUpgrade, IBlockPickResponseUpgrade {
 	private static final int COOLDOWN = 5;
 
+	public static final Codec<Map<Integer, TargetSlot>> TARGET_SLOTS_CODEC = Codec.unboundedMap(CodecHelper.STRING_ENCODED_INT, TargetSlot.CODEC);
+	public static final StreamCodec<FriendlyByteBuf, Map<Integer, TargetSlot>> TARGET_SLOTS_STREAM_CODEC = StreamCodecHelper.ofMap(ByteBufCodecs.INT, TargetSlot.STREAM_CODEC, HashMap::new);
+
 	private final Map<Integer, TargetSlot> targetSlots;
 
 	private final FilterLogic filterLogic;
 
 	public RefillUpgradeWrapper(IStorageWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
 		super(backpackWrapper, upgrade, upgradeSaveHandler);
-		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount());
-		targetSlots = NBTHelper.getMap(upgrade.getOrCreateTag(), "targetSlots", Integer::valueOf, (k, tag) -> Optional.of(TargetSlot.fromName(tag.getAsString()))).orElseGet(HashMap::new);
+		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), ModCoreDataComponents.FILTER_ATTRIBUTES);
+		targetSlots = new HashMap<>(upgrade.getOrDefault(ModDataComponents.TARGET_SLOTS, new HashMap<>()));
 		if (upgradeItem.allowsTargetSlotSelection()) {
 			FilterLogic.ObservableFilterItemStackHandler filterHandler = filterLogic.getFilterHandler();
 			filterHandler.setOnSlotChange(s -> onFilterChange(filterHandler, s));
@@ -78,7 +86,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	}
 
 	private void saveTargetSlots() {
-		NBTHelper.putMap(upgrade.getOrCreateTag(), "targetSlots", targetSlots, String::valueOf, t -> StringTag.valueOf(t.getSerializedName()));
+		upgrade.set(ModDataComponents.TARGET_SLOTS, ImmutableMap.copyOf(targetSlots));
 		save();
 	}
 
@@ -101,12 +109,12 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		setCooldown(level, COOLDOWN);
 	}
 
-	private void tryRefillFilter(@Nonnull LivingEntity entity, PlayerInventoryStorage playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
+	private void tryRefillFilter(@Nonnull LivingEntity entity, PlayerInventoryStorageWrapper playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
 		if (!(entity instanceof Player player)) {
 			return;
 		}
 		int missingCount = targetSlot.missingCountGetter.getMissingCount(player, playerInvHandler, filter);
-		if (ItemStack.isSameItemSameTags(player.containerMenu.getCarried(), filter)) {
+		if (ItemStack.isSameItemSameComponents(player.containerMenu.getCarried(), filter)) {
 			missingCount -= Math.min(missingCount, player.containerMenu.getCarried().getCount());
 		}
 		if (missingCount == 0) {
@@ -143,7 +151,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 
 		ITrackedContentsItemHandler inventoryHandler = storageWrapper.getInventoryForUpgradeProcessing();
 		InventoryHelper.iterate(inventoryHandler, (slot, stack) -> {
-			if (ItemStack.isSameItemSameTags(stack, filter)) {
+			if (ItemStack.isSameItemSameComponents(stack, filter)) {
 				hasItemInBackpack.set(true);
 				stashSlot.set(slot);
 			}
@@ -196,7 +204,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 			ItemStack slotStack = player.getInventory().getItem(slot);
 			if (slotStack.isEmpty()) {
 				return true;
-			} else if (ItemStack.isSameItemSameTags(slotStack, player.getMainHandItem())) {
+			} else if (ItemStack.isSameItemSameComponents(slotStack, player.getMainHandItem())) {
 				countToAdd -= (slotStack.getMaxStackSize() - slotStack.getCount());
 				if (countToAdd <= 0) {
 					return true;
@@ -251,6 +259,9 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		private final MissingCountGetter missingCountGetter;
 		private final Filler filler;
 
+		public static final Codec<TargetSlot> CODEC = StringRepresentable.fromEnum(TargetSlot::values);
+		public static final StreamCodec<FriendlyByteBuf, TargetSlot> STREAM_CODEC = StreamCodecHelper.enumCodec(TargetSlot.class);
+
 		TargetSlot(String name, Component acronym, Component description, MissingCountGetter missingCountGetter, Filler filler) {
 			this.name = name;
 			this.acronym = acronym;
@@ -301,14 +312,14 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		}
 
 		private interface MissingCountGetter {
-			int getMissingCount(Player player, PlayerInventoryStorage playerInventory, ItemStack filter);
+			int getMissingCount(Player player, PlayerInventoryStorageWrapper playerInventory, ItemStack filter);
 		}
 
 		private interface Filler {
-			ItemStack fill(Player player, PlayerInventoryStorage playerInventory, ItemStack stackToAdd);
+			ItemStack fill(Player player, PlayerInventoryStorageWrapper playerInventory, ItemStack stackToAdd);
 		}
 
-		private static ItemStack refillAnywhereInInventory(PlayerInventoryStorage playerInvHandler, ItemStack extracted) {
+		private static ItemStack refillAnywhereInInventory(PlayerInventoryStorageWrapper playerInvHandler, ItemStack extracted) {
 			ItemVariant resource = ItemVariant.of(extracted);
 			long remaining = extracted.getCount();
 
@@ -320,7 +331,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		}
 
 		private static int getMissingCount(ItemStack stack, ItemStack filter) {
-			if (ItemStack.isSameItemSameTags(stack, filter)) {
+			if (ItemStack.isSameItemSameComponents(stack, filter)) {
 				return filter.getMaxStackSize() - stack.getCount();
 			}
 			return filter.getMaxStackSize();
@@ -332,7 +343,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 				setSlotContents.accept(stackToAdd);
 				return ItemStack.EMPTY;
 			}
-			if (ItemStack.isSameItemSameTags(contents, stackToAdd)) {
+			if (ItemStack.isSameItemSameComponents(contents, stackToAdd)) {
 				contents.grow(stackToAdd.getCount());
 				return ItemStack.EMPTY;
 			}

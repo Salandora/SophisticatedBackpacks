@@ -1,0 +1,36 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedbackpacks:auto_smelting_upgrade"
+    }
+  ],
+  "type": "sophisticatedcore:upgrade_next_tier",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "c:gems/diamond"
+    },
+    "G": {
+      "tag": "c:ingots/gold"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    },
+    "S": {
+      "item": "sophisticatedbackpacks:smelting_upgrade"
+    }
+  },
+  "pattern": [
+    "DHD",
+    "RSH",
+    "GHG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "sophisticatedbackpacks:auto_smelting_upgrade"
+  }
+}

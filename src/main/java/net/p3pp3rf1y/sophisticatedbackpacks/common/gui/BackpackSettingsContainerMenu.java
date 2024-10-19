@@ -8,11 +8,11 @@ import net.minecraft.world.entity.player.Player;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackSettingsHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsPacket;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsPayload;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsContainer;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SettingsContainerMenu;
-import net.p3pp3rf1y.sophisticatedcore.network.PacketHelper;
+import net.p3pp3rf1y.sophisticatedcore.network.PacketDistributor;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.SETTINGS_CONTAINER_TYPE;
 
@@ -25,7 +25,7 @@ public class BackpackSettingsContainerMenu extends SettingsContainerMenu<IBackpa
 	private CompoundTag lastSettingsNbt = null;
 
 	protected BackpackSettingsContainerMenu(int windowId, Player player, BackpackContext backpackContext) {
-		super(SETTINGS_CONTAINER_TYPE, windowId, player, backpackContext.getBackpackWrapper(player));
+		super(SETTINGS_CONTAINER_TYPE.get(), windowId, player, backpackContext.getBackpackWrapper(player));
 
 		this.backpackContext = backpackContext;
 	}
@@ -66,7 +66,9 @@ public class BackpackSettingsContainerMenu extends SettingsContainerMenu<IBackpa
 				CompoundTag settingsNbt = storageWrapper.getSettingsHandler().getNbt();
 				if (!settingsNbt.isEmpty()) {
 					settingsContents.put(BackpackSettingsHandler.SETTINGS_TAG, settingsNbt);
-					PacketHelper.sendToPlayer(new BackpackContentsPacket(uuid, settingsContents), (ServerPlayer) player);
+					if (player instanceof ServerPlayer serverPlayer) {
+						PacketDistributor.sendToPlayer(serverPlayer, new BackpackContentsPayload(uuid, settingsContents));
+					}
 				}
 			});
 		}

@@ -20,7 +20,7 @@ public class BackpackDyeRecipe extends StorageDyeRecipeBase {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return ModItems.BACKPACK_DYE_RECIPE_SERIALIZER;
+		return ModItems.BACKPACK_DYE_RECIPE_SERIALIZER.get();
 	}
 
 	@Override
@@ -30,9 +30,9 @@ public class BackpackDyeRecipe extends StorageDyeRecipeBase {
 
 	@Override
 	protected void applyColors(ItemStack coloredStorage, List<DyeColor> mainDyes, List<DyeColor> trimDyes) {
-		IBackpackWrapper coloredWrapper = BackpackWrapper.fromData(coloredStorage);
-		coloredWrapper.setColors(ColorHelper.calculateColor(coloredWrapper.getMainColor(), BackpackWrapper.DEFAULT_CLOTH_COLOR, mainDyes),
-				ColorHelper.calculateColor(coloredWrapper.getAccentColor(), BackpackWrapper.DEFAULT_BORDER_COLOR, trimDyes)
+		IBackpackWrapper coloredWrapper = BackpackWrapper.fromStack(coloredStorage);
+		coloredWrapper.setColors(ColorHelper.calculateColor(coloredWrapper.getMainColor(), BackpackWrapper.DEFAULT_MAIN_COLOR, mainDyes),
+				ColorHelper.calculateColor(coloredWrapper.getAccentColor(), BackpackWrapper.DEFAULT_ACCENT_COLOR, trimDyes)
 		);
 	}
 }

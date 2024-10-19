@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,9 +40,9 @@ public class GiveCommand {
 			Item item = BuiltInRegistries.ITEM.get(alr.getBackpackItemRegistryName());
 			ItemStack backpack = new ItemStack(item);
 			if (!backpack.getHoverName().getString().equals(alr.getBackpackName())) {
-				backpack.setHoverName(Component.literal(alr.getBackpackName()));
+				backpack.set(DataComponents.CUSTOM_NAME, Component.literal(alr.getBackpackName()));
 			}
-			IBackpackWrapper backpackWrapper = BackpackWrapper.fromData(backpack);
+			IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(backpack);
 			backpackWrapper.setColors(alr.getClothColor(), alr.getTrimColor());
 			backpackWrapper.setColumnsTaken(alr.getColumnsTaken(), false);
 			backpackWrapper.setContentsUuid(backpackUuid);

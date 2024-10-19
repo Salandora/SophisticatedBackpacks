@@ -1,17 +1,21 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
-import net.minecraft.world.item.ItemStack;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.CombinedInvWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
@@ -60,11 +64,6 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		return combinedInventories.getSlotCount();
 	}
 
-	@Override
-	public SingleSlotStorage<ItemVariant> getSlot(int slot) {
-		return combinedInventories.getSlot(slot);
-	}
-
 	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int slot) {
@@ -84,6 +83,11 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 	@Override
 	public int getSlotLimit(int slot) {
 		return combinedInventories.getSlotLimit(slot);
+	}
+
+	@Override
+	public boolean isItemValid(int slot, ItemStack stack) {
+		return combinedInventories.isItemValid(slot, stack);
 	}
 
 	@Override
@@ -115,11 +119,6 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		}
 
 		return maxAmount - remaining;
-	}
-
-	@Override
-	public Iterator<StorageView<ItemVariant>> iterator() {
-		return combinedInventories.iterator();
 	}
 
 	@Override
@@ -172,8 +171,18 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 
 	private ITrackedContentsItemHandler getHandlerFromIndex(int index) {
 		if (index < 0 || index >= handlers.size()) {
-			return handlers.get(0);
+			return handlers.getFirst();
 		}
 		return handlers.get(index);
+	}
+
+	@Override
+	public SingleSlotStorage<ItemVariant> getSlot(int slot) {
+		return combinedInventories.getSlot(slot);
+	}
+
+	@Override
+	public Iterator<StorageView<ItemVariant>> iterator() {
+		return combinedInventories.iterator();
 	}
 }

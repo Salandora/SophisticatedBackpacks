@@ -1,3 +1,4 @@
+/*
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.mkb;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -60,3 +61,4 @@ public class ModernKeyBindingCompat implements ICompat {
 		return true;
 	}
 }
+*/

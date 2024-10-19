@@ -124,7 +124,7 @@ public class ToolRegistry {
 		}
 
 		private void parseObjectEntry(Tuple<Set<Item>, Set<Predicate<ItemStack>>> tools, String objectName) {
-			ResourceLocation registryName = new ResourceLocation(objectName);
+			ResourceLocation registryName = ResourceLocation.parse(objectName);
 			Optional<V> objectOptional = getObjectFromRegistry.apply(registryName);
 			if (objectOptional.isPresent()) {
 				toolMapping.addObjectTools(tools, objectOptional.get());
@@ -181,7 +181,7 @@ public class ToolRegistry {
 		Set<Predicate<ItemStack>> itemPredicates = new HashSet<>();
 		for (JsonElement jsonElement : toolArray) {
 			if (jsonElement.isJsonPrimitive()) {
-				ResourceLocation itemName = new ResourceLocation(jsonElement.getAsString());
+				ResourceLocation itemName = ResourceLocation.parse(jsonElement.getAsString());
 				if (!BuiltInRegistries.ITEM.containsKey(itemName)) {
 					SophisticatedBackpacks.LOGGER.debug("{} isn't loaded in item registry, skipping ...", itemName);
 				}
