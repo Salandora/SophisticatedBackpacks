@@ -254,19 +254,13 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 		ItemStack swordCopy = sword.copy();
 		swordCopy.setCount(1);
-		InventoryHelper.extractFromInventory(swordCopy, backpackInventory, null);
-		if (StorageUtil.simulateInsert(backpackInventory, ItemVariant.of(mainHandItem), mainHandItem.getCount(), null) == mainHandItem.getCount()) {
+		InventoryHelper.extractFromInventory(swordCopy, backpackInventory, false);
+		if (backpackInventory.insertItem(mainHandItem, true).isEmpty()) {
 			player.setItemInHand(InteractionHand.MAIN_HAND, swordCopy);
-			try (Transaction ctx = Transaction.openOuter()) {
-				backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), ctx);
-				ctx.commit();
-			}
+			backpackInventory.insertItem(mainHandItem, false);
 			return true;
 		} else {
-			try (Transaction ctx = Transaction.openOuter()) {
-				backpackInventory.insert(ItemVariant.of(swordCopy), swordCopy.getCount(), ctx);
-				ctx.commit();
-			}
+			backpackInventory.insertItem(swordCopy, false);
 			return false;
 		}
 	}
@@ -347,15 +341,10 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 		tool = tool.copy().split(1);
 
-		try (Transaction ctx = Transaction.openOuter()) {
-			long inserted = backpackInventory.insert(ItemVariant.of(mainHandStack), mainHandStack.getCount(), ctx);
-			if (tool.getCount() == 1 || inserted == 0) {
-				ItemVariant resource = ItemVariant.of(tool);
-				long extracted = backpackInventory.extract(resource, tool.getCount(), ctx);
-				player.setItemInHand(InteractionHand.MAIN_HAND, resource.toStack((int) extracted));
-				toolCache.offer(tool);
-				ctx.commit();
-			}
+		if ((tool.getCount() == 1 || backpackInventory.insertItem(mainHandStack, true).isEmpty())) {
+			player.setItemInHand(InteractionHand.MAIN_HAND, InventoryHelper.extractFromInventory(tool, backpackInventory, false));
+			backpackInventory.insertItem(mainHandStack, false);
+			toolCache.offer(tool);
 		}
 		return true;
 	}
