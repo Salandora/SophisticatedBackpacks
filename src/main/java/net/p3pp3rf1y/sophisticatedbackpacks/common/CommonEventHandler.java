@@ -39,6 +39,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModPayloads;
+import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.CreeperMixin;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenPayload;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
@@ -52,6 +53,7 @@ import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsPayload;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -98,7 +100,7 @@ public class CommonEventHandler {
 	private static final int BACKPACK_CHECK_COOLDOWN = 40;
 	private final Map<ResourceLocation, Long> nextBackpackCheckTime = new HashMap<>();
 
-	InteractionResult interactWithEntity(Player player, Level world, InteractionHand hand, Entity entity, @Nullable EntityHitResult hitResult) {
+	private InteractionResult interactWithEntity(Player player, Level world, InteractionHand hand, Entity entity, @Nullable EntityHitResult hitResult) {
 		if (!(entity instanceof Player targetPlayer) || hitResult == null || Boolean.FALSE.equals(Config.SERVER.allowOpeningOtherPlayerBackpacks.get())) {
 			return InteractionResult.PASS;
 		}
@@ -223,7 +225,7 @@ public class CommonEventHandler {
 		return false;
 	}
 
-	// TODO: Implement
+	/// Handled in {@link CreeperMixin#sophisticatedBackpacks$explodeCreeper(CallbackInfo)}
 	/*private void onEntityMobGriefing(EntityMobGriefingEvent event) {
 		if (event.getEntity() instanceof Creeper creeper) {
 			EntityBackpackAdditionHandler.removeBeneficialEffects(creeper);
@@ -238,25 +240,32 @@ public class CommonEventHandler {
 	}
 
 	private InteractionResult onItemPickup(Player player, ItemEntity itemEntity, ItemStack stack) {
-		if (itemEntity.hasPickUpDelay() || stack.isEmpty()) {
+		if (itemEntity.getItem().isEmpty() || itemEntity.pickupDelay > 0) {
 			return InteractionResult.PASS;
 		}
 
-		AtomicReference<ItemStack> remainingStack = new AtomicReference<>(stack.copy());
+		AtomicReference<ItemStack> remainingStackSimulated = new AtomicReference<>(itemEntity.getItem().copy());
 		Level level = player.getCommandSenderWorld();
-		try(Transaction ctx = Transaction.openOuter()) {
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
+					IBackpackWrapper wrapper = BackpackWrapper.fromStack(backpack);
+					try(Transaction simulated = Transaction.openOuter()) {
+						remainingStackSimulated.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, wrapper.getUpgradeHandler(), remainingStackSimulated.get(), simulated));
+					}
+					return remainingStackSimulated.get().isEmpty();
+				}, Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
+		);
+
+		if (remainingStackSimulated.get().getCount() != itemEntity.getItem().getCount()) {
+			AtomicReference<ItemStack> remainingStack = new AtomicReference<>(itemEntity.getItem().copy());
 			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
 						IBackpackWrapper wrapper = BackpackWrapper.fromStack(backpack);
-						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, player, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
+						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, player, wrapper.getUpgradeHandler(), remainingStack.get(), null));
 						return remainingStack.get().isEmpty();
-					}, Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
+					}
+					, Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
 			);
-
-			if (remainingStack.get().getCount() != stack.getCount()) {
-				itemEntity.setItem(remainingStack.get());
-				ctx.commit();
-				return InteractionResult.SUCCESS;
-			}
+			itemEntity.setItem(remainingStack.get());
+			return InteractionResult.SUCCESS; //cancelling even when the stack isn't empty at this point to prevent full stack from before pickup to be picked up by player
 		}
 		return InteractionResult.PASS;
 	}

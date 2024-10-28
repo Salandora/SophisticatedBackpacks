@@ -1,6 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
@@ -29,6 +31,7 @@ public record BackpackContentsPayload(UUID backpackUuid, @Nullable CompoundTag b
 		return TYPE;
 	}
 
+	@Environment(EnvType.CLIENT)
 	public static void handlePayload(BackpackContentsPayload payload, ClientPlayNetworking.Context context) {
 		if (payload.backpackContents == null) {
 			return;

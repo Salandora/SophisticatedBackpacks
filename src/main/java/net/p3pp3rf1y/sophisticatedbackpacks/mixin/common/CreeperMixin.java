@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Creeper.class)
 public class CreeperMixin {
-    @Inject(method = "explodeCreeper", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;", shift = At.Shift.BEFORE))
-    private void sophisticatedbackpacks$explodeCreeper(CallbackInfo ci) {
+    @Inject(method = "explodeCreeper", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;"))
+    private void sophisticatedBackpacks$explodeCreeper(CallbackInfo ci) {
         EntityBackpackAdditionHandler.removeBeneficialEffects(MixinHelper.cast(this));
     }
 }
