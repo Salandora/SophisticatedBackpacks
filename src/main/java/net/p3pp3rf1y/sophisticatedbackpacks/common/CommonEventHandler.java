@@ -73,7 +73,6 @@ public class CommonEventHandler {
 		ItemEntityEvents.CAN_PICKUP.register(this::onItemPickup);
 		MobSpawnEvents.AFTER_FINALIZE_SPAWN.register(this::onLivingSpecialSpawn);
 		LivingEntityEvents.DROPS.register(this::onLivingDrops);
-		// TODO: eventBus.addListener(this::onEntityMobGriefing);
 		EntityTrackingEvents.STOP_TRACKING.register(this::onEntityLeaveWorld);
 		ServerTickEvents.END_WORLD_TICK.register(ServerStorageSoundHandler::tick);
 		AttackBlockCallback.EVENT.register(this::onBlockClick);
@@ -248,9 +247,7 @@ public class CommonEventHandler {
 		Level level = player.getCommandSenderWorld();
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
 					IBackpackWrapper wrapper = BackpackWrapper.fromStack(backpack);
-					try(Transaction simulated = Transaction.openOuter()) {
-						remainingStackSimulated.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, wrapper.getUpgradeHandler(), remainingStackSimulated.get(), simulated));
-					}
+					remainingStackSimulated.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, wrapper.getUpgradeHandler(), remainingStackSimulated.get(), true));
 					return remainingStackSimulated.get().isEmpty();
 				}, Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
 		);
@@ -259,7 +256,7 @@ public class CommonEventHandler {
 			AtomicReference<ItemStack> remainingStack = new AtomicReference<>(itemEntity.getItem().copy());
 			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
 						IBackpackWrapper wrapper = BackpackWrapper.fromStack(backpack);
-						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, player, wrapper.getUpgradeHandler(), remainingStack.get(), null));
+						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(level, player, wrapper.getUpgradeHandler(), remainingStack.get(), false));
 						return remainingStack.get().isEmpty();
 					}
 					, Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
