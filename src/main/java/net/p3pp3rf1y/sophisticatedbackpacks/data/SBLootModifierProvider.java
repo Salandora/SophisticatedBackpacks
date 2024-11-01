@@ -65,8 +65,8 @@ public class SBLootModifierProvider extends GlobalLootModifierProvider {
 			this.lootTableToInjectInto = lootTableToInjectInto;
 		}
 
-		protected InjectLootModifier(ResourceKey<LootTable> lootTable, ResourceKey<LootTable>lootTableToInjectInto) {
-			this(new LootItemCondition[] {SBLootEnabledCondition.builder().build(),
+		protected InjectLootModifier(ResourceKey<LootTable> lootTable, ResourceKey<LootTable> lootTableToInjectInto) {
+			this(new LootItemCondition[]{SBLootEnabledCondition.builder().build(),
 					LootTableIdCondition.builder(lootTableToInjectInto.location()).build()}, lootTable, lootTableToInjectInto);
 		}
 
