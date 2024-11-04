@@ -10,14 +10,13 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACKS;
-
 public class BackpackWrapperLookup {
 	public static final ItemApiLookup<IBackpackWrapper, Boolean> ITEM = ItemApiLookup.get(SophisticatedBackpacks.getRL("item_backpack_wrapper"), IBackpackWrapper.class, Boolean.class);
 
 	public static IBackpackWrapper getOrCreate(ItemStack provider) {
 		return ITEM.find(provider, true);
     }
+
 	@Nullable
 	public static IBackpackWrapper get(ItemStack provider) {
 		return ITEM.find(provider, false);
@@ -37,6 +36,8 @@ public class BackpackWrapperLookup {
 			}
 		};
 
-		ITEM.registerForItems(provider, BACKPACKS);
+		// BackpackWrapper.fromStack needs to create a wrapper no matter what ItemStack is passed into it
+		// ITEM.registerForItems(provider, BACKPACKS);
+		ITEM.registerFallback(provider);
 	}
 }
