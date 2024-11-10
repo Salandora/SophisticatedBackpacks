@@ -8,6 +8,7 @@ import io.github.fabricators_of_create.porting_lib.util.DeferredHolder;
 import io.github.fabricators_of_create.porting_lib.util.DeferredRegister;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.cauldron.CauldronInteraction;
@@ -372,7 +373,7 @@ public class ModItems {
 
 	private static void registerCapabilities() {
 		var backpacks = ModItems.BACKPACKS.stream().map(Supplier::get).toArray(BackpackItem[]::new);
-		ItemItemStorages.ITEM.registerForItems((stack, ctx) -> BackpackWrapper.fromStack(stack).getInventoryForInputOutput(), backpacks);
+		ItemStorage.ITEM.registerForItems((stack, ctx) -> BackpackWrapper.fromStack(stack).getInventoryForInputOutput(), backpacks);
 		FluidStorage.ITEM.registerForItems((stack, ctx) -> {
 					if (Boolean.FALSE.equals(Config.SERVER.itemFluidHandlerEnabled.get())) {
 						return null;

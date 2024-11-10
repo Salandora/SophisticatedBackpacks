@@ -135,7 +135,7 @@ public class KeybindHandler {
 			double mouseX = mh.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth();
 			double mouseY = mh.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight();
 			Slot selectedSlot = screen.findSlot(mouseX, mouseY);
-			if (selectedSlot != null && container.isNotPlayersInventorySlot(selectedSlot.index)) {
+			if (selectedSlot == null || container.isNotPlayersInventorySlot(selectedSlot.index)) {
 				container.sort();
 				return true;
 			}
