@@ -6,13 +6,13 @@ import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEnergyStorageUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IFluidHandlerWrapperUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IInventoryWrapperUpgrade;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeAccessModifier;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeWrapperAccessor;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -31,11 +31,11 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 	}
 
 	public InventoryOrder getInventoryOrder() {
-		return NBTHelper.getEnumConstant(upgrade, "inventoryOrder", InventoryOrder::fromName).orElse(InventoryOrder.MAIN_FIRST);
+		return upgrade.getOrDefault(ModDataComponents.INVENTORY_ORDER, InventoryOrder.MAIN_FIRST);
 	}
 
 	public void setInventoryOrder(InventoryOrder inventoryOrder) {
-		NBTHelper.setEnumConstant(upgrade, "inventoryOrder", inventoryOrder);
+		upgrade.set(ModDataComponents.INVENTORY_ORDER, inventoryOrder);
 		save();
 		storageWrapper.refreshInventoryForUpgradeProcessing();
 	}

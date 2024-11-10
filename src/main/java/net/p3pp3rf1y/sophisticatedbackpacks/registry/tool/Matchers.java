@@ -37,20 +37,20 @@ public class Matchers {
 			@Override
 			protected Optional<Predicate<ItemStack>> getPredicateFromObject(JsonObject jsonObject) {
 				String tagName = GsonHelper.getAsString(jsonObject, "tag");
-				TagKey<Item> tag = TagKey.create(Registries.ITEM, new ResourceLocation(tagName));
+				TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(tagName));
 				return Optional.of(new ItemTagMatcher(tag));
 			}
 		});
 
-		addItemMatcherFactory(new ItemMatcherFactory("emptynbt") {
+		addItemMatcherFactory(new ItemMatcherFactory("nocomponents") {
 			@Override
 			protected Optional<Predicate<ItemStack>> getPredicateFromObject(JsonObject jsonObject) {
-				ResourceLocation itemName = new ResourceLocation(GsonHelper.getAsString(jsonObject, "item"));
+				ResourceLocation itemName = ResourceLocation.parse(GsonHelper.getAsString(jsonObject, "item"));
 				if (!BuiltInRegistries.ITEM.containsKey(itemName)) {
 					SophisticatedBackpacks.LOGGER.debug("{} isn't loaded in item registry, skipping ...", itemName);
 				}
 				Item item = BuiltInRegistries.ITEM.get(itemName);
-				return Optional.of(st -> st.getItem() == item && (st.getTag() == null || st.getTag().isEmpty()));
+				return Optional.of(st -> st.getItem() == item && (st.getComponents().isEmpty()));
 			}
 		});
 

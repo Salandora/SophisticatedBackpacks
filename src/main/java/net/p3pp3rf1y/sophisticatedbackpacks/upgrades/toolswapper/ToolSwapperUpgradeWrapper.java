@@ -3,8 +3,11 @@ package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.AtomicDouble;
+import io.github.fabricators_of_create.porting_lib.extensions.extensions.IShearable;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbilities;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbility;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -12,11 +15,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.context.UseOnContext;
@@ -27,28 +29,21 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import io.github.fabricators_of_create.porting_lib.extensions.extensions.IShearable;
-import io.github.fabricators_of_create.porting_lib.tool.ToolAction;
-import io.github.fabricators_of_create.porting_lib.tool.ToolActions;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IAttackEntityResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockToolSwapUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEntityToolSwapUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
-import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.ItemAccessor;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.tool.SwordRegistry;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.tool.ToolRegistry;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogic;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -58,7 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static io.github.fabricators_of_create.porting_lib.tool.ToolActions.*;
+import static io.github.fabricators_of_create.porting_lib.tool.ItemAbilities.*;
 
 public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpgradeWrapper, ToolSwapperUpgradeItem>
 		implements IBlockClickResponseUpgrade, IAttackEntityResponseUpgrade, IBlockToolSwapUpgrade, IEntityToolSwapUpgrade {
@@ -81,7 +76,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	protected ToolSwapperUpgradeWrapper(IStorageWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
 		super(backpackWrapper, upgrade, upgradeSaveHandler);
-		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, Config.SERVER.toolSwapperUpgrade.filterSlots.get());
+		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, Config.SERVER.toolSwapperUpgrade.filterSlots.get(), ModCoreDataComponents.FILTER_ATTRIBUTES);
 	}
 
 	@Override
@@ -130,29 +125,19 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 				}
 			}
 		});
-		ItemVariant mainHandItemResource = ItemVariant.of(mainHandItem);
 		ItemStack tool = selectedTool.get();
-		if (!tool.isEmpty() && hasSpaceInBackpackOrCanPlaceInTheSlotOfSwappedTool(backpackInventory, mainHandItemResource, mainHandItem.getCount(), tool, selectedSlot.get())) {
-			// Two transactions on purpose, to make sure there is space in the backpack inventory before inserting an item there!
-			// This is necessary due to how the extract is implemented in the InventoryHandler! This should be changed to be honest
-			try (Transaction ctx = Transaction.openOuter()) {
-				ItemVariant resource = ItemVariant.of(tool);
-				player.setItemInHand(InteractionHand.MAIN_HAND, resource.toStack((int) backpackInventory.extractSlot(selectedSlot.get(), resource, 1, ctx)));
-				ctx.commit();
-			}
-			try (Transaction ctx = Transaction.openOuter()) {
-				backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), ctx);
-				ctx.commit();
-			}
+		if (!tool.isEmpty() && hasSpaceInBackpackOrCanPlaceInTheSlotOfSwappedTool(backpackInventory, mainHandItem, tool, selectedSlot.get())) {
+			player.setItemInHand(InteractionHand.MAIN_HAND, backpackInventory.extractItem(selectedSlot.get(), 1, false));
+			backpackInventory.insertItem(mainHandItem, false);
 			return true;
 		}
 
 		return false;
 	}
 
-	private boolean hasSpaceInBackpackOrCanPlaceInTheSlotOfSwappedTool(IItemHandlerSimpleInserter backpackInventory, ItemVariant mainHandItem, int mainHandItemCount, ItemStack tool, int selectedSlot) {
-		return (StorageUtil.simulateInsert(backpackInventory, mainHandItem, mainHandItemCount, null) == mainHandItemCount)
-				|| (tool.getCount() == 1 && backpackInventory.isItemValid(selectedSlot, mainHandItem, mainHandItemCount));
+	private boolean hasSpaceInBackpackOrCanPlaceInTheSlotOfSwappedTool(IItemHandlerSimpleInserter backpackInventory, ItemStack mainHandItem, ItemStack tool, int selectedSlot) {
+		return (backpackInventory.insertItem(mainHandItem, true).isEmpty())
+				|| (tool.getCount() == 1 && backpackInventory.isItemValid(selectedSlot, mainHandItem));
 	}
 
 	private boolean isAllowedAndGoodAtBreakingBlock(BlockState state, ItemStack stack) {
@@ -187,13 +172,13 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	private static boolean canPerformToolAction(ItemStack stack) {
-		return canPerformAnyAction(stack, ToolActions.DEFAULT_AXE_ACTIONS) || canPerformAnyAction(stack, ToolActions.DEFAULT_HOE_ACTIONS)
-				|| canPerformAnyAction(stack, ToolActions.DEFAULT_PICKAXE_ACTIONS) || canPerformAnyAction(stack, ToolActions.DEFAULT_SHOVEL_ACTIONS)
-				|| canPerformAnyAction(stack, ToolActions.DEFAULT_SHEARS_ACTIONS);
+		return canPerformAnyAction(stack, ItemAbilities.DEFAULT_AXE_ACTIONS) || canPerformAnyAction(stack, ItemAbilities.DEFAULT_HOE_ACTIONS)
+				|| canPerformAnyAction(stack, ItemAbilities.DEFAULT_PICKAXE_ACTIONS) || canPerformAnyAction(stack, ItemAbilities.DEFAULT_SHOVEL_ACTIONS)
+				|| canPerformAnyAction(stack, ItemAbilities.DEFAULT_SHEARS_ACTIONS);
 	}
 
-	private static boolean canPerformAnyAction(ItemStack stack, Set<ToolAction> toolActions) {
-		for (ToolAction toolAction : toolActions) {
+	private static boolean canPerformAnyAction(ItemStack stack, Set<ItemAbility> toolActions) {
+		for (ItemAbility toolAction : toolActions) {
 			if (stack.canPerformAction(toolAction)) {
 				return true;
 			}
@@ -207,8 +192,8 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		}
 
 		AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
-		if (!stack.isEmpty() && stack.canPerformAction(ToolActions.SWORD_SWEEP)) {
-			return attackDamage != null && attackDamage.getModifier(ItemAccessor.getBaseAttackDamageUUID()) != null;
+		if (!stack.isEmpty() && stack.canPerformAction(ItemAbilities.SWORD_SWEEP)) {
+			return attackDamage != null && attackDamage.getModifier(Item.BASE_ATTACK_DAMAGE_ID) != null;
 		}
 		return false;
 	}
@@ -239,21 +224,21 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	private void updateBestWeapons(AtomicReference<ItemStack> bestAxe, AtomicDouble bestAxeDamage, AtomicReference<ItemStack> bestSword, AtomicDouble bestSwordDamage, ItemStack stack) {
 		AttributeInstance attribute = new AttributeInstance(Attributes.ATTACK_DAMAGE, a -> {
 		});
-		Multimap<Attribute, AttributeModifier> attributeModifiers = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
-		if (!attributeModifiers.containsKey(Attributes.ATTACK_DAMAGE)) {
-			return;
-		}
-		attributeModifiers.get(Attributes.ATTACK_DAMAGE).forEach(m -> {
-			attribute.removeModifier(m.getId());
+		stack.forEachModifier(EquipmentSlot.MAINHAND, (att, m) -> {
+			if (!att.equals(Attributes.ATTACK_DAMAGE)) {
+				return;
+			}
+			attribute.removeModifier(m);
 			attribute.addTransientModifier(m);
 		});
+
 		double damageValue = attribute.getValue();
-		if (stack.canPerformAction(ToolActions.AXE_DIG)) {
+		if (stack.canPerformAction(ItemAbilities.AXE_DIG)) {
 			if (damageValue > bestAxeDamage.get()) {
 				bestAxe.set(stack);
 				bestAxeDamage.set(damageValue);
 			}
-		} else if ((SwordRegistry.isSword(stack) || stack.canPerformAction(ToolActions.SWORD_SWEEP)) && damageValue > bestSwordDamage.get()) {
+		} else if ((SwordRegistry.isSword(stack) || stack.canPerformAction(ItemAbilities.SWORD_SWEEP)) && damageValue > bestSwordDamage.get()) {
 			bestSword.set(stack);
 			bestSwordDamage.set(damageValue);
 		}
@@ -264,15 +249,15 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 			return true;
 		}
 
-		try(Transaction ctx = Transaction.openOuter()) {
-			backpackInventory.extract(ItemVariant.of(sword), sword.getCount(), ctx);
-			long inserted = backpackInventory.insert(ItemVariant.of(mainHandItem), mainHandItem.getCount(), ctx);
-			if (inserted == mainHandItem.getCount()) {
-				player.setItemInHand(InteractionHand.MAIN_HAND, sword);
-				ctx.commit();
-				return true;
-			}
-
+		ItemStack swordCopy = sword.copy();
+		swordCopy.setCount(1);
+		InventoryHelper.extractFromInventory(swordCopy, backpackInventory, false);
+		if (backpackInventory.insertItem(mainHandItem, true).isEmpty()) {
+			player.setItemInHand(InteractionHand.MAIN_HAND, swordCopy);
+			backpackInventory.insertItem(mainHandItem, false);
+			return true;
+		} else {
+			backpackInventory.insertItem(swordCopy, false);
 			return false;
 		}
 	}
@@ -287,20 +272,20 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	public boolean shouldSwapWeapon() {
-		return NBTHelper.getBoolean(upgrade, "shouldSwapWeapon").orElse(true);
+		return upgrade.getOrDefault(ModDataComponents.SHOULD_SWAP_WEAPON, true);
 	}
 
 	public void setSwapWeapon(boolean shouldSwapWeapon) {
-		NBTHelper.setBoolean(upgrade, "shouldSwapWeapon", shouldSwapWeapon);
+		upgrade.set(ModDataComponents.SHOULD_SWAP_WEAPON, shouldSwapWeapon);
 		save();
 	}
 
 	public ToolSwapMode getToolSwapMode() {
-		return NBTHelper.getEnumConstant(upgrade, "toolSwapMode", ToolSwapMode::fromName).orElse(ToolSwapMode.ANY);
+		return upgrade.getOrDefault(ModDataComponents.TOOL_SWAP_MODE, ToolSwapMode.ANY);
 	}
 
 	public void setToolSwapMode(ToolSwapMode toolSwapMode) {
-		NBTHelper.setEnumConstant(upgrade, "toolSwapMode", toolSwapMode);
+		upgrade.set(ModDataComponents.TOOL_SWAP_MODE, toolSwapMode);
 		save();
 	}
 
@@ -353,15 +338,10 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 		tool = tool.copy().split(1);
 
-		try (Transaction ctx = Transaction.openOuter()) {
-			long inserted = backpackInventory.insert(ItemVariant.of(mainHandStack), mainHandStack.getCount(), ctx);
-			if (tool.getCount() == 1 || inserted == 0) {
-				ItemVariant resource = ItemVariant.of(tool);
-				long extracted = backpackInventory.extract(resource, tool.getCount(), ctx);
-				player.setItemInHand(InteractionHand.MAIN_HAND, resource.toStack((int) extracted));
-				toolCache.offer(tool);
-				ctx.commit();
-			}
+		if ((tool.getCount() == 1 || backpackInventory.insertItem(mainHandStack, true).isEmpty())) {
+			player.setItemInHand(InteractionHand.MAIN_HAND, InventoryHelper.extractFromInventory(tool, backpackInventory, false));
+			backpackInventory.insertItem(mainHandStack, false);
+			toolCache.offer(tool);
 		}
 		return true;
 	}
@@ -405,10 +385,10 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		return false;
 	}
 
-	private static final Set<ToolAction> BLOCK_MODIFICATION_ACTIONS = Set.of(AXE_STRIP, AXE_SCRAPE, AXE_WAX_OFF, SHOVEL_FLATTEN, SHEARS_CARVE, SHEARS_HARVEST);
+	private static final Set<ItemAbility> BLOCK_MODIFICATION_ACTIONS = Set.of(AXE_STRIP, AXE_SCRAPE, AXE_WAX_OFF, SHOVEL_FLATTEN, SHEARS_CARVE, SHEARS_HARVEST);
 
 	private boolean itemWorksOnBlock(Level level, BlockPos pos, BlockState blockState, Player player, ItemStack stack) {
-		for (ToolAction action : BLOCK_MODIFICATION_ACTIONS) {
+		for (ItemAbility action : BLOCK_MODIFICATION_ACTIONS) {
 			if (stack.canPerformAction(action) && blockState.getToolModifiedState(
 					new UseOnContext(level, player, InteractionHand.MAIN_HAND, stack, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true)), action, true) != null) {
 				return true;
@@ -423,15 +403,15 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	private boolean isShearsItem(ItemStack stack) {
-		return stack.getItem() instanceof ShearsItem || stack.is(ConventionalItemTags.SHEARS);
+		return stack.getItem() instanceof ShearsItem || stack.is(ConventionalItemTags.SHEAR_TOOLS);
 	}
 
 	private boolean isShearInteractionBlock(Level level, BlockPos pos, ItemStack stack, Block block) {
-		return (block instanceof IShearable shearable && shearable.isShearable(stack, level, pos)) || block instanceof BeehiveBlock;
+		return (block instanceof IShearable shearable && shearable.isShearable(/*null, */stack, level, pos)) || block instanceof BeehiveBlock;
 	}
 
 	private boolean isShearableEntity(Entity entity, ItemStack stack) {
-		return entity instanceof IShearable shearable && shearable.isShearable(stack, entity.level(), entity.blockPosition());
+		return entity instanceof IShearable shearable && shearable.isShearable(/*null, */stack, entity.level(), entity.blockPosition());
 	}
 
 	@Override

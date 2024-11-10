@@ -26,8 +26,6 @@ import net.p3pp3rf1y.sophisticatedcore.renderdata.UpgradeRenderDataType;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
 	public BackpackLayerRenderer(RenderLayerParent<T, M> entityRendererIn) {
@@ -58,7 +56,7 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 	public static <T extends LivingEntity, M extends EntityModel<T>> void renderBackpack(M parentModel, LivingEntity livingEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, ItemStack backpack, boolean wearsArmor, IBackpackModel model) {
 		model.translateRotateAndScale(parentModel, livingEntity, matrixStack, wearsArmor);
 
-		IBackpackWrapper wrapper = BackpackWrapper.fromData(backpack);
+		IBackpackWrapper wrapper = BackpackWrapper.fromStack(backpack);
 		int clothColor = wrapper.getMainColor();
 		int borderColor = wrapper.getAccentColor();
 		model.render(parentModel, livingEntity, matrixStack, buffer, packedLight, clothColor, borderColor, backpack.getItem(), wrapper.getRenderInfo());
@@ -81,9 +79,7 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 		if (Minecraft.getInstance().isPaused() || livingEntity.level().random.nextInt(32) != 0) {
 			return;
 		}
-
-		Map<UpgradeRenderDataType<?>, IUpgradeRenderData> upgradeRenderData = new HashMap<>(renderInfo.getUpgradeRenderData());
-		upgradeRenderData.forEach((type, data) -> UpgradeRenderRegistry.getUpgradeRenderer(type).ifPresent(renderer -> renderUpgrade(renderer, livingEntity, type, data)));
+		renderInfo.getUpgradeRenderData().forEach((type, data) -> UpgradeRenderRegistry.getUpgradeRenderer(type).ifPresent(renderer -> renderUpgrade(renderer, livingEntity, type, data)));
 	}
 
 	private static Vector3f getBackpackMiddleFacePoint(LivingEntity livingEntity, Vector3f vector) {

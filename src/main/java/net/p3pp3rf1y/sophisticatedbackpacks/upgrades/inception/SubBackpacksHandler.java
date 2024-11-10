@@ -42,7 +42,7 @@ public class SubBackpacksHandler {
 		if (backpackWasInTheSlot != backpackIsInTheSlot) {
 			notifyAndRefreshSubbackpacks();
 		} else {
-			if (BackpackWrapper.fromData(stackInSlot) != subBackpacks.get(slot)) {
+			if (BackpackWrapper.fromStack(stackInSlot) != subBackpacks.get(slot)) {
 				notifyAndRefreshSubbackpacks();
 			}
 		}
@@ -74,7 +74,7 @@ public class SubBackpacksHandler {
 		for (int slot = 0; slot < inventoryHandler.getSlotCount(); slot++) {
 			ItemStack slotStack = inventoryHandler.getStackInSlot(slot);
 			if (slotStack.getItem() instanceof BackpackItem) {
-				subBackpacks.put(slot, BackpackWrapper.fromData(slotStack));
+				subBackpacks.put(slot, BackpackWrapper.fromStack(slotStack));
 			}
 		}
 	}

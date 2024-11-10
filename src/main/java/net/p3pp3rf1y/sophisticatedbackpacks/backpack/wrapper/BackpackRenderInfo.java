@@ -2,14 +2,13 @@ package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class BackpackRenderInfo extends RenderInfo {
-	private static final String RENDER_INFO_TAG = "renderInfo";
 	private final ItemStack backpack;
 
 	public BackpackRenderInfo(ItemStack backpack, Supplier<Runnable> getSaveHandler) {
@@ -20,11 +19,11 @@ public class BackpackRenderInfo extends RenderInfo {
 
 	@Override
 	protected void serializeRenderInfo(CompoundTag renderInfo) {
-		NBTHelper.setCompoundNBT(backpack, RENDER_INFO_TAG, renderInfo);
+		backpack.set(ModCoreDataComponents.RENDER_INFO_TAG, renderInfo);
 	}
 
 	@Override
 	protected Optional<CompoundTag> getRenderInfoTag() {
-		return NBTHelper.getCompound(backpack, RENDER_INFO_TAG);
+		return Optional.ofNullable(backpack.get(ModCoreDataComponents.RENDER_INFO_TAG));
 	}
 }

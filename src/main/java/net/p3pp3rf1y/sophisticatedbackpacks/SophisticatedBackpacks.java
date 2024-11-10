@@ -1,16 +1,16 @@
 package net.p3pp3rf1y.sophisticatedbackpacks;
 
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.config.ModConfig;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.command.SBPCommand;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.CommonEventHandler;
-import net.p3pp3rf1y.sophisticatedbackpacks.init.ModPackets;
+import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.RegistryLoader;
-import fuzs.forgeconfigapiport.api.config.v3.ForgeConfigRegistry;
-
+import net.p3pp3rf1y.sophisticatedcore.compat.CompatRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,17 +23,24 @@ public class SophisticatedBackpacks implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		ForgeConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.SERVER, Config.SERVER_SPEC);
-		ForgeConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.COMMON, Config.COMMON_SPEC);
-		Config.SERVER.initListeners();
+		NeoForgeConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.SERVER, Config.SERVER_SPEC);
+		NeoForgeConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.COMMON, Config.COMMON_SPEC);
 		commonEventHandler.registerHandlers();
+		setup();
+		Config.SERVER.initListeners();
 		SBPCommand.init();
-		ModPackets.registerPackets();
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(registryLoader);
+
+		CompatRegistry.getRegistry(MOD_ID).setupCompats();
+	}
+
+	private static void setup() {
+		ModItems.registerDispenseBehavior();
+		ModItems.registerCauldronInteractions();
 	}
 
 	public static ResourceLocation getRL(String regName) {
-		return new ResourceLocation(getRegistryName(regName));
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, regName);
 	}
 
 	public static String getRegistryName(String regName) {

@@ -20,7 +20,7 @@
 
 # include sourcecode
 !src/
-src/main/generated/.cache/
+src/generated/resources/.cache/
 
 # include git important files
 !.gitmodules

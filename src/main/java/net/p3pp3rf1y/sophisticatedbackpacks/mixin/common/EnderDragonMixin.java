@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EnderDragon.class)
-public class EnderDragonMixin extends Mob {
+public abstract class EnderDragonMixin extends Mob {
 	protected EnderDragonMixin(EntityType<? extends Mob> entityType, Level level) {
 		super(entityType, level);
 	}

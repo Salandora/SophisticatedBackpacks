@@ -7,7 +7,6 @@ import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
-import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,7 +21,7 @@ public class PiglinAiMixin {
 	@Inject(method = "isWearingGold", at = @At(value = "HEAD"), cancellable = true)
 	private static void sophisticatedBackpacks$isWearingGold(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
 		for (ItemStack itemStack : sophisticatedBackpacks$getArmorSlots(entity)) {
-			if (itemStack.getItem() == ModItems.GOLD_BACKPACK) {
+			if (itemStack.makesPiglinsNeutral(entity)) {
 				cir.setReturnValue(true);
 				return;
 			}

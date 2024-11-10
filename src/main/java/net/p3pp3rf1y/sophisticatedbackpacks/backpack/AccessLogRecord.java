@@ -73,7 +73,7 @@ public class AccessLogRecord {
 
 	public static AccessLogRecord deserializeFromNBT(CompoundTag nbt) {
 		return new AccessLogRecord(
-				new ResourceLocation(nbt.getString("backpackItemRegistryName")),
+				ResourceLocation.parse(nbt.getString("backpackItemRegistryName")),
 				nbt.getUUID("backpackUuid"),
 				nbt.getString("playerName"),
 				nbt.getString("backpackName"),

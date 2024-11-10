@@ -20,10 +20,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class TrinketsCompat implements ICompat {
     private static final BackpackTrinket TRINKET_BACKPACK = new BackpackTrinket();
-    private static final ItemStack BACKPACK = new ItemStack(ModItems.BACKPACK);
 	private static final int TAGS_REFRESH_COOLDOWN = 100;
 
 	public static <T> T getFromTrinketInventory(Player player, String identifier, Function<TrinketInventory, T> getFromHandler, T defaultValue) {
@@ -61,13 +61,6 @@ public class TrinketsCompat implements ICompat {
 
 	@Override
 	public void init() {
-		for (BackpackItem backpack : ModItems.BACKPACKS) {
-            TrinketsApi.registerTrinket(backpack, TRINKET_BACKPACK);
-			if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-				TrinketRendererRegistry.registerRenderer(backpack, TRINKET_BACKPACK);
-			}
-        }
-
         PlayerInventoryProvider.get().addPlayerInventoryHandler(CompatModIds.TRINKETS, this::getTrinketTags,
                 (player, identifier) -> getFromTrinketInventory(player, identifier, TrinketInventory::getContainerSize, 0),
                 (player, identifier, slot) -> getFromTrinketInventory(player, identifier, ti -> ti.getItem(slot), ItemStack.EMPTY),
@@ -76,7 +69,12 @@ public class TrinketsCompat implements ICompat {
 
     @Override
     public void setup() {
-        // noop
+		for (Supplier<BackpackItem> backpack : ModItems.BACKPACKS) {
+			TrinketsApi.registerTrinket(backpack.get(), TRINKET_BACKPACK);
+			if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+				TrinketRendererRegistry.registerRenderer(backpack.get(), TRINKET_BACKPACK);
+			}
+		}
     }
 
 	private Set<String> getTrinketTags(Player player, long gameTime) {
@@ -85,6 +83,7 @@ public class TrinketsCompat implements ICompat {
 
 			backpackTrinketIdentifiers.clear();
 			TrinketsApi.getTrinketComponent(player).ifPresent(comp -> {
+				ItemStack backpack = new ItemStack(ModItems.BACKPACK.get());
 				for (Map.Entry<String, Map<String, TrinketInventory>> group : comp.getInventory().entrySet()) {
 					for (Map.Entry<String, TrinketInventory> inventory : group.getValue().entrySet()) {
 						TrinketInventory trinketInventory = inventory.getValue();
@@ -92,7 +91,7 @@ public class TrinketsCompat implements ICompat {
 
 						for (int i = 0; i < trinketInventory.getContainerSize(); i++) {
 							SlotReference ref = new SlotReference(trinketInventory, i);
-							if (TrinketsApi.evaluatePredicateSet(slotType.getValidatorPredicates(), BACKPACK, ref, player)) {
+							if (TrinketsApi.evaluatePredicateSet(slotType.getValidatorPredicates(), backpack, ref, player)) {
 								backpackTrinketIdentifiers.add(group.getKey() + "/" + inventory.getKey());
 							}
 						}

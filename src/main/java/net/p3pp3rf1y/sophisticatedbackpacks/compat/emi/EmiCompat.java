@@ -12,7 +12,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
-import net.p3pp3rf1y.sophisticatedbackpacks.compat.common.DyeRecipesMaker;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.SettingsScreen;
 import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiGridMenuInfo;
@@ -20,16 +19,13 @@ import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiSettingsGhostDragDropHandle
 import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiStorageGhostDragDropHandler;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
-import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.stack.Comparison;
-import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.Bounds;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -64,36 +60,23 @@ public class EmiCompat implements EmiPlugin {
 		registry.addDragDropHandler(BackpackScreen.class, new EmiStorageGhostDragDropHandler<>());
 		registry.addDragDropHandler(SettingsScreen.class, new EmiSettingsGhostDragDropHandler<>());
 
-		registerCraftingRecipes(registry, DyeRecipesMaker.getRecipes());
-
 		Comparison compareColor = Comparison.of((a, b) -> {
-			IBackpackWrapper wrapperA = BackpackWrapper.fromData(a.getItemStack());
-			IBackpackWrapper wrapperB = BackpackWrapper.fromData(b.getItemStack());
+			IBackpackWrapper wrapperA = BackpackWrapper.fromStack(a.getItemStack());
+			IBackpackWrapper wrapperB = BackpackWrapper.fromStack(b.getItemStack());
 			return wrapperA.getMainColor() == wrapperB.getMainColor() && wrapperA.getAccentColor() == wrapperB.getAccentColor();
 		});
 
-        registry.setDefaultComparison(EmiStack.of(ModItems.BACKPACK), compareColor);
+        registry.setDefaultComparison(EmiStack.of(ModItems.BACKPACK.get()), compareColor);
 
-        registry.addRecipeHandler(ModItems.BACKPACK_CONTAINER_TYPE, new EmiGridMenuInfo<>());
+        registry.addRecipeHandler(ModItems.BACKPACK_CONTAINER_TYPE.get(), new EmiGridMenuInfo<>());
 
-		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, EmiStack.of(ModItems.CRAFTING_UPGRADE));
-		registry.addWorkstation(VanillaEmiRecipeCategories.STONECUTTING, EmiStack.of(ModItems.STONECUTTER_UPGRADE));
+		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, EmiStack.of(ModItems.CRAFTING_UPGRADE.get()));
+		registry.addWorkstation(VanillaEmiRecipeCategories.STONECUTTING, EmiStack.of(ModItems.STONECUTTER_UPGRADE.get()));
 
 		List<WorkstationEntry> entries = new ArrayList<>();
 		WORKSTATIONS.invoker().additionalWorkstations(entries::add);
 		for (WorkstationEntry entry : entries) {
 			registry.addWorkstation(new EmiRecipeCategory(entry.id, EmiStack.of(entry.icon)), EmiStack.of(entry.workstation));
 		}
-    }
-
-    private static void registerCraftingRecipes(EmiRegistry registry, Collection<RecipeHolder<CraftingRecipe>> recipes) {
-		Minecraft mc = Minecraft.getInstance();
-        recipes.forEach(r -> registry.addRecipe(
-            new EmiCraftingRecipe(
-                r.value().getIngredients().stream().map(EmiIngredient::of).toList(),
-                EmiStack.of(r.value().getResultItem(mc.level.registryAccess())),
-                r.id())
-            )
-        );
     }
 }
