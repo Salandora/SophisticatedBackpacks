@@ -2,10 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -88,7 +84,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	}
 
 	private void saveTargetSlots() {
-		upgrade.set(ModDataComponents.TARGET_SLOTS, ImmutableMap.copyOf(targetSlots));
+		upgrade.sophisticatedCore_set(ModDataComponents.TARGET_SLOTS, ImmutableMap.copyOf(targetSlots));
 		save();
 	}
 

@@ -35,7 +35,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 	}
 
 	public void setInventoryOrder(InventoryOrder inventoryOrder) {
-		upgrade.set(ModDataComponents.INVENTORY_ORDER, inventoryOrder);
+		upgrade.sophisticatedCore_set(ModDataComponents.INVENTORY_ORDER, inventoryOrder);
 		save();
 		storageWrapper.refreshInventoryForUpgradeProcessing();
 	}

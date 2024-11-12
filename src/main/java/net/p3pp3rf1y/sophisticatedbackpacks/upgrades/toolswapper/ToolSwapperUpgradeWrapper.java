@@ -276,7 +276,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	public void setSwapWeapon(boolean shouldSwapWeapon) {
-		upgrade.set(ModDataComponents.SHOULD_SWAP_WEAPON, shouldSwapWeapon);
+		upgrade.sophisticatedCore_set(ModDataComponents.SHOULD_SWAP_WEAPON, shouldSwapWeapon);
 		save();
 	}
 
@@ -285,7 +285,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	public void setToolSwapMode(ToolSwapMode toolSwapMode) {
-		upgrade.set(ModDataComponents.TOOL_SWAP_MODE, toolSwapMode);
+		upgrade.sophisticatedCore_set(ModDataComponents.TOOL_SWAP_MODE, toolSwapMode);
 		save();
 	}
 

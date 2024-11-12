@@ -137,7 +137,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private int getNumberOfInventorySlots() {
-		Integer inventorySlots = getBackpackStack().get(ModCoreDataComponents.NUMBER_OF_INVENTORY_SLOTS);
+		Integer inventorySlots = getBackpackStack().sophisticatedCore_get(ModCoreDataComponents.NUMBER_OF_INVENTORY_SLOTS);
 
 		if (inventorySlots != null) {
 			return inventorySlots;
@@ -155,7 +155,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private void setNumberOfInventorySlots(int itemInventorySlots) {
-		getBackpackStack().set(ModCoreDataComponents.NUMBER_OF_INVENTORY_SLOTS, itemInventorySlots);
+		getBackpackStack().sophisticatedCore_set(ModCoreDataComponents.NUMBER_OF_INVENTORY_SLOTS, itemInventorySlots);
 	}
 
 	private CompoundTag getBackpackContentsNbt() {
@@ -277,7 +277,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private int getNumberOfUpgradeSlots() {
-		Integer upgradeSlots = getBackpackStack().get(ModCoreDataComponents.NUMBER_OF_UPGRADE_SLOTS);
+		Integer upgradeSlots = getBackpackStack().sophisticatedCore_get(ModCoreDataComponents.NUMBER_OF_UPGRADE_SLOTS);
 
 		if (upgradeSlots != null) {
 			return upgradeSlots;
@@ -290,7 +290,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public Optional<UUID> getContentsUuid() {
-		return Optional.ofNullable(getBackpackStack().get(ModCoreDataComponents.STORAGE_UUID));
+		return Optional.ofNullable(getBackpackStack().sophisticatedCore_get(ModCoreDataComponents.STORAGE_UUID));
 	}
 
 	private UUID getOrCreateContentsUuid() {
@@ -325,18 +325,18 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public Optional<Integer> getOpenTabId() {
-		return Optional.ofNullable(getBackpackStack().get(ModCoreDataComponents.OPEN_TAB_ID));
+		return Optional.ofNullable(getBackpackStack().sophisticatedCore_get(ModCoreDataComponents.OPEN_TAB_ID));
 	}
 
 	@Override
 	public void setOpenTabId(int openTabId) {
-		getBackpackStack().set(ModCoreDataComponents.OPEN_TAB_ID, openTabId);
+		getBackpackStack().sophisticatedCore_set(ModCoreDataComponents.OPEN_TAB_ID, openTabId);
 		backpackSaveHandler.run();
 	}
 
 	@Override
 	public void removeOpenTabId() {
-		getBackpackStack().remove(ModCoreDataComponents.OPEN_TAB_ID);
+		getBackpackStack().sophisticatedCore_remove(ModCoreDataComponents.OPEN_TAB_ID);
 		backpackSaveHandler.run();
 	}
 
@@ -349,7 +349,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void setSortBy(SortBy sortBy) {
-		getBackpackStack().set(ModCoreDataComponents.SORT_BY, sortBy);
+		getBackpackStack().sophisticatedCore_set(ModCoreDataComponents.SORT_BY, sortBy);
 		backpackSaveHandler.run();
 	}
 
@@ -398,7 +398,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	private ItemStack cloneBackpack(IBackpackWrapper originalWrapper) {
 		ItemStack backpackCopy = originalWrapper.getBackpack().copy();
-		backpackCopy.remove(ModCoreDataComponents.STORAGE_UUID);
+		backpackCopy.sophisticatedCore_remove(ModCoreDataComponents.STORAGE_UUID);
 		IBackpackWrapper wrapperCopy = BackpackWrapper.fromStack(backpackCopy);
 		originalWrapper.copyDataTo(wrapperCopy);
 		return wrapperCopy.getBackpack();
@@ -424,8 +424,8 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void setLoot(ResourceLocation lootTableName, float lootFactor) {
-		getBackpackStack().set(ModDataComponents.LOOT_TABLE, lootTableName);
-		getBackpackStack().set(ModDataComponents.LOOT_FACTOR, lootFactor);
+		getBackpackStack().sophisticatedCore_set(ModDataComponents.LOOT_TABLE, lootTableName);
+		getBackpackStack().sophisticatedCore_set(ModDataComponents.LOOT_FACTOR, lootFactor);
 		backpackSaveHandler.run();
 	}
 
@@ -434,7 +434,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 		if (playerEntity.level().isClientSide) {
 			return;
 		}
-		ResourceLocation lootTable = getBackpackStack().get(ModDataComponents.LOOT_TABLE);
+		ResourceLocation lootTable = getBackpackStack().sophisticatedCore_get(ModDataComponents.LOOT_TABLE);
 		if (lootTable == null) {
 			return;
 		}
@@ -443,7 +443,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void setContentsUuid(UUID storageUuid) {
-		getBackpackStack().set(ModCoreDataComponents.STORAGE_UUID, storageUuid);
+		getBackpackStack().sophisticatedCore_set(ModCoreDataComponents.STORAGE_UUID, storageUuid);
 /* TODO add in the future
 		StorageWrapperRepository.migrateToUuid(this, backpack, storageUuid);
 */
@@ -457,7 +457,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void removeContentsUUIDTag() {
-		getBackpackStack().remove(ModCoreDataComponents.STORAGE_UUID);
+		getBackpackStack().sophisticatedCore_remove(ModCoreDataComponents.STORAGE_UUID);
 	}
 
 	private ItemStack getBackpackStack() {
@@ -475,7 +475,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	@Override
 	public void setColumnsTaken(int columnsTaken, boolean hasChanged) {
 		int originalColumnsTaken = getColumnsTaken();
-		getBackpackStack().set(ModDataComponents.COLUMNS_TAKEN, columnsTaken);
+		getBackpackStack().sophisticatedCore_set(ModDataComponents.COLUMNS_TAKEN, columnsTaken);
 		if (hasChanged) {
 			int diff = (columnsTaken - originalColumnsTaken) * getNumberOfSlotRows();
 			onSlotsChange.accept(diff);
@@ -507,8 +507,8 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 		float lootFactor = getBackpackStack().getOrDefault(ModDataComponents.LOOT_FACTOR, 0f);
 
-		getBackpackStack().remove(ModDataComponents.LOOT_TABLE);
-		getBackpackStack().remove(ModDataComponents.LOOT_FACTOR);
+		getBackpackStack().sophisticatedCore_remove(ModDataComponents.LOOT_TABLE);
+		getBackpackStack().sophisticatedCore_remove(ModDataComponents.LOOT_FACTOR);
 
 		List<ItemStack> loot = LootHelper.getLoot(lootTable, server, serverLevel, playerEntity);
 		loot.removeIf(stack -> stack.getItem() instanceof BackpackItem);
@@ -517,7 +517,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private void setNumberOfUpgradeSlots(int numberOfUpgradeSlots) {
-		getBackpackStack().set(ModCoreDataComponents.NUMBER_OF_UPGRADE_SLOTS, numberOfUpgradeSlots);
+		getBackpackStack().sophisticatedCore_set(ModCoreDataComponents.NUMBER_OF_UPGRADE_SLOTS, numberOfUpgradeSlots);
 	}
 
 	@Override
