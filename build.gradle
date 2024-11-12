@@ -24,7 +24,6 @@ idea {
     module {
         downloadJavadoc = true
         downloadSources = true
-        inheritOutputDirs = true
     }
 }
 
@@ -321,17 +320,15 @@ processResources {
 
 // Fix to make IDEA load the correct resources when build and run is delegated to it
 tasks.register('fixIntelliJResources', Copy) {
-    def ideaClasspath = SourceSetHelper.getIdeaClasspath(new SourceSetReference(sourceSets.main, project), rootProject)
-    if (ideaClasspath.empty)
+    def ideaModuleCompileOutputPath = SourceSetHelper.getIdeaModuleCompileOutput(new SourceSetReference(sourceSets.main, project))
+    if (ideaModuleCompileOutputPath.empty)
         return
 
     dependsOn processResources
     group "fabric"
 
     from processResources
-    ideaClasspath.each {
-        into it.toPath()
-    }
+    into ideaModuleCompileOutputPath[1]
 }
 
 static def mavenVersionToFabric(String version) {
