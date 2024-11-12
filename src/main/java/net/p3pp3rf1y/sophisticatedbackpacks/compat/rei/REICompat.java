@@ -7,6 +7,7 @@ import me.shedaniel.rei.api.common.transfer.info.MenuInfoRegistry;
 import me.shedaniel.rei.api.common.transfer.info.simple.SimpleMenuInfoProvider;
 import me.shedaniel.rei.plugin.common.BuiltinPlugin;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
@@ -28,13 +29,12 @@ public class REICompat implements REIServerPlugin {
 
     @Override
     public void registerItemComparators(ItemComparatorRegistry registry) {
-        EntryComparator<DataComponentMap> componentHasher = EntryComparator.component();
         EntryComparator<ItemStack> colorTag = (context, stack) -> {
 			IBackpackWrapper wrapper = BackpackWrapper.fromStack(stack);
             var builder = DataComponentMap.builder();
             builder.set(ModCoreDataComponents.MAIN_COLOR.get(), wrapper.getMainColor());
             builder.set(ModCoreDataComponents.ACCENT_COLOR.get(), wrapper.getAccentColor());
-            return componentHasher.hash(context, builder.build());
+            return EntryComparator.component().hash(context, new PatchedDataComponentMap(builder.build()));
         };
 
         registry.register(colorTag, ModItems.BACKPACKS.stream().map(Supplier::get).toArray(BackpackItem[]::new));
