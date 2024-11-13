@@ -285,7 +285,7 @@ processResources {
             mod_id              : project.mod_id,
             mod_name            : project.mod_name,
             mod_license         : project.mod_license,
-            mod_version         : version,
+            mod_version         : version.replace(getStable(), ""), // remove the getStable string so that fabric loader can catch version mismatches, only important for snapshots
             mod_issue_tracker_url: project.mod_issue_tracker_url,
             mod_sources_url     : project.mod_sources_url,
             mod_logo_file       : project.mod_logo_file,
