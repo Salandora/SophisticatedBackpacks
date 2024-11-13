@@ -8,7 +8,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.DyeRecipesMaker;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.compat.jei.ClientRecipeHelper;
-import net.p3pp3rf1y.sophisticatedcore.compat.rei.StorageGhostIngredientHandler;
+import net.p3pp3rf1y.sophisticatedcore.compat.rei.REIStorageGhostIngredientHandler;
 import net.p3pp3rf1y.sophisticatedcore.crafting.UpgradeNextTierRecipe;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
@@ -61,7 +61,7 @@ public class REIClientCompat implements REIClientPlugin {
 
     @Override
     public void registerScreens(ScreenRegistry registry) {
-        registry.registerDraggableStackVisitor(new StorageGhostIngredientHandler<>() {
+        registry.registerDraggableStackVisitor(new REIStorageGhostIngredientHandler<>() {
             @Override
             public <R extends Screen> boolean isHandingScreen(R screen) {
                 return screen instanceof BackpackScreen;
