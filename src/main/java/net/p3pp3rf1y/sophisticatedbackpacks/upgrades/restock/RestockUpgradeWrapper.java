@@ -41,7 +41,7 @@ public class RestockUpgradeWrapper extends UpgradeWrapperBase<RestockUpgradeWrap
 
 		InventoryHelper.transfer(itemHandler,
 				new FilteredItemHandler<>(storageWrapper.getInventoryForUpgradeProcessing(), Collections.singletonList(filterLogic), Collections.emptyList()),
-				s -> stacksAdded.incrementAndGet());
+				s -> stacksAdded.incrementAndGet(), null);
 
 		int stacksRestocked = stacksAdded.get();
 		String translKey = stacksRestocked > 0 ? "gui.sophisticatedbackpacks.status.stacks_restocked" : "gui.sophisticatedbackpacks.status.nothing_to_restock";
