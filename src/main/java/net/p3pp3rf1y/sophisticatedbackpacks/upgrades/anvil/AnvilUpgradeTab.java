@@ -27,7 +27,7 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 	public AnvilUpgradeTab(AnvilUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) {
 		super(upgradeContainer, position, screen, SBPTranslationHelper.INSTANCE.translUpgrade("anvil"), SBPTranslationHelper.INSTANCE.translUpgradeTooltip("anvil"));
 		openTabDimension = new Dimension(103, 92);
-		itemNameTextBox = new TextBox(new Position(x + 6, y + 27), new Dimension(84, 13)) {
+		itemNameTextBox = new TextBox(new Position(x + 5, y + 25), new Dimension(90, 14)) {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				if (isEditable()) {
@@ -42,7 +42,7 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 				super.renderBg(guiGraphics, minecraft, mouseX, mouseY);
 				TextureBlitData textureBlitData = getContainer().getSlots().get(0).hasItem() ? EDIT_ITEM_NAME_BACKGROUND : EDIT_ITEM_NAME_BACKGROUND_DISABLED;
 
-				GuiHelper.blit(guiGraphics, getX() - 4, getY() - ((getHeight() - 8) / 2) - 1, textureBlitData, getWidth() + 12, getHeight() + 2);
+				GuiHelper.blit(guiGraphics, getX() - 2, getY() - 2, textureBlitData, getWidth() + 4, getHeight() + 2);
 			}
 		};
 
