@@ -44,7 +44,7 @@ public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper,
 	}
 
 	public void setShiftClickIntoStorage(boolean shiftClickIntoStorage) {
-		upgrade.set(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, shiftClickIntoStorage);
+		upgrade.sophisticatedCore_set(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, shiftClickIntoStorage);
 		save();
 	}
 
@@ -53,7 +53,7 @@ public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper,
 	}
 
 	public void setItemName(String itemName) {
-		upgrade.set(ModDataComponents.ITEM_NAME, itemName);
+		upgrade.sophisticatedCore_set(ModDataComponents.ITEM_NAME, itemName);
 		save();
 	}
 }

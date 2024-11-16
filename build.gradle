@@ -24,7 +24,6 @@ idea {
     module {
         downloadJavadoc = true
         downloadSources = true
-        inheritOutputDirs = true
     }
 }
 
@@ -286,7 +285,7 @@ processResources {
             mod_id              : project.mod_id,
             mod_name            : project.mod_name,
             mod_license         : project.mod_license,
-            mod_version         : version,
+            mod_version         : version.replace(getStable(), ""), // remove the getStable string so that fabric loader can catch version mismatches, only important for snapshots
             mod_issue_tracker_url: project.mod_issue_tracker_url,
             mod_sources_url     : project.mod_sources_url,
             mod_logo_file       : project.mod_logo_file,
@@ -321,17 +320,15 @@ processResources {
 
 // Fix to make IDEA load the correct resources when build and run is delegated to it
 tasks.register('fixIntelliJResources', Copy) {
-    def ideaClasspath = SourceSetHelper.getIdeaClasspath(new SourceSetReference(sourceSets.main, project), rootProject)
-    if (ideaClasspath.empty)
+    def ideaModuleCompileOutputPath = SourceSetHelper.getIdeaModuleCompileOutput(new SourceSetReference(sourceSets.main, project))
+    if (ideaModuleCompileOutputPath.empty)
         return
 
     dependsOn processResources
     group "fabric"
 
     from processResources
-    ideaClasspath.each {
-        into it.toPath()
-    }
+    into ideaModuleCompileOutputPath[1]
 }
 
 static def mavenVersionToFabric(String version) {
@@ -356,7 +353,7 @@ static def getBuildNumber() {
     if (System.getenv("GITHUB_RUN_NUMBER") != null) {
         return System.getenv("GITHUB_RUN_NUMBER").toString()
     }
-    return ""
+    return "9999"
 }
 
 static def getStable() {

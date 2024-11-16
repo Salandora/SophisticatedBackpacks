@@ -65,7 +65,7 @@ public class DepositFilterLogic extends FilterLogic {
 	}
 
 	private void setFilterByInventory(boolean filterByInventory) {
-		upgrade.set(ModDataComponents.FILTER_BY_INVENTORY, filterByInventory);
+		upgrade.sophisticatedCore_set(ModDataComponents.FILTER_BY_INVENTORY, filterByInventory);
 		save();
 	}
 
