@@ -353,7 +353,7 @@ static def getBuildNumber() {
     if (System.getenv("GITHUB_RUN_NUMBER") != null) {
         return System.getenv("GITHUB_RUN_NUMBER").toString()
     }
-    return ""
+    return "9999"
 }
 
 static def getStable() {
