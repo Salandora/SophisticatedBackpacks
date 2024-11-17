@@ -86,8 +86,8 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void onLoad() {
-		super.onLoad();
+	public void sophisticatedCore_onLoad() {
+		super.sophisticatedCore_onLoad();
 		registerWithControllerOnLoad();
 	}
 

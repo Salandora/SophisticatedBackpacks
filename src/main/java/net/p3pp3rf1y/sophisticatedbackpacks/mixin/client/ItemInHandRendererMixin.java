@@ -23,7 +23,7 @@ public class ItemInHandRendererMixin {
 	private int slotMainHand = 0;
 
 	@Unique
-	private boolean shouldCauseReequipAnimation(ItemStack from, ItemStack to, int slot) {
+	private boolean sophisticatedBackpacks_shouldCauseReequipAnimation(ItemStack from, ItemStack to, int slot) {
 		boolean fromEmpty = from.isEmpty();
 		boolean toEmpty = to.isEmpty();
 
@@ -41,12 +41,12 @@ public class ItemInHandRendererMixin {
 	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F"))
 	private void sophisticatedbackpacks$skipRequipAnimMainHand(CallbackInfo ci, @Local LocalPlayer localPlayer, @Local(ordinal = 0)	ItemStack itemStack,
 			@Local(ordinal = 1) ItemStack itemStack1) {
-		boolean reequipMain = shouldCauseReequipAnimation(this.mainHandItem, itemStack, localPlayer.getInventory().selected);
+		boolean reequipMain = sophisticatedBackpacks_shouldCauseReequipAnimation(this.mainHandItem, itemStack, localPlayer.getInventory().selected);
 		if (!reequipMain && this.mainHandItem != itemStack) {
 			this.mainHandItem = itemStack;
 		}
 
-		boolean reequipOff = shouldCauseReequipAnimation(this.offHandItem, itemStack1, -1);
+		boolean reequipOff = sophisticatedBackpacks_shouldCauseReequipAnimation(this.offHandItem, itemStack1, -1);
 		if (!reequipOff && this.offHandItem != itemStack1) {
 			this.offHandItem = itemStack1;
 		}
