@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.AtomicDouble;
-import io.github.fabricators_of_create.porting_lib.extensions.extensions.IShearable;
 import io.github.fabricators_of_create.porting_lib.tool.ItemAbilities;
 import io.github.fabricators_of_create.porting_lib.tool.ItemAbility;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
@@ -30,10 +29,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
-import net.p3pp3rf1y.sophisticatedbackpacks.api.IAttackEntityResponseUpgrade;
-import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
-import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockToolSwapUpgrade;
-import net.p3pp3rf1y.sophisticatedbackpacks.api.IEntityToolSwapUpgrade;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.*;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.tool.SwordRegistry;
@@ -407,11 +403,11 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	private boolean isShearInteractionBlock(Level level, BlockPos pos, ItemStack stack, Block block) {
-		return (block instanceof IShearable shearable && shearable.isShearable(/*null, */stack, level, pos)) || block instanceof BeehiveBlock;
+		return (block instanceof SophisticatedShearable shearable && shearable.sophisticatedBackpacks_isShearable(null, stack, level, pos)) || block instanceof BeehiveBlock;
 	}
 
 	private boolean isShearableEntity(Entity entity, ItemStack stack) {
-		return entity instanceof IShearable shearable && shearable.isShearable(/*null, */stack, entity.level(), entity.blockPosition());
+		return entity instanceof SophisticatedShearable shearable && shearable.sophisticatedBackpacks_isShearable(null, stack, entity.level(), entity.blockPosition());
 	}
 
 	@Override
