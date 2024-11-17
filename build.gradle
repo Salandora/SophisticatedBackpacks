@@ -177,14 +177,22 @@ dependencies {
 
     if (findProject(":SophisticatedCore") != null) {
         api project(path: ":SophisticatedCore", configuration: "namedElements")
+        var core = project(":SophisticatedCore")
+        if (core.port_lib_modules != "none") {
+            for (def module in core.port_lib_modules.split(',')) {
+                modApi("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version")
+            }
+        }
     } else {
         modApi("sophisticatedcore:sophisticatedcore:${sc_version}") {
             transitive = false
         }
     }
 
-    for (def module in port_lib_modules.split(',')) {
-        modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
+    if (port_lib_modules != "none") {
+        for (def module in port_lib_modules.split(',')) {
+            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
+        }
     }
 
     // EMI
