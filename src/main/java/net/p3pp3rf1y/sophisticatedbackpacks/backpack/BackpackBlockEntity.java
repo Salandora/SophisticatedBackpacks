@@ -141,7 +141,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	private void invalidateHandlers() {
-		invalidateCapabilities();
+		sophisticatedCore_invalidateCapabilities();
 		externalItemHandler = null;
 		externalFluidHandler = null;
 		externalEnergyStorage = null;
@@ -263,8 +263,8 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void onChunkUnloaded() {
-		super.onChunkUnloaded();
+	public void sophisticatedCore_onChunkUnloaded() {
+		super.sophisticatedCore_onChunkUnloaded();
 		chunkBeingUnloaded = true;
 	}
 
