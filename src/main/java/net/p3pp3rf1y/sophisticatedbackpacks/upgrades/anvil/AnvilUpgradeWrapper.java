@@ -40,7 +40,7 @@ public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper,
 	}
 
 	public boolean shouldShiftClickIntoStorage() {
-		return upgrade.getOrDefault(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, true);
+		return upgrade.sophisticatedCore_getOrDefault(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, true);
 	}
 
 	public void setShiftClickIntoStorage(boolean shiftClickIntoStorage) {
@@ -49,7 +49,7 @@ public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper,
 	}
 
 	public String getItemName() {
-		return upgrade.getOrDefault(ModDataComponents.ITEM_NAME, "");
+		return upgrade.sophisticatedCore_getOrDefault(ModDataComponents.ITEM_NAME, "");
 	}
 
 	public void setItemName(String itemName) {

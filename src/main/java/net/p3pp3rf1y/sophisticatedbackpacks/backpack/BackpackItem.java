@@ -253,7 +253,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			String handlerName = hand == InteractionHand.MAIN_HAND ? PlayerInventoryProvider.MAIN_INVENTORY : PlayerInventoryProvider.OFFHAND_INVENTORY;
 			int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 0;
 			BackpackContext.Item context = new BackpackContext.Item(handlerName, slot);
-			player.openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), stack.getHoverName()), context::toBuffer);
+			player.sophisticatedCore_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), stack.getHoverName()), context::toBuffer);
 		}
 		return InteractionResultHolder.success(stack);
 	}

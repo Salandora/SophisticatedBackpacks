@@ -45,7 +45,7 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 	}
 
 	private boolean mouseNotOverBackpack() {
-		Slot selectedSlot = getSlotUnderMouse();
+		Slot selectedSlot = sophisticatedCore_getSlotUnderMouse();
 		return selectedSlot == null || !(selectedSlot.getItem().getItem() instanceof BackpackItem);
 	}
 

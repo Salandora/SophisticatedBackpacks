@@ -55,7 +55,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	public RefillUpgradeWrapper(IStorageWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
 		super(backpackWrapper, upgrade, upgradeSaveHandler);
 		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), ModCoreDataComponents.FILTER_ATTRIBUTES);
-		targetSlots = new HashMap<>(upgrade.getOrDefault(ModDataComponents.TARGET_SLOTS, new HashMap<>()));
+		targetSlots = new HashMap<>(upgrade.sophisticatedCore_getOrDefault(ModDataComponents.TARGET_SLOTS, new HashMap<>()));
 		if (upgradeItem.allowsTargetSlotSelection()) {
 			FilterLogic.ObservableFilterItemStackHandler filterHandler = filterLogic.getFilterHandler();
 			filterHandler.setOnSlotChange(s -> onFilterChange(filterHandler, s));

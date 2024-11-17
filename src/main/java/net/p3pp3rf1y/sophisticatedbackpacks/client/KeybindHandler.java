@@ -188,7 +188,7 @@ public class KeybindHandler {
 
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-			Slot slot = containerScreen.getSlotUnderMouse();
+			Slot slot = containerScreen.sophisticatedCore_getSlotUnderMouse();
 
 			if (slot != null && (slot.container instanceof Inventory || isTrinket(slot.container))) {
 				Optional<PlayerInventoryReturn> handler = getPlayerInventory(slot);

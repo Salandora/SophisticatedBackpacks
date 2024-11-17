@@ -3,7 +3,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.init;
 import com.mojang.serialization.MapCodec;
 import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
 import io.github.fabricators_of_create.porting_lib.loot.PortingLibLoot;
-import io.github.fabricators_of_create.porting_lib.transfer.item.ItemItemStorages;
 import io.github.fabricators_of_create.porting_lib.util.DeferredHolder;
 import io.github.fabricators_of_create.porting_lib.util.DeferredRegister;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -72,7 +71,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper.ToolSwapperUpgr
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerRegistry;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.UpgradeContainerType;
-import net.p3pp3rf1y.sophisticatedcore.extensions.inventory.IMenuTypeExtension;
+import net.p3pp3rf1y.sophisticatedcore.util.IMenuTypeExtension;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ContentsFilteredUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.battery.BatteryUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.battery.BatteryUpgradeItem;

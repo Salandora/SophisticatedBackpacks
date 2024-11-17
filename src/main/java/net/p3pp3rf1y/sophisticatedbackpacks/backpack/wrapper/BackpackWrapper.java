@@ -315,12 +315,12 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public int getMainColor() {
-		return getBackpackStack().getOrDefault(ModCoreDataComponents.MAIN_COLOR, DEFAULT_MAIN_COLOR);
+		return getBackpackStack().sophisticatedCore_getOrDefault(ModCoreDataComponents.MAIN_COLOR, DEFAULT_MAIN_COLOR);
 	}
 
 	@Override
 	public int getAccentColor() {
-		return getBackpackStack().getOrDefault(ModCoreDataComponents.ACCENT_COLOR, DEFAULT_ACCENT_COLOR);
+		return getBackpackStack().sophisticatedCore_getOrDefault(ModCoreDataComponents.ACCENT_COLOR, DEFAULT_ACCENT_COLOR);
 	}
 
 	@Override
@@ -355,7 +355,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public SortBy getSortBy() {
-		return getBackpackStack().getOrDefault(ModCoreDataComponents.SORT_BY, SortBy.NAME);
+		return getBackpackStack().sophisticatedCore_getOrDefault(ModCoreDataComponents.SORT_BY, SortBy.NAME);
 	}
 
 	@Override
@@ -496,7 +496,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public int getColumnsTaken() {
-		return getBackpackStack().getOrDefault(ModDataComponents.COLUMNS_TAKEN, 0);
+		return getBackpackStack().sophisticatedCore_getOrDefault(ModDataComponents.COLUMNS_TAKEN, 0);
 	}
 
 	private void fillWithLootFromTable(Player playerEntity, ResourceLocation lootTable) {
@@ -505,7 +505,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 			return;
 		}
 
-		float lootFactor = getBackpackStack().getOrDefault(ModDataComponents.LOOT_FACTOR, 0f);
+		float lootFactor = getBackpackStack().sophisticatedCore_getOrDefault(ModDataComponents.LOOT_FACTOR, 0f);
 
 		getBackpackStack().sophisticatedCore_remove(ModDataComponents.LOOT_TABLE);
 		getBackpackStack().sophisticatedCore_remove(ModDataComponents.LOOT_FACTOR);
