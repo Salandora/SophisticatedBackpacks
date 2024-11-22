@@ -8,11 +8,7 @@ import net.p3pp3rf1y.sophisticatedcore.client.gui.SettingsScreen;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ButtonDefinition;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ImageButton;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ToggleButton;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Dimension;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.GuiHelper;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Position;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.TextureBlitData;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.UV;
+import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.*;
 import net.p3pp3rf1y.sophisticatedcore.settings.main.MainSettingsTab;
 
 import java.util.List;
@@ -46,7 +42,7 @@ public class BackpackMainSettingsTab extends MainSettingsTab<BackpackMainSetting
 		super(container, position, screen, BACKPACK_CONTEXT_TOOLTIP, Component.translatable(SBPTranslationHelper.INSTANCE.translSettingsButton("context_backpack")),
 				SBPTranslationHelper.INSTANCE.translSettings("backpack"), SBPTranslationHelper.INSTANCE.translSettingsTooltip("backpack"), onTabIconClicked -> new ImageButton(new Position(position.x() + 1, position.y() + 4), Dimension.SQUARE_16, ICON, onTabIconClicked));
 		if (Boolean.TRUE.equals(Config.SERVER.allowOpeningOtherPlayerBackpacks.get())) {
-			addHideableChild(new ToggleButton<>(new Position(x + 39, y + 46), ANOTHER_PLAYER_CAN_OPEN, button -> container.toggleAnotherPlayerCanOpen(), container::canAnotherPlayerOpen));
+			addHideableChild(new ToggleButton<>(new Position(x + 57, y + 46), ANOTHER_PLAYER_CAN_OPEN, button -> container.toggleAnotherPlayerCanOpen(), container::canAnotherPlayerOpen));
 		}
 	}
 }
