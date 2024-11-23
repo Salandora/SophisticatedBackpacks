@@ -1,4 +1,0 @@
-[submodule "Porting-Lib"]
-	path = Porting-Lib
-	url = https://github.com/Salandora/Porting-Lib
-	branch = 1.20.4

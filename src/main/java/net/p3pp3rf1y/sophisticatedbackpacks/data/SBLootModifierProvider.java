@@ -2,6 +2,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.fabricators_of_create.porting_lib.loot.GlobalLootModifierProvider;
 import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
 import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
 import io.github.fabricators_of_create.porting_lib.loot.LootTableIdCondition;
@@ -18,7 +19,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.p3pp3rf1y.porting_lib.loot.GlobalLootModifierProvider;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 

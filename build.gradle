@@ -38,8 +38,19 @@ repositories {
 
     maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
     maven { url = "https://maven.quiltmc.org/repository/release" } // QM
-    maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib
-    maven { url = "https://mvn.devos.one/releases/" } // Porting Lib
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Salandora/Porting-Lib")
+        credentials {
+            username = System.getenv("USERNAME")
+            password = System.getenv("READ_PACKAGES_TOKEN")
+        }
+        content {
+            includeGroupByRegex "io.github.fabricators_of_create.Porting-Lib.*"
+        }
+    }
+    /*maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib
+    maven { url = "https://mvn.devos.one/releases/" } // Porting Lib*/
 
     maven { // Forge Config API Port
         name = "Fuzs Mod Resources"
@@ -176,7 +187,7 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     if (findProject(":SophisticatedCore") != null) {
-        api project(path: ":SophisticatedCore", configuration: "namedElements")
+        implementation project(path: ":SophisticatedCore", configuration: "namedElements")
         var core = project(":SophisticatedCore")
         if (core.port_lib_modules != "none") {
             for (def module in core.port_lib_modules.split(',')) {
@@ -184,9 +195,7 @@ dependencies {
             }
         }
     } else {
-        modApi("sophisticatedcore:sophisticatedcore:${sc_version}") {
-            transitive = false
-        }
+        modImplementation("sophisticatedcore:sophisticatedcore:${sc_version}")
     }
 
     if (port_lib_modules != "none") {
@@ -205,35 +214,31 @@ dependencies {
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
 
-    implementation("com.electronwill.night-config:core:$project.night_config_version")
-    implementation("com.electronwill.night-config:toml:$project.night_config_version")
     modApi(include("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$project.forge_config_api_port_version"))
     modApi(include("teamreborn:energy:$project.energy_version"))
 
-    modImplementation("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
+    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
 
-    modImplementation("curse.maven:jade-324717:${project.jade_version}")
+    modCompileOnly("curse.maven:jade-324717:${project.jade_version}")
 
-    modImplementation("curse.maven:litematica-308892:$project.litematica_cf_file_id")
-    modImplementation("curse.maven:malilib-303119:$project.malilib_cf_file_id")
+    modCompileOnly("curse.maven:litematica-308892:$project.litematica_cf_file_id")
+    modCompileOnly("curse.maven:malilib-303119:$project.malilib_cf_file_id")
 
-    modImplementation("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
-    modImplementation("curse.maven:balm-500525:${project.balm_cf_file_id}")
+    modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
+    modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
 
-    modImplementation("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
+    modCompileOnly("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
 
-    /*modImplementation("vazkii.botania:Botania:${project.botania_version}") {
+    /*modCompileOnly("vazkii.botania:Botania:${project.botania_version}") {
         transitive = false
     }*/
 
-    /*modImplementation("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") {
+    /*modCompileOnly("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") {
         transitive = false
     }*/
     // modImplementation("maven.modrinth:modernkeybinding:${project.mkb_modrinth_mod_version}") { transitive = false }
 
-    modImplementation("dev.emi:trinkets:$project.trinkets_version")
-    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$project.cca_version") // for Trinkets
-    modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version") // for Trinkets
+    modCompileOnly("dev.emi:trinkets:$project.trinkets_version")
 
     testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.+'
@@ -383,14 +388,9 @@ publishing {
         }
     }
     publications {
-        gpr(MavenPublication) {
+        register("mavenJava", MavenPublication) {
             artifactId = mod_id
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
+            from((SoftwareComponent) components["java"])
         }
     }
 }
