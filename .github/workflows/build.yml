@@ -14,6 +14,12 @@ jobs:
           java-version: 21
           distribution: zulu
           cache: gradle
+      - name: Loom Cache
+        uses: actions/cache@v4
+        with:
+          path: "**/.gradle/loom-cache"
+          key: "${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}"
+          restore-keys: "${{ runner.os }}-gradle-"
       - uses: gradle/actions/wrapper-validation@v4
       - run: chmod +x ./gradlew
       - name: Build with Gradle
