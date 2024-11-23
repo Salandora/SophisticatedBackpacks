@@ -214,9 +214,6 @@ dependencies {
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
 
-    modApi(include("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$project.forge_config_api_port_version"))
-    modApi(include("teamreborn:energy:$project.energy_version"))
-
     modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
 
     modCompileOnly("curse.maven:jade-324717:${project.jade_version}")
