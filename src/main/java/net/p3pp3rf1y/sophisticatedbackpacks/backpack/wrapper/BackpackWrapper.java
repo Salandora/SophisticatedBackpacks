@@ -4,6 +4,7 @@ import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -13,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEnergyStorageUpgradeWrapper;
@@ -21,6 +23,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SortBy;
@@ -170,6 +173,9 @@ public class BackpackWrapper implements IBackpackWrapper {
 	public ITrackedContentsItemHandler getInventoryForInputOutput() {
 		if (inventoryIOHandler == null) {
 			inventoryIOHandler = new InventoryIOHandler(this);
+			if (SophisticatedCore.isLogicalServerThread() && SophisticatedCore.getCurrentServer() != null) {
+				fillWithLoot(SophisticatedCore.getCurrentServer().overworld(), BlockPos.ZERO);
+			}
 		}
 		return inventoryIOHandler.getFilteredItemHandler();
 	}
@@ -315,12 +321,12 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public int getMainColor() {
-		return getBackpackStack().getOrDefault(ModCoreDataComponents.MAIN_COLOR, DEFAULT_MAIN_COLOR);
+		return getBackpackStack().sophisticatedCore_getOrDefault(ModCoreDataComponents.MAIN_COLOR, DEFAULT_MAIN_COLOR);
 	}
 
 	@Override
 	public int getAccentColor() {
-		return getBackpackStack().getOrDefault(ModCoreDataComponents.ACCENT_COLOR, DEFAULT_ACCENT_COLOR);
+		return getBackpackStack().sophisticatedCore_getOrDefault(ModCoreDataComponents.ACCENT_COLOR, DEFAULT_ACCENT_COLOR);
 	}
 
 	@Override
@@ -355,7 +361,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public SortBy getSortBy() {
-		return getBackpackStack().getOrDefault(ModCoreDataComponents.SORT_BY, SortBy.NAME);
+		return getBackpackStack().sophisticatedCore_getOrDefault(ModCoreDataComponents.SORT_BY, SortBy.NAME);
 	}
 
 	@Override
@@ -431,14 +437,20 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void fillWithLoot(Player playerEntity) {
-		if (playerEntity.level().isClientSide) {
+		Level level = playerEntity.level();
+		if (level.isClientSide) {
 			return;
 		}
+		BlockPos pos = playerEntity.blockPosition();
+		fillWithLoot(level, pos);
+	}
+
+	private void fillWithLoot(Level level, BlockPos pos) {
 		ResourceLocation lootTable = getBackpackStack().sophisticatedCore_get(ModDataComponents.LOOT_TABLE);
 		if (lootTable == null) {
 			return;
 		}
-		fillWithLootFromTable(playerEntity, lootTable);
+		fillWithLootFromTable(level, pos, lootTable);
 	}
 
 	@Override
@@ -496,21 +508,21 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public int getColumnsTaken() {
-		return getBackpackStack().getOrDefault(ModDataComponents.COLUMNS_TAKEN, 0);
+		return getBackpackStack().sophisticatedCore_getOrDefault(ModDataComponents.COLUMNS_TAKEN, 0);
 	}
 
-	private void fillWithLootFromTable(Player playerEntity, ResourceLocation lootTable) {
-		MinecraftServer server = playerEntity.level().getServer();
-		if (server == null || !(playerEntity.level() instanceof ServerLevel serverLevel)) {
+	private void fillWithLootFromTable(Level level, BlockPos pos, ResourceLocation lootTable) {
+		MinecraftServer server = level.getServer();
+		if (server == null || !(level instanceof ServerLevel serverLevel)) {
 			return;
 		}
 
-		float lootFactor = getBackpackStack().getOrDefault(ModDataComponents.LOOT_FACTOR, 0f);
+		float lootFactor = getBackpackStack().sophisticatedCore_getOrDefault(ModDataComponents.LOOT_FACTOR, 0f);
 
 		getBackpackStack().sophisticatedCore_remove(ModDataComponents.LOOT_TABLE);
 		getBackpackStack().sophisticatedCore_remove(ModDataComponents.LOOT_FACTOR);
 
-		List<ItemStack> loot = LootHelper.getLoot(lootTable, server, serverLevel, playerEntity);
+		List<ItemStack> loot = LootHelper.getLoot(lootTable, server, serverLevel, pos);
 		loot.removeIf(stack -> stack.getItem() instanceof BackpackItem);
 		loot = RandHelper.getNRandomElements(loot, (int) (loot.size() * lootFactor));
 		LootHelper.fillWithLoot(serverLevel.random, loot, getInventoryHandler());

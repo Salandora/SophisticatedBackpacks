@@ -70,6 +70,6 @@ public class DepositFilterLogic extends FilterLogic {
 	}
 
 	private boolean shouldFilterByInventory() {
-		return upgrade.getOrDefault(ModDataComponents.FILTER_BY_INVENTORY, false);
+		return upgrade.sophisticatedCore_getOrDefault(ModDataComponents.FILTER_BY_INVENTORY, false);
 	}
 }

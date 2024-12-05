@@ -9,6 +9,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.util.CombinedInvWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -70,9 +71,21 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		return combinedInventories.getStackInSlot(slot);
 	}
 
+	@Nonnull
+	@Override
+	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+		return combinedInventories.insertItem(slot, stack, simulate);
+	}
+
 	@Override
 	public long insertSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext ctx) {
 		return combinedInventories.insertSlot(slot, resource, maxAmount, ctx);
+	}
+
+	@Nonnull
+	@Override
+	public ItemStack extractItem(int slot, int amount, boolean simulate) {
+		return combinedInventories.extractItem(slot, amount, simulate);
 	}
 
 	@Override
@@ -91,8 +104,16 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 	}
 
 	@Override
-	public boolean isItemValid(int slot, ItemVariant resource, int count) {
-		return combinedInventories.isItemValid(slot, resource, count);
+	public ItemStack insertItem(ItemStack stack, boolean simulate) {
+		ItemStack remainingStack = stack;
+		for (IItemHandlerSimpleInserter handler : handlers) {
+			remainingStack = handler.insertItem(remainingStack, simulate);
+			if (remainingStack.isEmpty()) {
+				break;
+			}
+		}
+
+		return remainingStack;
 	}
 
 	@Override

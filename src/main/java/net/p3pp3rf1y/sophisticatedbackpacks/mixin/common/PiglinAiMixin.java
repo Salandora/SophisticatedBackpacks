@@ -20,7 +20,7 @@ import java.util.List;
 public class PiglinAiMixin {
 	@Inject(method = "isWearingGold", at = @At(value = "HEAD"), cancellable = true)
 	private static void sophisticatedBackpacks$isWearingGold(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
-		for (ItemStack itemStack : sophisticatedBackpacks$getArmorSlots(entity)) {
+		for (ItemStack itemStack : sophisticatedBackpacks_getArmorSlots(entity)) {
 			if (itemStack.makesPiglinsNeutral(entity)) {
 				cir.setReturnValue(true);
 				return;
@@ -29,7 +29,7 @@ public class PiglinAiMixin {
 	}
 
 	@Unique
-	private static Iterable<ItemStack> sophisticatedBackpacks$getArmorSlots(LivingEntity entity) {
+	private static Iterable<ItemStack> sophisticatedBackpacks_getArmorSlots(LivingEntity entity) {
 		if (entity instanceof Player player) {
 			List<ItemStack> trinkets = Lists.newArrayList();
 			PlayerInventoryProvider.get().runOnBackpacks(player, CompatModIds.TRINKETS, (backpack, inventoryHandlerName, identifier, slot) -> trinkets.add(backpack));

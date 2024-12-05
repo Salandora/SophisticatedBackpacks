@@ -9,6 +9,8 @@
         "common.EnderDragonMixin",
         "common.ExplosionDamageCalculatorMixin",
         "common.PiglinAiMixin",
+        "common.ShearableBlocksMixin",
+        "common.ShearableMixin",
         "common.WitherBossMixin",
         "common.WitherSkullMixin"
     ],

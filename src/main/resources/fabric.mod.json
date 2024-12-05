@@ -57,6 +57,15 @@
         "modmenu": "*"
     },
     "custom": {
+        "loom:injected_interfaces": {
+            "net/minecraft/class_2311": ["net/p3pp3rf1y/sophisticatedbackpacks/api/SophisticatedShearable"],
+            "net/minecraft/class_2397": ["net/p3pp3rf1y/sophisticatedbackpacks/api/SophisticatedShearable"],
+            "net/minecraft/class_2476": ["net/p3pp3rf1y/sophisticatedbackpacks/api/SophisticatedShearable"],
+            "net/minecraft/class_2526": ["net/p3pp3rf1y/sophisticatedbackpacks/api/SophisticatedShearable"],
+            "net/minecraft/class_2541": ["net/p3pp3rf1y/sophisticatedbackpacks/api/SophisticatedShearable"],
+            "net/minecraft/class_2560": ["net/p3pp3rf1y/sophisticatedbackpacks/api/SophisticatedShearable"],
+            "net/minecraft/class_5147": ["net/p3pp3rf1y/sophisticatedbackpacks/api/SophisticatedShearable"]
+        },
         "modmenu": {
             "parent": {
                 "id": "sophisticatedmods",

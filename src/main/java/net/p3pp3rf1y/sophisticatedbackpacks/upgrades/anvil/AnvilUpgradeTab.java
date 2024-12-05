@@ -27,7 +27,7 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 	public AnvilUpgradeTab(AnvilUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) {
 		super(upgradeContainer, position, screen, SBPTranslationHelper.INSTANCE.translUpgrade("anvil"), SBPTranslationHelper.INSTANCE.translUpgradeTooltip("anvil"));
 		openTabDimension = new Dimension(103, 92);
-		itemNameTextBox = new TextBox(new Position(x + 6, y + 27), new Dimension(84, 13)) {
+		itemNameTextBox = new TextBox(new Position(x + 5, y + 25), new Dimension(90, 14)) {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				if (isEditable()) {
@@ -42,7 +42,7 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 				super.renderBg(guiGraphics, minecraft, mouseX, mouseY);
 				TextureBlitData textureBlitData = getContainer().getSlots().get(0).hasItem() ? EDIT_ITEM_NAME_BACKGROUND : EDIT_ITEM_NAME_BACKGROUND_DISABLED;
 
-				GuiHelper.blit(guiGraphics, getX() - 4, getY() - ((getHeight() - 8) / 2) - 1, textureBlitData, getWidth() + 12, getHeight() + 2);
+				GuiHelper.blit(guiGraphics, getX() - 2, getY() - 2, textureBlitData, getWidth() + 4, getHeight() + 2);
 			}
 		};
 
@@ -80,7 +80,7 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 	}
 
 	private void renderSlotBg(GuiGraphics guiGraphics, Slot slot) {
-		GuiHelper.renderSlotsBackground(guiGraphics, slot.x + screen.getGuiLeft() - 1, slot.y + screen.getGuiTop() - 1, 1, 1);
+		GuiHelper.renderSlotsBackground(guiGraphics, slot.x + screen.sophisticatedCore_getGuiLeft() - 1, slot.y + screen.sophisticatedCore_getGuiTop() - 1, 1, 1);
 	}
 
 	@Override
@@ -94,11 +94,11 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 		renderCost(guiGraphics, x + 3, y + 62);
 
 		Slot firstSlot = getContainer().getSlots().get(0);
-		int inputSlotsY = firstSlot.y + screen.getGuiTop();
-		int firstInputSlotX = firstSlot.x + screen.getGuiLeft();
-		int secondInputSlotX = getContainer().getSlots().get(1).x + screen.getGuiLeft();
+		int inputSlotsY = firstSlot.y + screen.sophisticatedCore_getGuiTop();
+		int firstInputSlotX = firstSlot.x + screen.sophisticatedCore_getGuiLeft();
+		int secondInputSlotX = getContainer().getSlots().get(1).x + screen.sophisticatedCore_getGuiLeft();
 		Slot resultSlot = getContainer().getSlots().get(2);
-		int resultSlotX = resultSlot.x + screen.getGuiLeft();
+		int resultSlotX = resultSlot.x + screen.sophisticatedCore_getGuiLeft();
 
 		GuiHelper.blit(guiGraphics, firstInputSlotX + 18 + (secondInputSlotX - (firstInputSlotX + 18)) / 2 - PLUS_SIGN.getWidth() / 2 - 1, inputSlotsY + 2, PLUS_SIGN);
 		int arrowX = secondInputSlotX + 18 + (resultSlotX - (secondInputSlotX + 18)) / 2 - ARROW.getWidth() / 2 - 1;
@@ -113,16 +113,16 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 	@Override
 	protected void moveSlotsToTab() {
 		Slot firstInputSlot = getContainer().getSlots().get(0);
-		firstInputSlot.x = x - screen.getGuiLeft() + 4;
-		firstInputSlot.y = y + 42 - screen.getGuiTop() + 1;
+		firstInputSlot.x = x - screen.sophisticatedCore_getGuiLeft() + 4;
+		firstInputSlot.y = y + 42 - screen.sophisticatedCore_getGuiTop() + 1;
 
 		Slot secondInputSlot = getContainer().getSlots().get(1);
-		secondInputSlot.x = x - screen.getGuiLeft() + getWidth() / 2 - 9;
-		secondInputSlot.y = y + 42 - screen.getGuiTop() + 1;
+		secondInputSlot.x = x - screen.sophisticatedCore_getGuiLeft() + getWidth() / 2 - 9;
+		secondInputSlot.y = y + 42 - screen.sophisticatedCore_getGuiTop() + 1;
 
 		Slot resultSlot = getContainer().getSlots().get(2);
-		resultSlot.x = x - screen.getGuiLeft() + getWidth() - 2 - 3 - 18;
-		resultSlot.y = y + 42 - screen.getGuiTop() + 1;
+		resultSlot.x = x - screen.sophisticatedCore_getGuiLeft() + getWidth() - 2 - 3 - 18;
+		resultSlot.y = y + 42 - screen.sophisticatedCore_getGuiTop() + 1;
 	}
 
 	protected void renderCost(GuiGraphics guiGraphics, int x, int y) {

@@ -34,22 +34,24 @@ public class BackpackLayerRenderer<T extends LivingEntity, M extends EntityModel
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, MultiBufferSource buffer, int packedLight, T entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, T entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
 		if (entity instanceof AbstractClientPlayer player) {
 			PlayerInventoryProvider.get().getBackpackFromRendered(player).ifPresent(backpackRenderInfo -> {
-				matrixStack.pushPose();
+				poseStack.pushPose();
 				ItemStack backpack = backpackRenderInfo.getBackpack();
 				IBackpackModel model = BackpackModelManager.getBackpackModel(backpack.getItem());
 				EquipmentSlot equipmentSlot = model.getRenderEquipmentSlot();
 				boolean wearsArmor = (equipmentSlot != EquipmentSlot.CHEST || !backpackRenderInfo.isArmorSlot()) && !player.getInventory().armor.get(equipmentSlot.getIndex()).isEmpty();
-				renderBackpack(getParentModel(), player, matrixStack, buffer, packedLight, backpack, wearsArmor, model);
-				matrixStack.popPose();
+				renderBackpack(getParentModel(), player, poseStack, buffer, packedLight, backpack, wearsArmor, model);
+				poseStack.popPose();
 			});
 		} else {
+			poseStack.pushPose();
 			ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
 			if (chestStack.getItem() instanceof BackpackItem) {
-				renderBackpack(getParentModel(), entity, matrixStack, buffer, packedLight, chestStack, false, BackpackModelManager.getBackpackModel(chestStack.getItem()));
+				renderBackpack(getParentModel(), entity, poseStack, buffer, packedLight, chestStack, false, BackpackModelManager.getBackpackModel(chestStack.getItem()));
 			}
+			poseStack.popPose();
 		}
 	}
 

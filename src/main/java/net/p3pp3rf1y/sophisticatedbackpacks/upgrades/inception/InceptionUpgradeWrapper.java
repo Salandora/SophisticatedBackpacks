@@ -31,7 +31,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 	}
 
 	public InventoryOrder getInventoryOrder() {
-		return upgrade.getOrDefault(ModDataComponents.INVENTORY_ORDER, InventoryOrder.MAIN_FIRST);
+		return upgrade.sophisticatedCore_getOrDefault(ModDataComponents.INVENTORY_ORDER, InventoryOrder.MAIN_FIRST);
 	}
 
 	public void setInventoryOrder(InventoryOrder inventoryOrder) {

@@ -51,7 +51,6 @@ import net.p3pp3rf1y.sophisticatedcore.event.common.MobSpawnEvents;
 import net.p3pp3rf1y.sophisticatedcore.network.PacketDistributor;
 import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsPayload;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
-import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -74,7 +73,6 @@ public class CommonEventHandler {
 		MobSpawnEvents.AFTER_FINALIZE_SPAWN.register(this::onLivingSpecialSpawn);
 		LivingEntityEvents.DROPS.register(this::onLivingDrops);
 		EntityTrackingEvents.STOP_TRACKING.register(this::onEntityLeaveWorld);
-		ServerTickEvents.END_WORLD_TICK.register(ServerStorageSoundHandler::tick);
 		AttackBlockCallback.EVENT.register(this::onBlockClick);
 		AttackEntityCallback.EVENT.register(this::onAttackEntity);
 		LivingEntityEvents.TICK.register(EntityBackpackAdditionHandler::onLivingUpdate);
