@@ -19,17 +19,9 @@ import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -48,14 +40,10 @@ import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedBatteryUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedTankUpgrade;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Function;
 
 import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.BATTERY;
 import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.LEFT_TANK;
@@ -102,7 +90,8 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		private static final ItemTransforms ITEM_TRANSFORMS = createItemTransforms();
 		private static final ResourceLocation BACKPACK_MODULES_TEXTURE = new ResourceLocation("sophisticatedbackpacks:block/backpack_modules");
 
-		@SuppressWarnings("java:S4738") //ItemTransforms require Guava ImmutableMap to be passed in so no way to change that to java Map
+		@SuppressWarnings("java:S4738")
+		//ItemTransforms require Guava ImmutableMap to be passed in so no way to change that to java Map
 		private static ItemTransforms createItemTransforms() {
 			return new ItemTransforms(new ItemTransform(
 					new Vector3f(85, -90, 0),
@@ -223,7 +212,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		}
 
 		private void addFluid(List<BakedQuad> ret, FluidStack fluidStack, float ratio, double xMin, int tintIndex) {
-			if (Mth.equal(ratio, 0.0f)) {
+			if (fluidStack.isEmpty() || Mth.equal(ratio, 0.0f)) {
 				return;
 			}
 
@@ -274,7 +263,8 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			return true;
 		}
 
-		@SuppressWarnings("java:S1874") //don't have model data to pass in here and just calling getParticleTexture of baked model that doesn't need model data
+		@SuppressWarnings("java:S1874")
+		//don't have model data to pass in here and just calling getParticleTexture of baked model that doesn't need model data
 		@Override
 		public TextureAtlasSprite getParticleIcon() {
 			return models.get(ModelPart.BASE).getParticleIcon();

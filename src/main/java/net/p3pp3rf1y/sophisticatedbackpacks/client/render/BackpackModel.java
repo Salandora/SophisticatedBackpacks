@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -465,13 +466,12 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 	}
 
 	@Override
-	public <L extends LivingEntity, M extends EntityModel<L>> void translateRotateAndScale(M parentModel, LivingEntity livingEntity, PoseStack matrixStack, boolean wearsArmor) {
-		if (livingEntity.isCrouching()) {
-			matrixStack.translate(0D, 0.2D, 0D);
-			matrixStack.mulPose(Axis.XP.rotationDegrees(90F / (float) Math.PI));
+	public <L extends LivingEntity, M extends EntityModel<L>> void translateRotateAndScale(M parentModel, LivingEntity livingEntity, PoseStack poseStack, boolean wearsArmor) {
+		if (parentModel instanceof HumanoidModel<?> humanoidModel) {
+			humanoidModel.body.translateAndRotate(poseStack);
 		}
 
-		matrixStack.mulPose(Axis.YP.rotationDegrees(180));
+		poseStack.mulPose(Axis.YP.rotationDegrees(180));
 		float zOffset = wearsArmor ? -0.35f : -0.3f;
 		float yOffset = -0.75f;
 
@@ -480,19 +480,19 @@ public class BackpackModel extends AgeableListModel<LivingEntity> implements IBa
 			yOffset = CHILD_Y_OFFSET;
 		}
 
-		matrixStack.translate(0, yOffset, zOffset);
+		poseStack.translate(0, yOffset, zOffset);
 
 		if (livingEntity instanceof Player) {
 			return;
 		}
 
 		if (livingEntity.isBaby()) {
-			matrixStack.scale(CHILD_SCALE, CHILD_SCALE, CHILD_SCALE);
+			poseStack.scale(CHILD_SCALE, CHILD_SCALE, CHILD_SCALE);
 		}
 
 		if (entityTranslations.containsKey(livingEntity.getType())) {
 			Vec3 translVector = entityTranslations.get(livingEntity.getType());
-			matrixStack.translate(translVector.x(), translVector.y(), translVector.z());
+			poseStack.translate(translVector.x(), translVector.y(), translVector.z());
 		}
 	}
 
