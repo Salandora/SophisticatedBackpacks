@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     id 'idea'
-    id 'fabric-loom' version '1.8.+'
+    id 'fabric-loom' version '1.9.+'
     id 'maven-publish'
     id "net.darkhax.curseforgegradle" version "1.1.15"
     id "com.modrinth.minotaur" version "2.+"
@@ -169,6 +169,13 @@ loom {
             configName = "Minecraft Server ${project.minecraft_version}"
             runDir "run/${project.minecraft_version}"
         }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "net.fabricmc:fabric-loader:$project.loader_version"
+        force "net.fabricmc.fabric-api:fabric-api:$project.fabric_version"
     }
 }
 
