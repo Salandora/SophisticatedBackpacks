@@ -232,6 +232,7 @@ dependencies {
     modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
 
     modCompileOnly("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
+    modLocalRuntime("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
 
     /*modCompileOnly("vazkii.botania:Botania:${project.botania_version}") {
         transitive = false
