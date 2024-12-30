@@ -28,7 +28,7 @@ jobs:
           READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
         run: ./gradlew build
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: SophisticatedBackpacks
           path: build/libs
