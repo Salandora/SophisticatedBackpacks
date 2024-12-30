@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     id 'idea'
-    id 'fabric-loom' version '1.8.+'
+    id 'fabric-loom' version '1.9.+'
     id 'maven-publish'
     id "net.darkhax.curseforgegradle" version "1.1.15"
     id "com.modrinth.minotaur" version "2.+"
@@ -172,11 +172,18 @@ loom {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force "net.fabricmc:fabric-loader:$project.loader_version"
+        force "net.fabricmc.fabric-api:fabric-api:$project.fabric_version"
+    }
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:$project.minecraft_version")
     mappings(loom.layered {
         it.officialMojangMappings()
-        it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
+        it.parchment("org.parchmentmc.data:parchment-${project.parchment_minecraft_version}:${project.parchment_mappings_version}@zip")
     })
 
     // Fabric Loader
@@ -225,6 +232,7 @@ dependencies {
     modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
 
     modCompileOnly("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
+    modLocalRuntime("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
 
     /*modCompileOnly("vazkii.botania:Botania:${project.botania_version}") {
         transitive = false
