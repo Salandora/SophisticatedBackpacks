@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemItemStorages;
 import team.reborn.energy.api.EnergyStorage;
 
 import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
@@ -29,6 +30,7 @@ public class BackpackWrapperLookup {
     static {
 		ITEM.registerForItems(BackpackItem.initCapabilities(), BACKPACKS);
 
+		ItemItemStorages.ITEM.registerForItems((stack, ctx) -> get(stack).map(IStorageWrapper::getInventoryForInputOutput).orElse(null), BACKPACKS);
 		FluidStorage.ITEM.registerForItems((stack, ctx) -> get(stack).flatMap(IStorageWrapper::getFluidHandler).orElse(null), BACKPACKS);
 		EnergyStorage.ITEM.registerForItems((stack, ctx) -> get(stack).flatMap(IStorageWrapper::getEnergyStorage).orElse(null), BACKPACKS);
 
