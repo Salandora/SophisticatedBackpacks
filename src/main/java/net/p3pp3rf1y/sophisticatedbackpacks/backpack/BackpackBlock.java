@@ -1,6 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
 import com.mojang.math.Axis;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -52,6 +53,8 @@ import net.p3pp3rf1y.sophisticatedcore.client.render.UpgradeRenderRegistry;
 import net.p3pp3rf1y.sophisticatedcore.controller.IControllableStorage;
 import net.p3pp3rf1y.sophisticatedcore.fluid.FluidActionResult;
 import net.p3pp3rf1y.sophisticatedcore.fluid.FluidUtil;
+import net.p3pp3rf1y.sophisticatedcore.inventory.IInventoryHandlerHelper;
+import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.IUpgradeRenderData;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.UpgradeRenderDataType;
@@ -157,12 +160,12 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 		if (!stack.isEmpty() && FluidUtil.isFluidStorage(stack)) {
 			WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class)
 					.flatMap(be -> be.getBackpackWrapper().getFluidHandler()).ifPresent(backpackFluidHandler ->
-							CapabilityHelper.runOnItemHandler(player, playerInventory -> {
-								FluidActionResult resultOfEmptying = FluidUtil.tryEmptyContainerAndStow(stack, backpackFluidHandler, playerInventory, FluidConstants.BUCKET, player, true);
+							CapabilityHelper.runOnItemHandler(player, inventoryHandler -> {
+								FluidActionResult resultOfEmptying = FluidUtil.tryEmptyContainerAndStow(stack, backpackFluidHandler, inventoryHandler, FluidConstants.BUCKET, player, true);
 								if (resultOfEmptying.isSuccess()) {
 									player.setItemInHand(InteractionHand.MAIN_HAND, resultOfEmptying.getResult());
 								} else {
-									FluidActionResult resultOfFilling = FluidUtil.tryFillContainerAndStow(stack, backpackFluidHandler, playerInventory, FluidConstants.BUCKET, player, true);
+									FluidActionResult resultOfFilling = FluidUtil.tryFillContainerAndStow(stack, backpackFluidHandler, inventoryHandler, FluidConstants.BUCKET, player, true);
 									if (resultOfFilling.isSuccess()) {
 										player.setItemInHand(InteractionHand.MAIN_HAND, resultOfFilling.getResult());
 									}
