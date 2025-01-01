@@ -73,9 +73,12 @@ public class EmiCompat implements EmiPlugin {
 
         registry.setDefaultComparison(EmiStack.of(ModItems.BACKPACK), compareColor);
 
-        registry.addRecipeHandler(ModItems.BACKPACK_CONTAINER_TYPE, new EmiGridMenuInfo<>());
+        registry.addRecipeHandler(ModItems.BACKPACK_CONTAINER_TYPE, EmiGridMenuInfo.crafting());
+		registry.addRecipeHandler(ModItems.BACKPACK_CONTAINER_TYPE, EmiGridMenuInfo.stonecutting());
+		registry.addRecipeHandler(ModItems.BACKPACK_CONTAINER_TYPE, EmiGridMenuInfo.smithing());
 
 		registry.addWorkstation(VanillaEmiRecipeCategories.CRAFTING, EmiStack.of(ModItems.CRAFTING_UPGRADE));
+		registry.addWorkstation(VanillaEmiRecipeCategories.SMITHING, EmiStack.of(ModItems.SMITHING_UPGRADE));
 		registry.addWorkstation(VanillaEmiRecipeCategories.STONECUTTING, EmiStack.of(ModItems.STONECUTTER_UPGRADE));
 
 		List<WorkstationEntry> entries = new ArrayList<>();

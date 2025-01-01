@@ -623,6 +623,17 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
+		ShapeBasedRecipeBuilder.shaped(ModItems.SMITHING_UPGRADE)
+				.pattern(" S ")
+				.pattern("IBI")
+				.pattern(" C ")
+				.define('S', Items.SMITHING_TABLE)
+				.define('I', ConventionalItemTags.IRON_INGOTS)
+				.define('B', ModItems.UPGRADE_BASE)
+				.define('C', Tags.Items.WOODEN_CHESTS)
+				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
+				.save(consumer);
+
 		new SmithingTransformRecipeBuilder(ModItems.SMITHING_BACKPACK_UPGRADE_RECIPE_SERIALIZER, Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(ModItems.DIAMOND_BACKPACK),
 				Ingredient.of(Items.NETHERITE_INGOT), RecipeCategory.MISC, ModItems.NETHERITE_BACKPACK)
 				.unlocks("has_diamond_backpack", has(ModItems.DIAMOND_BACKPACK))
