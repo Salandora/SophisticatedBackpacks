@@ -1,4 +1,10 @@
 accessWidener v2 named
 
+accessible field net/minecraft/client/gui/screens/inventory/SmithingScreen EMPTY_SLOT_SMITHING_TEMPLATES Ljava/util/List;
+accessible field net/minecraft/client/gui/screens/inventory/SmithingScreen ERROR_TOOLTIP Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/client/gui/screens/inventory/SmithingScreen MISSING_TEMPLATE_TOOLTIP Lnet/minecraft/network/chat/Component;
+
+accessible field net/minecraft/world/inventory/SmithingMenu selectedRecipe Lnet/minecraft/world/item/crafting/SmithingRecipe;
 extendable method net/minecraft/world/inventory/ItemCombinerMenu createContainer (I)Lnet/minecraft/world/SimpleContainer;
 extendable method net/minecraft/world/inventory/ItemCombinerMenu createInputSlots (Lnet/minecraft/world/inventory/ItemCombinerMenuSlotDefinition;)V
+extendable method net/minecraft/world/inventory/ItemCombinerMenu createResultSlot (Lnet/minecraft/world/inventory/ItemCombinerMenuSlotDefinition;)V

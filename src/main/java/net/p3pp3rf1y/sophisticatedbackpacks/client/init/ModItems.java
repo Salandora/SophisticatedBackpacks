@@ -15,6 +15,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill.RefillUpgradeContain
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill.RefillUpgradeTab;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.restock.RestockUpgradeTab;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.restock.RestockUpgradeWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.smithing.SmithingUpgradeTab;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper.ToolSwapperUpgradeTab;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.UpgradeGuiManager;
@@ -49,41 +50,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeTab;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeTab;
 
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.ADVANCED_COMPACTING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.ADVANCED_DEPOSIT_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.ADVANCED_FEEDING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.ADVANCED_PUMP_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.ADVANCED_REFILL_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.ADVANCED_RESTOCK_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.ADVANCED_VOID_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.ANVIL_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.AUTO_BLASTING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.AUTO_SMELTING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.AUTO_SMOKING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACK_CONTAINER_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BATTERY_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BLASTING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.COMPACTING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.CRAFTING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.DEPOSIT_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.FEEDING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.INCEPTION_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.JUKEBOX_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.MAGNET_ADVANCED_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.MAGNET_BASIC_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.PICKUP_ADVANCED_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.PICKUP_BASIC_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.PUMP_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.REFILL_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.RESTOCK_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.SETTINGS_CONTAINER_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.SMELTING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.SMOKING_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.STONECUTTER_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.TANK_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.TOOL_SWAPPER_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.VOID_TYPE;
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.XP_PUMP_TYPE;
+import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.*;
 
 public class ModItems {
 	public static void registerScreens() {
@@ -149,5 +116,6 @@ public class ModItems {
 		UpgradeGuiManager.registerTab(XP_PUMP_TYPE, (XpPumpUpgradeContainer upgradeContainer, Position position, StorageScreenBase<?> screen) ->
 				new XpPumpUpgradeTab(upgradeContainer, position, screen, Config.SERVER.xpPumpUpgrade.mendingOn.get()));
 		UpgradeGuiManager.registerTab(ANVIL_TYPE, AnvilUpgradeTab::new);
+		UpgradeGuiManager.registerTab(SMITHING_TYPE, SmithingUpgradeTab::new);
 	}
 }

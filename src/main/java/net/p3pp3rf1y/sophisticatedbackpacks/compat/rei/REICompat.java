@@ -41,6 +41,8 @@ public class REICompat implements REIServerPlugin {
 
     @Override
     public void registerMenuInfo(MenuInfoRegistry registry) {
-        registry.register(BuiltinPlugin.CRAFTING, BackpackContainer.class, SimpleMenuInfoProvider.of(ReiGridMenuInfo::new));
+        registry.register(BuiltinPlugin.CRAFTING, BackpackContainer.class, SimpleMenuInfoProvider.of(ReiGridMenuInfo::crafting));
+        // TODO: Fix this
+        // registry.register(BuiltinPlugin.SMITHING, BackpackContainer.class, SimpleMenuInfoProvider.of(ReiGridMenuInfo::smithing));
     }
 }
