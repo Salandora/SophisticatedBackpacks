@@ -28,4 +28,4 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Versions**
-Mod version that you're using. Version of forge may also be helpful in some cases
+Mod version that you're using. Version of fabric-loader and fabric-api may also be helpful in some cases

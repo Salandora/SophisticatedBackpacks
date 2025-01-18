@@ -15,7 +15,7 @@ public class ModPayloads {
 	private ModPayloads() {
 	}
 
-	public static void registerPackets() {
+	public static void registerPayloads() {
 		registerC2S(BackpackOpenPayload.TYPE, BackpackOpenPayload.STREAM_CODEC, BackpackOpenPayload::handlePayload);
 		registerC2S(UpgradeTogglePayload.TYPE, UpgradeTogglePayload.STREAM_CODEC, UpgradeTogglePayload::handlePayload);
 		registerC2S(RequestBackpackInventoryContentsPayload.TYPE, RequestBackpackInventoryContentsPayload.STREAM_CODEC, RequestBackpackInventoryContentsPayload::handlePayload);

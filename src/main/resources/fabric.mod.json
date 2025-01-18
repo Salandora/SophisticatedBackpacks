@@ -47,11 +47,7 @@
         "minecraft": "${minecraft_version}",
         "sophisticatedcore": "${sc_version}",
         "forgeconfigapiport": ">=${forge_config_version}",
-        "team_reborn_energy": ">=${energy_version}",
-        "porting_lib_loot": ">=${port_lib_version}",
-        "porting_lib_model_loader": ">=${port_lib_version}",
-        "porting_lib_item_abilities": ">=${port_lib_version}",
-        "porting_lib_transfer": ">=${port_lib_version}"
+        "team_reborn_energy": ">=${energy_version}"
     },
     "suggests": {
         "modmenu": "*"

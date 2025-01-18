@@ -68,7 +68,7 @@ public class CommonEventHandler {
 
 		ModItems.registerHandlers();
 		ModBlocks.registerHandlers();
-		ModPayloads.registerPackets();
+		ModPayloads.registerPayloads();
 		ItemEntityEvents.CAN_PICKUP.register(this::onItemPickup);
 		MobSpawnEvents.AFTER_FINALIZE_SPAWN.register(this::onLivingSpecialSpawn);
 		LivingEntityEvents.DROPS.register(this::onLivingDrops);

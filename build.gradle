@@ -49,8 +49,8 @@ repositories {
             includeGroupByRegex "io.github.fabricators_of_create.Porting-Lib.*"
         }
     }
-    /*maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib
-    maven { url = "https://mvn.devos.one/releases/" } // Porting Lib*/
+    maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib
+    maven { url = "https://mvn.devos.one/releases/" } // Porting Lib
 
     maven { // Forge Config API Port
         name = "Fuzs Mod Resources"
@@ -196,18 +196,18 @@ dependencies {
     if (findProject(":SophisticatedCore") != null) {
         implementation project(path: ":SophisticatedCore", configuration: "namedElements")
         var core = project(":SophisticatedCore")
-        if (core.port_lib_modules != "none") {
-            for (def module in core.port_lib_modules.split(',')) {
-                modApi("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$core.port_lib_version+$minecraft_version")
+        if (core.porting_lib_modules != "none") {
+            for (def module in core.porting_lib_modules.split(',')) {
+                modApi("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$core.porting_lib_version+$minecraft_version")
             }
         }
     } else {
         modImplementation("sophisticatedcore:sophisticatedcore:${sc_version}")
     }
 
-    if (port_lib_modules != "none") {
-        for (def module in port_lib_modules.split(',')) {
-            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
+    if (porting_lib_modules != "none") {
+        for (def module in porting_lib_modules.split(',')) {
+            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$porting_lib_version+$minecraft_version"))
         }
     }
 
@@ -316,7 +316,7 @@ processResources {
             sc_version          : mavenVersionToFabric(project.sc_version),
             forge_config_version: project.forge_config_api_port_version,
             energy_version      : project.energy_version,
-            port_lib_version    : project.port_lib_version
+            porting_lib_version : project.porting_lib_version
     ]
 
     inputs.properties replaceProperties
