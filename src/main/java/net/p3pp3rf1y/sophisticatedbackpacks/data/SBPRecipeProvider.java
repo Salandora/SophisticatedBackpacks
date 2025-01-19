@@ -437,6 +437,17 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.unlockedBy(HAS_UPGRADE_BASE, has(ModItems.UPGRADE_BASE))
 				.save(consumer);
 
+		ShapeBasedRecipeBuilder.shaped(ModItems.ADVANCED_JUKEBOX_UPGRADE)
+				.pattern(" D ")
+				.pattern("GJG")
+				.pattern("RRR")
+				.define('D', ConventionalItemTags.DIAMONDS)
+				.define('G', ConventionalItemTags.GOLD_INGOTS)
+				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
+				.define('J', ModItems.JUKEBOX_UPGRADE.get())
+				.unlockedBy("has_jukebox_upgrade", has(ModItems.JUKEBOX_UPGRADE))
+				.save(consumer);
+
 		ShapeBasedRecipeBuilder.shaped(ModItems.TOOL_SWAPPER_UPGRADE)
 				.pattern("RWR")
 				.pattern("PBA")

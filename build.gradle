@@ -83,9 +83,7 @@ repositories {
 }
 
 group = mod_group_id
-version = "${project.minecraft_version}-${project.mod_version}.${getBuildNumber()}${getStable()}"
-logger.lifecycle("${project.name} version: ${project.version}")
-
+version = "${project.minecraft_version}-${project.mod_version}.${getBuildNumber()}"
 base {
     archivesName = "${mod_id}"
 }
@@ -284,7 +282,7 @@ processResources {
             mod_id              : project.mod_id,
             mod_name            : project.mod_name,
             mod_license         : project.mod_license,
-            mod_version         : version.replace(getStable(), ""), // remove the getStable string so that fabric loader can catch version mismatches, only important for snapshots
+            mod_version         : version,
             mod_issue_tracker_url: project.mod_issue_tracker_url,
             mod_sources_url     : project.mod_sources_url,
             mod_logo_file       : project.mod_logo_file,
@@ -352,14 +350,7 @@ static def getBuildNumber() {
     if (System.getenv("GITHUB_RUN_NUMBER") != null) {
         return System.getenv("GITHUB_RUN_NUMBER").toString()
     }
-    return "9999"
-}
-
-static def getStable() {
-    if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev")) {
-        return "-SNAPSHOT"
-    }
-    return ""
+    return "1"
 }
 
 publishing {
