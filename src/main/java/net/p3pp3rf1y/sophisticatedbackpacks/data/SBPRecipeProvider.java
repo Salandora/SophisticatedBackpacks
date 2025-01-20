@@ -444,7 +444,7 @@ public class SBPRecipeProvider extends FabricRecipeProvider {
 				.define('D', ConventionalItemTags.DIAMONDS)
 				.define('G', ConventionalItemTags.GOLD_INGOTS)
 				.define('R', ConventionalItemTags.REDSTONE_DUSTS)
-				.define('J', ModItems.JUKEBOX_UPGRADE.get())
+				.define('J', ModItems.JUKEBOX_UPGRADE)
 				.unlockedBy("has_jukebox_upgrade", has(ModItems.JUKEBOX_UPGRADE))
 				.save(consumer);
 

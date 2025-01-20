@@ -3,6 +3,8 @@ package net.p3pp3rf1y.sophisticatedbackpacks.common;
 import com.google.common.primitives.Ints;
 
 import net.fabricmc.fabric.api.entity.FakePlayer;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
@@ -173,8 +175,11 @@ public class EntityBackpackAdditionHandler {
 			JukeboxUpgradeWrapper wrapper = it.next();
 			int numberOfDiscs = advancedJukebox ? random.nextInt(wrapper.getDiscInventory().getSlotCount() / 3) + 1 : 1;
 			for (int i = 0; i < numberOfDiscs; i++) {
-				// TODO:
-				wrapper.getDiscInventory().insertItem(i, new ItemStack(musicDiscs.get(rnd.nextInt(musicDiscs.size()))), false);
+				try (Transaction ctx = Transaction.openOuter()) {
+					ItemVariant variant = ItemVariant.of(musicDiscs.get(rnd.nextInt(musicDiscs.size())));
+					wrapper.getDiscInventory().insertSlot(i, variant, 1, ctx);
+					ctx.commit();
+				}
 			}
 		}
 	}

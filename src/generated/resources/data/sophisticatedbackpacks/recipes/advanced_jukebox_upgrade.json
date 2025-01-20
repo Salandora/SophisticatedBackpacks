@@ -1,23 +1,23 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "conditions": [
+  "fabric:load_conditions": [
     {
-      "type": "sophisticatedcore:item_enabled",
+      "condition": "sophisticatedcore:item_enabled",
       "itemRegistryName": "sophisticatedbackpacks:advanced_jukebox_upgrade"
     }
   ],
+  "type": "minecraft:crafting_shaped",
   "key": {
     "D": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:diamonds"
     },
     "G": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:gold_ingots"
     },
     "J": {
       "item": "sophisticatedbackpacks:jukebox_upgrade"
     },
     "R": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:redstone_dusts"
     }
   },
   "pattern": [
