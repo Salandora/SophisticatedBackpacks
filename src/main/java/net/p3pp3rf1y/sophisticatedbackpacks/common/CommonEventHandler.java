@@ -6,9 +6,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -16,15 +18,20 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -32,7 +39,10 @@ import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IAttackEntityResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlockEntity;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenMessage;
@@ -46,14 +56,12 @@ import net.p3pp3rf1y.sophisticatedcore.event.common.MobSpawnEvents;
 import net.p3pp3rf1y.sophisticatedcore.network.PacketHandler;
 import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsMessage;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.infinity.InfinityUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
+import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
@@ -66,8 +74,8 @@ public class CommonEventHandler {
 		ItemEntityEvents.CAN_PICKUP.register(this::onItemPickup);
 
 		MobSpawnEvents.AFTER_FINALIZE_SPAWN.register(this::onLivingSpecialSpawn);
-		LivingEntityEvents.DROPS.register(EntityBackpackAdditionHandler::handleBackpackDrop);
-
+		LivingEntityEvents.DROPS.register(this::onLivingDrops);
+		//eventBus.addListener(this::onEntityMobGriefing);
 		EntityTrackingEvents.STOP_TRACKING.register(this::onEntityLeaveWorld);
 		ServerTickEvents.END_WORLD_TICK.register(ServerStorageSoundHandler::tick);
 		AttackBlockCallback.EVENT.register(this::onBlockClick);
@@ -78,6 +86,7 @@ public class CommonEventHandler {
 		ServerPlayerEvents.AFTER_RESPAWN.register(this::onPlayerRespawn);
 		ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
 		UseEntityCallback.EVENT.register(this::interactWithEntity);
+		PlayerBlockBreakEvents.BEFORE.register(this::handleBreakBackpackWithInfinityUpgrade);
 
 		EntityEvents.ON_JOIN_WORLD.register((entity, world, loadedFromDisk) -> {
 			if (entity.getClass().equals(ItemEntity.class) && ((ItemEntity)entity).getItem().getItem() instanceof BackpackItem backpack) {
@@ -221,6 +230,17 @@ public class CommonEventHandler {
 		}
 	}
 
+	private boolean onLivingDrops(LivingEntity target, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit) {
+		return EntityBackpackAdditionHandler.handleBackpackDrop(target, source, drops, lootingLevel, recentlyHit);
+	}
+
+	/// Handled in CreeperMixin.java
+	/*private void onEntityMobGriefing(EntityMobGriefingEvent event) {
+		if (event.getEntity() instanceof Creeper creeper) {
+			EntityBackpackAdditionHandler.removeBeneficialEffects(creeper);
+		}
+	}*/
+
 	private void onEntityLeaveWorld(Entity trackedEntity, ServerPlayer player) {
 		if (!(trackedEntity instanceof Monster monster)) {
 			return;
@@ -250,5 +270,21 @@ public class CommonEventHandler {
 			}
 		}
 		return InteractionResult.PASS;
+	}
+
+	private boolean handleBreakBackpackWithInfinityUpgrade(Level world, Player player, BlockPos pos, BlockState state, @org.jetbrains.annotations.Nullable BlockEntity blockEntity) {
+		if (!(state.getBlock() instanceof BackpackBlock)) {
+			return true;
+		}
+
+		if (WorldHelper.getBlockEntity(world, pos, BackpackBlockEntity.class)
+				.map(backpackBlockEntity -> backpackBlockEntity.getStorageWrapper().getUpgradeHandler().getTypeWrappers(InfinityUpgradeItem.TYPE)
+						.stream().anyMatch(w -> !player.hasPermissions(w.getPermissionLevel())))
+				.orElse(false)) {
+			player.displayClientMessage(SBPTranslationHelper.INSTANCE.translStatusMessage("infinity_upgrade_only_admin_break").withStyle(ChatFormatting.RED), true);
+			return false;
+		}
+
+		return true;
 	}
 }
