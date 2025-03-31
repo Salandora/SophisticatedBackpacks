@@ -327,7 +327,7 @@ processResources {
     }
 
     filesMatching("fabric.mod.json") {
-        expand replaceProperties + [project: project]
+        expand replaceProperties
 
         filter { String line ->
             line = line.replace("[\"mod_authors\"]", mod_authors.toString())
@@ -343,7 +343,7 @@ tasks.register('fixIntelliJResources', Copy) {
         return
 
     dependsOn processResources
-    group "fabric"
+    group = "fabric"
 
     from processResources
     into ideaModuleCompileOutputPath[1]
