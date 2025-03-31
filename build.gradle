@@ -322,7 +322,7 @@ tasks.register('fixIntelliJResources', Copy) {
         return
 
     dependsOn processResources
-    group "fabric"
+    group = "fabric"
 
     from processResources
     into ideaModuleCompileOutputPath[1]
