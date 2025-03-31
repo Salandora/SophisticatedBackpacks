@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     id 'idea'
-    id 'fabric-loom' version '1.9.+'
+    id 'fabric-loom' version '1.10.+'
     id 'maven-publish'
     id "net.darkhax.curseforgegradle" version "1.1.15"
     id "com.modrinth.minotaur" version "2.+"
