@@ -149,4 +149,11 @@ public class BackpackStorage extends SavedData {
 	public boolean removeUpdatedBackpackSettingsFlag(UUID backpackUuid) {
 		return updatedBackpackSettingsFlags.remove(backpackUuid);
 	}
+
+	public static void onClientWorldLoad(LevelEvent.Load evt) {
+		if (evt.getLevel().isClientSide()) {
+			clientStorageCopy.backpackContents.clear();
+			clientStorageCopy.accessLogRecords.clear();
+		}
+	}
 }
