@@ -24,15 +24,15 @@ public class BackpackItemStackRenderer implements BuiltinItemRendererRegistry.Dy
 		BakedModel model = itemRenderer.getModel(stack, null, minecraft.player, 0);
 		RenderType rendertype = ItemBlockRenderTypes.getRenderType(stack, true);
 		//model.getRenderPasses(stack, true).forEach(bakedModel -> bakedModel.getRenderTypes(stack, true).forEach(renderType -> {
-			VertexConsumer ivertexbuilder = ItemRenderer.getFoilBufferDirect(buffer, rendertype, true, stack.hasFoil());
-			itemRenderer.renderModelLists(model, stack, combinedLight, combinedOverlay, matrixStack, ivertexbuilder);
-			IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(stack);
-			backpackWrapper.getRenderInfo().getItemDisplayRenderInfo().getDisplayItem().ifPresent(displayItem -> {
-				matrixStack.translate(0.5, 0.6, 0.25);
-				matrixStack.scale(0.5f, 0.5f, 0.5f);
-				matrixStack.mulPose(Axis.ZP.rotationDegrees(displayItem.getRotation()));
-				itemRenderer.renderStatic(displayItem.getItem(), ItemDisplayContext.FIXED, combinedLight, combinedOverlay, matrixStack, buffer, minecraft.level, 0);
-			});
+		VertexConsumer ivertexbuilder = ItemRenderer.getFoilBufferDirect(buffer, rendertype, true, stack.hasFoil());
+		itemRenderer.renderModelLists(model, stack, combinedLight, combinedOverlay, matrixStack, ivertexbuilder);
+		IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(stack);
+		backpackWrapper.getRenderInfo().getItemDisplayRenderInfo().getDisplayItem().ifPresent(displayItem -> {
+			matrixStack.translate(0.5, 0.6, 0.25);
+			matrixStack.scale(0.5f, 0.5f, 0.5f);
+			matrixStack.mulPose(Axis.ZP.rotationDegrees(displayItem.getRotation()));
+			itemRenderer.renderStatic(displayItem.getItem(), ItemDisplayContext.FIXED, combinedLight, combinedOverlay, matrixStack, buffer, minecraft.level, 0);
+		});
 		//}));
 	}
 }

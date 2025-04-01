@@ -290,7 +290,7 @@ public class EntityBackpackAdditionHandler {
 				InventoryHelper.iterate(wrapper.getDiscInventory(), (slot, stack) -> {
 					if (!stack.isEmpty()) {
 						try (Transaction ctx = Transaction.openOuter()) {
-							long extracted = wrapper.getDiscInventory().extractSlot(slot, ItemVariant.of(stack), stack.getCount(), ctx));
+							long extracted = wrapper.getDiscInventory().extractSlot(slot, ItemVariant.of(stack), stack.getCount(), ctx);
 							inventoryItems.add(stack.copyWithCount((int) extracted));
 							ctx.commit();
 						}

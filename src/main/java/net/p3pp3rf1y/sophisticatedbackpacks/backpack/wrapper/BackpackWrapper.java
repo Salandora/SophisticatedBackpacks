@@ -452,8 +452,8 @@ public class BackpackWrapper implements IBackpackWrapper {
 		}
 
 		ItemContainerContents containerItems = backpack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
-		for (int slot = 0; slot < containerItems.getSlots(); slot++) {
-			ItemStack stack = containerItems.getStackInSlot(slot);
+		for (int slot = 0; slot < containerItems.sophisticatedCore_getSlots(); slot++) {
+			ItemStack stack = containerItems.sophisticatedCore_getStackInSlot(slot);
 			if (stack.isEmpty()) {
 				continue;
 			}

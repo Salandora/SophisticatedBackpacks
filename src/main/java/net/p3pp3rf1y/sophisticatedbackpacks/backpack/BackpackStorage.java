@@ -1,5 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
+import io.github.fabricators_of_create.porting_lib.level.events.LevelEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -150,10 +153,10 @@ public class BackpackStorage extends SavedData {
 		return updatedBackpackSettingsFlags.remove(backpackUuid);
 	}
 
-	public static void onClientWorldLoad(LevelEvent.Load evt) {
-		if (evt.getLevel().isClientSide()) {
+	public static void onClientWorldLoad(Minecraft mc, ClientLevel level) {
+		//if (evt.getLevel().isClientSide()) {
 			clientStorageCopy.backpackContents.clear();
 			clientStorageCopy.accessLogRecords.clear();
-		}
+		//}
 	}
 }
