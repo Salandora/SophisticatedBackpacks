@@ -15,7 +15,7 @@
       "tag": "c:ingots/gold"
     },
     "R": {
-      "item": "minecraft:redstone_block"
+      "tag": "c:storage_blocks/redstone"
     }
   },
   "pattern": [

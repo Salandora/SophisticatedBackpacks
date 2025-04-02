@@ -1,7 +1,7 @@
 {
-  "neoforge:conditions": [
+  "fabric:load_conditions": [
     {
-      "type": "sophisticatedcore:item_enabled",
+      "condition": "sophisticatedcore:item_enabled",
       "itemRegistryName": "sophisticatedbackpacks:stack_downgrade_tier_1"
     }
   ],
