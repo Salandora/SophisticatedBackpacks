@@ -30,7 +30,7 @@
             "net.p3pp3rf1y.sophisticatedbackpacks.compat.jei.SBPPlugin"
         ],
         "rei_common": [
-            "net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REICompat"
+            "net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REIServerCompat"
         ],
         "rei_client": [
             "net.p3pp3rf1y.sophisticatedbackpacks.compat.rei.REIClientCompat"
