@@ -176,7 +176,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			float minZ = 1.95f / 16f;
 			float maxX = minX + pixels / 16f;
 			float maxY = minY + 1 / 16f;
-			float[] cols = new float[]{1f, 1f, 1f, 1f};
+			float[] cols = new float[]{1f, 1f, 1f, 1f, -1};
 			TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BACKPACK_MODULES_TEXTURE);
 			ret.add(createQuad(List.of(getVector(maxX, maxY, minZ), getVector(maxX, minY, minZ), getVector(minX, minY, minZ), getVector(minX, maxY, minZ)), cols, sprite, Direction.NORTH, 14, 14 + (pixels / 2f), 6, 6.5f));
 		}
