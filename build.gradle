@@ -314,8 +314,6 @@ processResources {
             loader_version      : project.loader_version,
             fabric_version      : project.fabric_version,
             sc_version          : mavenVersionToFabric(project.sc_version),
-            forge_config_version: project.forge_config_api_port_version,
-            energy_version      : project.energy_version,
             porting_lib_version : project.porting_lib_version
     ]
 
