@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     id 'idea'
-    id 'fabric-loom' version '1.9.+'
+    id 'fabric-loom' version '1.10.+'
     id 'maven-publish'
     id "net.darkhax.curseforgegradle" version "1.1.15"
     id "com.modrinth.minotaur" version "2.+"
@@ -314,8 +314,6 @@ processResources {
             loader_version      : project.loader_version,
             fabric_version      : project.fabric_version,
             sc_version          : mavenVersionToFabric(project.sc_version),
-            forge_config_version: project.forge_config_api_port_version,
-            energy_version      : project.energy_version,
             porting_lib_version : project.porting_lib_version
     ]
 
@@ -327,7 +325,7 @@ processResources {
     }
 
     filesMatching("fabric.mod.json") {
-        expand replaceProperties + [project: project]
+        expand replaceProperties
 
         filter { String line ->
             line = line.replace("[\"mod_authors\"]", mod_authors.toString())
@@ -343,7 +341,7 @@ tasks.register('fixIntelliJResources', Copy) {
         return
 
     dependsOn processResources
-    group "fabric"
+    group = "fabric"
 
     from processResources
     into ideaModuleCompileOutputPath[1]

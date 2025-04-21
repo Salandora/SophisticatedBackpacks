@@ -20,19 +20,10 @@ public class BackpackItemStackRenderer implements BuiltinItemRendererRegistry.Dy
 
 	@Override
 	public void render(ItemStack stack, ItemDisplayContext mode, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
-		//ItemRenderer.render does transformations that would need to be transformed against in complicated way so rather pop the pose here and push the new one with the same transforms
-		// applied in the correct order with the getModel
-		matrixStack.popPose();
-		matrixStack.pushPose();
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		BakedModel model = itemRenderer.getModel(stack, null, minecraft.player, 0);
-
-		boolean leftHand = minecraft.player != null && minecraft.player.getOffhandItem() == stack;
-		if (mode != ItemDisplayContext.NONE) {
-			model.getTransforms().getTransform(mode).apply(leftHand, matrixStack);
-		}
-		matrixStack.translate(-0.5D, -0.5D, -0.5D);
 		RenderType rendertype = ItemBlockRenderTypes.getRenderType(stack, true);
+		//model.getRenderPasses(stack, true).forEach(bakedModel -> bakedModel.getRenderTypes(stack, true).forEach(renderType -> {
 		VertexConsumer ivertexbuilder = ItemRenderer.getFoilBufferDirect(buffer, rendertype, true, stack.hasFoil());
 		itemRenderer.renderModelLists(model, stack, combinedLight, combinedOverlay, matrixStack, ivertexbuilder);
 		IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(stack);
@@ -42,5 +33,6 @@ public class BackpackItemStackRenderer implements BuiltinItemRendererRegistry.Dy
 			matrixStack.mulPose(Axis.ZP.rotationDegrees(displayItem.getRotation()));
 			itemRenderer.renderStatic(displayItem.getItem(), ItemDisplayContext.FIXED, combinedLight, combinedOverlay, matrixStack, buffer, minecraft.level, 0);
 		});
+		//}));
 	}
 }

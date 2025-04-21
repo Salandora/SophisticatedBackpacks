@@ -2,7 +2,10 @@ package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import com.google.common.primitives.Ints;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
@@ -29,6 +32,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -41,7 +45,10 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeItem;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeWrapper;
+import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WeightedElement;
 
@@ -159,7 +166,7 @@ public class EntityBackpackAdditionHandler {
 				wrapper.getInventoryHandler(); //just to assign uuid and real upgrade handler
 				if (wrapper.getUpgradeHandler().getSlotCount() > 0) {
 					monster.addTag(SPAWNED_WITH_JUKEBOX_UPGRADE);
-					addJukeboxUpgradeAndRandomDisc(wrapper, rnd);
+					addJukeboxUpgradeAndRandomDisc(level.getRandom(), wrapper, rnd);
 				}
 			}
 		});
@@ -167,12 +174,19 @@ public class EntityBackpackAdditionHandler {
 		monster.setDropChance(EquipmentSlot.CHEST, 0);
 	}
 
-	private static void addJukeboxUpgradeAndRandomDisc(IStorageWrapper w, RandomSource rnd) {
-		w.getUpgradeHandler().setStackInSlot(0, new ItemStack(ModItems.JUKEBOX_UPGRADE.get()));
-		Iterator<JukeboxUpgradeItem.Wrapper> it = w.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).iterator();
+	private static void addJukeboxUpgradeAndRandomDisc(RandomSource random, IStorageWrapper w, RandomSource rnd) {
+		boolean advancedJukebox = random.nextFloat() < 0.25;
+		w.getUpgradeHandler().setStackInSlot(0, new ItemStack(advancedJukebox ? ModItems.ADVANCED_JUKEBOX_UPGRADE.get() : ModItems.JUKEBOX_UPGRADE.get()));
+		Iterator<JukeboxUpgradeWrapper> it = w.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).iterator();
 		if (it.hasNext()) {
-			JukeboxUpgradeItem.Wrapper wrapper = it.next();
-			wrapper.setDisc(new ItemStack(getMusicDiscs().get(rnd.nextInt(getMusicDiscs().size()))));
+			JukeboxUpgradeWrapper wrapper = it.next();
+			int numberOfDiscs = advancedJukebox ? random.nextInt(wrapper.getDiscInventory().getSlotCount() / 3) + 1 : 1;
+			for (int i = 0; i < numberOfDiscs; i++) {
+				try (Transaction ctx = Transaction.openOuter()) {
+					wrapper.getDiscInventory().insertSlot(i, ItemVariant.of(getMusicDiscs().get(rnd.nextInt(getMusicDiscs().size()))), 1, ctx);
+					ctx.commit();
+				}
+			}
 		}
 	}
 
@@ -257,6 +271,7 @@ public class EntityBackpackAdditionHandler {
 			ItemStack backpack = mob.getItemBySlot(EquipmentSlot.CHEST);
 			Config.Server.EntityBackpackAdditionsConfig additionsConfig = Config.SERVER.entityBackpackAdditions;
 			if (shouldDropBackpack(source, additionsConfig, mob, backpack)) {
+				putJukeboxItemsInContainerAndRemoveStorageUuid(source, mob, backpack);
 				ItemEntity backpackEntity = new ItemEntity(mob.level(), mob.getX(), mob.getY(), mob.getZ(), backpack);
 				drops.add(backpackEntity);
 				mob.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
@@ -264,6 +279,38 @@ public class EntityBackpackAdditionHandler {
 			} else {
 				removeContentsUuid(backpack);
 			}
+		}
+	}
+
+	private static void putJukeboxItemsInContainerAndRemoveStorageUuid(DamageSource source, LivingEntity mob, ItemStack backpack) {
+		if (mob.getTags().remove(SPAWNED_WITH_JUKEBOX_UPGRADE)) {
+			List<ItemStack> inventoryItems = new ArrayList<>();
+			IBackpackWrapper backpackwrapper = BackpackWrapper.fromStack(backpack);
+			backpackwrapper.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).forEach(wrapper -> {
+				InventoryHelper.iterate(wrapper.getDiscInventory(), (slot, stack) -> {
+					if (!stack.isEmpty()) {
+						try (Transaction ctx = Transaction.openOuter()) {
+							long extracted = wrapper.getDiscInventory().extractSlot(slot, ItemVariant.of(stack), stack.getCount(), ctx);
+							inventoryItems.add(stack.copyWithCount((int) extracted));
+							ctx.commit();
+						}
+					}
+				});
+			});
+			InventoryHelper.iterate(backpackwrapper.getUpgradeHandler(), (slot, stack) -> {
+				if (!stack.isEmpty()) {
+					try (Transaction ctx = Transaction.openOuter()) {
+						long extracted = backpackwrapper.getUpgradeHandler().extractSlot(slot, ItemVariant.of(stack), stack.getCount(), ctx);
+						inventoryItems.add(stack.copyWithCount((int) extracted));
+						ctx.commit();
+					}
+				}
+			});
+			UUID backpackUuid = backpack.sophisticatedCore_remove(ModCoreDataComponents.STORAGE_UUID);
+			if (backpackUuid != null) {
+				BackpackStorage.get().removeBackpackContents(backpackUuid);
+			}
+			backpack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(inventoryItems));
 		}
 	}
 

@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
@@ -83,6 +84,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	};
 	private Runnable upgradeCachesInvalidatedHandler = () -> {
 	};
+
 	public BackpackWrapper(ItemStack backpackStack) {
 		setBackpackStack(backpackStack);
 	}
@@ -173,9 +175,6 @@ public class BackpackWrapper implements IBackpackWrapper {
 	public ITrackedContentsItemHandler getInventoryForInputOutput() {
 		if (inventoryIOHandler == null) {
 			inventoryIOHandler = new InventoryIOHandler(this);
-			if (SophisticatedCore.isLogicalServerThread() && SophisticatedCore.getCurrentServer() != null) {
-				fillWithLoot(SophisticatedCore.getCurrentServer().overworld(), BlockPos.ZERO);
-			}
 		}
 		return inventoryIOHandler.getFilteredItemHandler();
 	}
@@ -267,7 +266,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 				}) {
 					@Override
 					public boolean isItemValid(int slot, ItemStack stack) {
-						return super.isItemValid(slot, stack) && (stack.isEmpty() || SophisticatedBackpacks.MOD_ID.equals(BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace()) || stack.is(ModItems.BACKPACK_UPGRADE_TAG));
+						return super.isItemValid(slot, stack) && (stack.isEmpty() || stack.is(ModItems.BACKPACK_UPGRADE_TAG));
 					}
 				};
 			} else {
@@ -436,13 +435,31 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	@Override
-	public void fillWithLoot(Player playerEntity) {
-		Level level = playerEntity.level();
+	public void fillWithLoot(Player player) {
+		Level level = player.level();
 		if (level.isClientSide) {
 			return;
 		}
-		BlockPos pos = playerEntity.blockPosition();
+		BlockPos pos = player.blockPosition();
 		fillWithLoot(level, pos);
+		fillWithExtraItems(player);
+	}
+
+	private void fillWithExtraItems(Player player) {
+		ItemStack backpack = getBackpackStack();
+		if (!backpack.has(DataComponents.CONTAINER)) {
+			return;
+		}
+
+		ItemContainerContents containerItems = backpack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+		for (int slot = 0; slot < containerItems.sophisticatedCore_getSlots(); slot++) {
+			ItemStack stack = containerItems.sophisticatedCore_getStackInSlot(slot);
+			if (stack.isEmpty()) {
+				continue;
+			}
+			InventoryHelper.insertOrDropItem(player, stack, getInventoryHandler());
+		}
+		backpack.remove(DataComponents.CONTAINER);
 	}
 
 	private void fillWithLoot(Level level, BlockPos pos) {
