@@ -7,6 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
@@ -21,10 +22,10 @@ import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 public abstract class BackpackContext implements MenuProviderHelper.ContextProvider {
 	public abstract Optional<IStorageWrapper> getParentBackpackWrapper(Player player);
@@ -152,7 +153,12 @@ public abstract class BackpackContext implements MenuProviderHelper.ContextProvi
 				SophisticatedBackpacks.LOGGER.error("Error getting backpack wrapper - Unable to find inventory handler for \"{}\"", handlerName);
 				return IBackpackWrapper.Noop.INSTANCE;
 			}
-			LazyOptional<IBackpackWrapper> backpackWrapper = BackpackWrapperLookup.get(inventoryHandler.get().getStackInSlot(player, identifier, backpackSlotIndex));
+			ItemStack stack = inventoryHandler.get().getStackInSlot(player, identifier, backpackSlotIndex);
+			if (stack.isEmpty()) {
+				return IBackpackWrapper.Noop.INSTANCE;
+			}
+
+			LazyOptional<IBackpackWrapper> backpackWrapper = BackpackWrapperLookup.get(stack);
 			if (!backpackWrapper.isPresent()) {
 				SophisticatedBackpacks.LOGGER.error("Error getting backpack wrapper - Unable to find backpack at slot index {} in \"{}\" inventory handler", backpackSlotIndex, handlerName);
 				return IBackpackWrapper.Noop.INSTANCE;

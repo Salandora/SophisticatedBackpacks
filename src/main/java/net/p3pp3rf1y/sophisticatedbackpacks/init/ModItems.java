@@ -107,8 +107,12 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.feeding.FeedingUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.feeding.FeedingUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.filter.FilterUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.filter.FilterUpgradeItem;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.filter.FilterUpgradeTab;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.infinity.InfinityUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeItem;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeTab;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.magnet.MagnetUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.magnet.MagnetUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.magnet.MagnetUpgradeWrapper;
@@ -230,8 +234,16 @@ public class ModItems {
 			new StackUpgradeItem(8, Config.SERVER.maxUpgradesPerStorage));
 	public static final StackUpgradeItem STACK_UPGRADE_TIER_4 = register("stack_upgrade_tier_4", () ->
 			new StackUpgradeItem(16, Config.SERVER.maxUpgradesPerStorage));
-	public static final String JUKEBOX_UPGRADE_NAME = "jukebox_upgrade";
-	public static final JukeboxUpgradeItem JUKEBOX_UPGRADE = register(JUKEBOX_UPGRADE_NAME, () -> new JukeboxUpgradeItem(Config.SERVER.maxUpgradesPerStorage));
+	public static final StackUpgradeItem STACK_DOWNGRADE_TIER_1 = register("stack_downgrade_tier_1", () ->
+			new StackUpgradeItem(0.125, Config.SERVER.maxUpgradesPerStorage));
+	public static final StackUpgradeItem STACK_DOWNGRADE_TIER_2 = register("stack_downgrade_tier_2", () ->
+			new StackUpgradeItem(0.0625, Config.SERVER.maxUpgradesPerStorage));
+	public static final StackUpgradeItem STACK_DOWNGRADE_TIER_3 = register("stack_downgrade_tier_3", () ->
+			new StackUpgradeItem(0.03125, Config.SERVER.maxUpgradesPerStorage));
+	public static final StackUpgradeItem STACK_UPGRADE_OMEGA_TIER = register("stack_upgrade_omega_tier", () ->
+			new StackUpgradeItem(Integer.MAX_VALUE, Config.SERVER.maxUpgradesPerStorage));
+	public static final JukeboxUpgradeItem JUKEBOX_UPGRADE = register("jukebox_upgrade", () -> new JukeboxUpgradeItem(Config.SERVER.maxUpgradesPerStorage, () -> 1, () -> 1));
+	public static final JukeboxUpgradeItem ADVANCED_JUKEBOX_UPGRADE = register("advanced_jukebox_upgrade", () -> new JukeboxUpgradeItem(Config.SERVER.maxUpgradesPerStorage, Config.SERVER.advancedJukeboxUpgrade.numberOfSlots::get, Config.SERVER.advancedJukeboxUpgrade.slotsInRow::get));
 	public static final ToolSwapperUpgradeItem TOOL_SWAPPER_UPGRADE = register("tool_swapper_upgrade",
 			() -> new ToolSwapperUpgradeItem(false, false));
 	public static final ToolSwapperUpgradeItem ADVANCED_TOOL_SWAPPER_UPGRADE = register("advanced_tool_swapper_upgrade",
@@ -243,6 +255,8 @@ public class ModItems {
 	public static final XpPumpUpgradeItem XP_PUMP_UPGRADE = register("xp_pump_upgrade", () -> new XpPumpUpgradeItem(Config.SERVER.xpPumpUpgrade, Config.SERVER.maxUpgradesPerStorage));
 	public static final AnvilUpgradeItem ANVIL_UPGRADE = register("anvil_upgrade", AnvilUpgradeItem::new);
 	public static final SmithingUpgradeItem SMITHING_UPGRADE = register("smithing_upgrade", SmithingUpgradeItem::new);
+	public static final InfinityUpgradeItem INFINITY_UPGRADE = register("infinity_upgrade", () -> new InfinityUpgradeItem(Config.SERVER.maxUpgradesPerStorage, true));
+	public static final InfinityUpgradeItem SURVIVAL_INFINITY_UPGRADE = register("survival_infinity_upgrade", () -> new InfinityUpgradeItem(Config.SERVER.maxUpgradesPerStorage, false));
 
 	public static final ItemBase UPGRADE_BASE = register("upgrade_base", () -> new ItemBase(new Item.Properties().stacksTo(16)));
 
@@ -359,7 +373,8 @@ public class ModItems {
 	public static final UpgradeContainerType<CraftingUpgradeWrapper, CraftingUpgradeContainer> CRAFTING_TYPE = new UpgradeContainerType<>(CraftingUpgradeContainer::new);
 	public static final UpgradeContainerType<InceptionUpgradeWrapper, InceptionUpgradeContainer> INCEPTION_TYPE = new UpgradeContainerType<>(InceptionUpgradeContainer::new);
 	public static final UpgradeContainerType<StonecutterUpgradeWrapper, StonecutterUpgradeContainer> STONECUTTER_TYPE = new UpgradeContainerType<>(StonecutterUpgradeContainer::new);
-	public static final UpgradeContainerType<JukeboxUpgradeItem.Wrapper, JukeboxUpgradeContainer> JUKEBOX_TYPE = new UpgradeContainerType<>(JukeboxUpgradeContainer::new);
+	public static final UpgradeContainerType<JukeboxUpgradeWrapper, JukeboxUpgradeContainer> JUKEBOX_TYPE = new UpgradeContainerType<>(JukeboxUpgradeContainer::new);
+	public static final UpgradeContainerType<JukeboxUpgradeWrapper, JukeboxUpgradeContainer> ADVANCED_JUKEBOX_TYPE = new UpgradeContainerType<>(JukeboxUpgradeContainer::new);
 	public static final UpgradeContainerType<ToolSwapperUpgradeWrapper, ToolSwapperUpgradeContainer> TOOL_SWAPPER_TYPE = new UpgradeContainerType<>(ToolSwapperUpgradeContainer::new);
 	public static final UpgradeContainerType<TankUpgradeWrapper, TankUpgradeContainer> TANK_TYPE = new UpgradeContainerType<>(TankUpgradeContainer::new);
 	public static final UpgradeContainerType<BatteryUpgradeWrapper, BatteryUpgradeContainer> BATTERY_TYPE = new UpgradeContainerType<>(BatteryUpgradeContainer::new);
@@ -398,6 +413,7 @@ public class ModItems {
 		UpgradeContainerRegistry.register(INCEPTION_UPGRADE, INCEPTION_TYPE);
 		UpgradeContainerRegistry.register(STONECUTTER_UPGRADE, STONECUTTER_TYPE);
 		UpgradeContainerRegistry.register(JUKEBOX_UPGRADE, JUKEBOX_TYPE);
+		UpgradeContainerRegistry.register(ADVANCED_JUKEBOX_UPGRADE, ADVANCED_JUKEBOX_TYPE);
 		UpgradeContainerRegistry.register(ADVANCED_TOOL_SWAPPER_UPGRADE, TOOL_SWAPPER_TYPE);
 		UpgradeContainerRegistry.register(TANK_UPGRADE, TANK_TYPE);
 		UpgradeContainerRegistry.register(BATTERY_UPGRADE, BATTERY_TYPE);

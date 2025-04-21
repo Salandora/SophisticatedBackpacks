@@ -3,6 +3,8 @@ package net.p3pp3rf1y.sophisticatedbackpacks.common;
 import com.google.common.primitives.Ints;
 
 import net.fabricmc.fabric.api.entity.FakePlayer;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
@@ -40,17 +42,11 @@ import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.RecordItemAccessor;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeItem;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WeightedElement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class EntityBackpackAdditionHandler {
 	private static final int MAX_DIFFICULTY = 3;
@@ -162,7 +158,7 @@ public class EntityBackpackAdditionHandler {
 						w.getInventoryHandler(); //just to assign uuid and real upgrade handler
 						if (w.getUpgradeHandler().getSlotCount() > 0) {
 							monster.addTag(SPAWNED_WITH_JUKEBOX_UPGRADE);
-							addJukeboxUpgradeAndRandomDisc(w, rnd);
+							addJukeboxUpgradeAndRandomDisc(level.getRandom(), w, rnd);
 						}
 					}
 				}));
@@ -170,13 +166,21 @@ public class EntityBackpackAdditionHandler {
 		monster.setDropChance(EquipmentSlot.CHEST, 0);
 	}
 
-	private static void addJukeboxUpgradeAndRandomDisc(IStorageWrapper w, RandomSource rnd) {
-		w.getUpgradeHandler().setStackInSlot(0, new ItemStack(ModItems.JUKEBOX_UPGRADE));
-		Iterator<JukeboxUpgradeItem.Wrapper> it = w.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).iterator();
+	private static void addJukeboxUpgradeAndRandomDisc(RandomSource random, IStorageWrapper w, RandomSource rnd) {
+		boolean advancedJukebox = random.nextFloat() < 0.25;
+		w.getUpgradeHandler().setStackInSlot(0, new ItemStack(advancedJukebox ? ModItems.ADVANCED_JUKEBOX_UPGRADE : ModItems.JUKEBOX_UPGRADE));
+		Iterator<JukeboxUpgradeWrapper> it = w.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).iterator();
 		if (it.hasNext()) {
-			JukeboxUpgradeItem.Wrapper wrapper = it.next();
 			List<RecordItem> musicDiscs = getMusicDiscs();
-			wrapper.setDisc(new ItemStack(musicDiscs.get(rnd.nextInt(musicDiscs.size()))));
+			JukeboxUpgradeWrapper wrapper = it.next();
+			int numberOfDiscs = advancedJukebox ? random.nextInt(wrapper.getDiscInventory().getSlotCount() / 3) + 1 : 1;
+			for (int i = 0; i < numberOfDiscs; i++) {
+				try (Transaction ctx = Transaction.openOuter()) {
+					ItemVariant variant = ItemVariant.of(musicDiscs.get(rnd.nextInt(musicDiscs.size())));
+					wrapper.getDiscInventory().insertSlot(i, variant, 1, ctx);
+					ctx.commit();
+				}
+			}
 		}
 	}
 

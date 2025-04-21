@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_stack_upgrade_tier_2": {
+    "has_jukebox_upgrade": {
       "conditions": {
         "items": [
           {
             "items": [
-              "sophisticatedbackpacks:stack_upgrade_tier_2"
+              "sophisticatedbackpacks:jukebox_upgrade"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "sophisticatedbackpacks:stack_upgrade_tier_3"
+        "recipe": "sophisticatedbackpacks:advanced_jukebox_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_stack_upgrade_tier_2",
+      "has_jukebox_upgrade",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "sophisticatedbackpacks:stack_upgrade_tier_3"
+      "sophisticatedbackpacks:advanced_jukebox_upgrade"
     ]
   },
   "sends_telemetry_event": true

@@ -2,7 +2,7 @@
   "fabric:load_conditions": [
     {
       "condition": "sophisticatedcore:item_enabled",
-      "itemRegistryName": "sophisticatedbackpacks:smithing_upgrade"
+      "itemRegistryName": "sophisticatedbackpacks:stack_downgrade_tier_1"
     }
   ],
   "type": "minecraft:crafting_shaped",
@@ -10,22 +10,19 @@
     "B": {
       "item": "sophisticatedbackpacks:upgrade_base"
     },
-    "C": {
-      "tag": "c:wooden_chests"
-    },
-    "I": {
-      "tag": "c:iron_ingots"
+    "F": {
+      "item": "minecraft:flint"
     },
     "S": {
-      "item": "minecraft:smithing_table"
+      "item": "minecraft:stick"
     }
   },
   "pattern": [
-    " S ",
-    "IBI",
-    " C "
+    "SFS",
+    "SBS",
+    "FSF"
   ],
   "result": {
-    "item": "sophisticatedbackpacks:smithing_upgrade"
+    "item": "sophisticatedbackpacks:stack_downgrade_tier_1"
   }
 }
