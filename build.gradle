@@ -225,9 +225,6 @@ dependencies {
 
     modCompileOnly("curse.maven:jade-324717:${project.jade_version}")
 
-    modCompileOnly("curse.maven:litematica-308892:$project.litematica_cf_file_id")
-    modCompileOnly("curse.maven:malilib-303119:$project.malilib_cf_file_id")
-
     modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
     modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
 

@@ -37,8 +37,7 @@
         ]
     },
     "mixins": [
-        "sophisticatedbackpacks.mixins.json",
-        "compat/sophisticatedbackpacks.litematica.mixins.json"
+        "sophisticatedbackpacks.mixins.json"
     ],
     "accessWidener": "sophisticatedbackpacks.accesswidener",
     "depends": {
