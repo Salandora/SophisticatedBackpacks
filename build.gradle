@@ -31,34 +31,6 @@ repositories {
     mavenLocal()
     mavenCentral()
 
-    maven {
-        name = 'ParchmentMC'
-        url = 'https://maven.parchmentmc.org'
-    }
-
-    maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
-    maven { url = "https://maven.quiltmc.org/repository/release" } // QM
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Salandora/Porting-Lib")
-        credentials {
-            username = System.getenv("USERNAME")
-            password = System.getenv("READ_PACKAGES_TOKEN")
-        }
-        content {
-            includeGroupByRegex "io.github.fabricators_of_create.Porting-Lib.*"
-        }
-    }
-    maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib
-    maven { url = "https://mvn.devos.one/releases/" } // Porting Lib
-
-    maven { // Forge Config API Port
-        name = "Fuzs Mod Resources"
-        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-    }
-    maven { url = "https://maven.nova-committee.cn/releases" } // Modern KeyBinding
-    maven { url = "https://maven.terraformersmc.com/releases/" } // Emi
-    maven { url = "https://maven.shedaniel.me/" } // REI and deps
     exclusiveContent {
         forRepository {
             maven {
@@ -70,26 +42,88 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
-    maven {
-        name = "entity reach"
-        url = "https://maven.jamieswhiteshirt.com/libs-release/"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name "CurseForge"
+                url "https://cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
+    }
+    exclusiveContent {
+        forRepositories(
+                maven { url = "https://mvn.devos.one/snapshots/" },
+                maven { url = "https://mvn.devos.one/releases/" }
+        )
+        filter {
+            includeGroup "io.github.fabricators_of_create.Porting-Lib"
+        }
     }
 
-    // maven { url = 'https://maven.blamejared.com' } // Botania
-    maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
-    maven { url = "https://www.cursemaven.com" } // Balm, CraftingTweaks
-    maven { url = "https://modmaven.dev" } // Jei
-    // maven { url = "https://maven.resourcefulbees.com/repository/maven-public/" } // Chipped, resourcefullib, athena
-    maven { url = "https://maven.teamresourceful.com/repository/maven-public/" } // Chipped, resourcefullib, athena
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+    maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
+    maven { url = "https://maven.quiltmc.org/repository/release" } // QM
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
+        url = "https://maven.pkg.github.com/Salandora/SophisticatedCore"
         credentials {
             username = System.getenv("USERNAME")
             password = System.getenv("READ_PACKAGES_TOKEN")
         }
         content {
-            includeGroupByRegex "sophisticatedcore.*"
+            includeGroupAndSubgroups "sophisticatedcore"
+        }
+    }
+    maven { // Forge Config API Port
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+        content {
+            includeGroup "fuzs.forgeconfigapiport"
+        }
+    }
+    maven { // Jei
+        url = "https://modmaven.dev"
+        content {
+            includeGroup "mezz.jei"
+        }
+    }
+    maven {  // REI and deps
+        url = "https://maven.shedaniel.me/"
+        content {
+            includeGroupAndSubgroups "me.shedaniel"
+            includeGroupAndSubgroups "dev.architectury"
+        }
+    }
+    maven {  // Emi and ModMenu
+        url = "https://maven.terraformersmc.com/releases/"
+        content {
+            includeGroupAndSubgroups "com.terraformersmc"
+            includeGroupAndSubgroups "dev.emi"
+        }
+    }
+    maven { // Chipped
+        url = "https://maven.teamresourceful.com/repository/maven-public/"
+        content {
+            includeGroupAndSubgroups "earth.terrarium"
+            includeGroupAndSubgroups "com.teamresourceful"
+        }
+    }
+    maven { // CraftingTweaks
+        url = "https://maven.twelveiterations.com/repository/maven-public/"
+        content {
+            includeGroup "net.blay09.mods"
+        }
+    }
+    maven { // CCA
+        url = "https://maven.ladysnake.org/releases"
+        content {
+            includeGroup "org.ladysnake.cardinal-components-api"
         }
     }
 }
@@ -172,7 +206,7 @@ loom {
     }
 }
 
-configurations.all {
+configurations.configureEach {
     resolutionStrategy {
         force "net.fabricmc:fabric-loader:$project.loader_version"
         force "net.fabricmc.fabric-api:fabric-api:$project.fabric_version"
@@ -225,8 +259,8 @@ dependencies {
 
     modCompileOnly("curse.maven:jade-324717:${project.jade_version}")
 
-    modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
-    modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
+    modCompileOnly("net.blay09.mods:craftingtweaks-fabric:${project.craftingtweaks_version}")
+    modCompileOnly("net.blay09.mods:balm-fabric:${project.balm_version}")
 
     modCompileOnly("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
     modLocalRuntime("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
