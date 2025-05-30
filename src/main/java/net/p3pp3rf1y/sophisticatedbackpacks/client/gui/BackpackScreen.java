@@ -27,7 +27,7 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 		if (getFocused() != null) {
 			return super.keyPressed(keyCode, scanCode, modifiers);
 		}
-		if (keyCode == 256 || KeybindHandler.BACKPACK_OPEN_KEYBIND.isDown()) {
+		if (keyCode == 256 || KeybindHandler.BACKPACK_OPEN_KEYBIND.matches(keyCode, scanCode)) {
 			if (getMenu().isFirstLevelStorage() && (keyCode == 256 || mouseNotOverBackpack())) {
 				if (getMenu().getBackpackContext().wasOpenFromInventory()) {
 					this.minecraft.player.closeContainer();
