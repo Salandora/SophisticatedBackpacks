@@ -27,6 +27,14 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
         run: ./gradlew build
+      - name: Store reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
       - name: Read minecraft version from gradle.properties
         id: read-version
         run: |
