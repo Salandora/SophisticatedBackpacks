@@ -533,7 +533,7 @@ task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
     // Dependencies
     mainFile.addRequirement('sophisticated-core-unofficial-fabric-port')
     mainFile.addRequirement('fabric-api')
-    mainFile.addEmbedded('forge-config-api-port-fabric')
+    mainFile.addRequirement('forge-config-api-port-fabric')
     mainFile.addEmbedded('porting-lib')
     mainFile.addOptional('jei')
     mainFile.addOptional('emi')
@@ -554,7 +554,7 @@ modrinth {
     dependencies {
         required.project "sophisticated-core-(unofficial-fabric-port)"
         required.project "fabric-api"
-        embedded.project "forge-config-api-port"
+        required.project "forge-config-api-port"
         embedded.project "porting_lib"
         optional.project "jei"
         optional.project "emi"
