@@ -19,8 +19,7 @@ public interface BlockInterfaceHelper {
 	default boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
 		if (entity instanceof EnderDragon) {
 			return !((Block)this).defaultBlockState().is(BlockTags.DRAGON_IMMUNE);
-		} else if ((entity instanceof WitherBoss) ||
-				(entity instanceof WitherSkull)) {
+		} else if (entity instanceof WitherBoss || entity instanceof WitherSkull) {
 			return state.isAir() || WitherBoss.canDestroy(state);
 		}
 

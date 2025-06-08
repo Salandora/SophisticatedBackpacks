@@ -9,7 +9,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.IContextAwareContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SophisticatedMenuProvider;
 import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
-import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
 
 public class BackpackOpenMessage extends SimplePacketBase {
 	private static final int CHEST_SLOT = 38;

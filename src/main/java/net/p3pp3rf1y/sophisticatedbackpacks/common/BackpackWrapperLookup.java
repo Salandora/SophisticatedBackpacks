@@ -17,6 +17,7 @@ import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.BACKPACKS;
 
 public class BackpackWrapperLookup {
+	@SuppressWarnings("unchecked")
 	public static final ItemApiLookup<LazyOptional<IBackpackWrapper>, Void> ITEM = ItemApiLookup.get(SophisticatedBackpacks.getRL("item_backpack_wrapper"), (Class<LazyOptional<IBackpackWrapper>>) (Class<?>) LazyOptional.class, Void.class);
 
 	public static LazyOptional<IBackpackWrapper> get(ItemStack provider) {

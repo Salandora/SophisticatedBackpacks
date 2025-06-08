@@ -155,7 +155,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 
 		UUIDDeduplicator.dedupeBackpackItemEntityInArea(itemEntity);
 
-		return hasEverlastingUpgrade(itemstack) ? createEverlastingBackpack(world, (ItemEntity) entity, itemstack) : null;
+		return hasEverlastingUpgrade(itemstack) ? createEverlastingBackpack(world, itemEntity, itemstack) : null;
 	}
 
 	@Nullable

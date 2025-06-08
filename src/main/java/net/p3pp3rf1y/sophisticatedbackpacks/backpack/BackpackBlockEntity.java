@@ -155,12 +155,12 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 			return itemHandlerCap.cast();
 		} else if (cap == FluidStorage.SIDED) {
 			if (fluidHandlerCap == null) {
-				fluidHandlerCap = LazyOptional.of(() -> getBackpackWrapper().getFluidHandler().map(IStorageFluidHandler.class::cast).orElse(EmptyFluidHandler.INSTANCE));
+				fluidHandlerCap = LazyOptional.of(() -> getBackpackWrapper().getFluidHandler().orElse(EmptyFluidHandler.INSTANCE));
 			}
 			return fluidHandlerCap.cast();
 		} else if (cap == EnergyStorage.SIDED) {
 			if (energyStorageCap == null) {
-				energyStorageCap = LazyOptional.of(() -> getBackpackWrapper().getEnergyStorage().map(EnergyStorage.class::cast).orElse(EnergyStorage.EMPTY));
+				energyStorageCap = LazyOptional.of(() -> getBackpackWrapper().getEnergyStorage().orElse(EnergyStorage.EMPTY));
 			}
 			return energyStorageCap.cast();
 		}

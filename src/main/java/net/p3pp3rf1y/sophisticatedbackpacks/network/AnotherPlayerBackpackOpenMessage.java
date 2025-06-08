@@ -15,7 +15,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
 import net.p3pp3rf1y.sophisticatedcore.settings.main.MainSettingsCategory;
-import net.p3pp3rf1y.sophisticatedcore.util.MenuProviderHelper;
 
 public class AnotherPlayerBackpackOpenMessage extends SimplePacketBase {
 	private final int anotherPlayerId;

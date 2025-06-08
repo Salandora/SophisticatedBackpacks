@@ -50,7 +50,7 @@ public class BackpackSettingsHandler extends SettingsHandler {
 	}
 
 	@Override
-	public ISettingsCategory instantiateGlobalSettingsCategory(CompoundTag categoryNbt, Consumer<CompoundTag> saveNbt) {
+	public ISettingsCategory<?> instantiateGlobalSettingsCategory(CompoundTag categoryNbt, Consumer<CompoundTag> saveNbt) {
 		return new BackpackMainSettingsCategory(categoryNbt, saveNbt);
 	}
 
