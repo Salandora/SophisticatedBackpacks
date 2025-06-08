@@ -9,6 +9,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -50,13 +51,13 @@ public class UUIDDeduplicator {
 	}
 
 	private static boolean checkEntityBackpackIdMatchAndRemoveIfItDoes(IBackpackWrapper newBackpackWrapper, UUID newBackpackId, ItemEntity entity) {
-		return BackpackWrapperLookup.get(entity.getItem()).flatMap(IStorageWrapper::getContentsUuid).map(backpackId -> {
-			if (backpackId.equals(newBackpackId)) {
-				newBackpackWrapper.removeContentsUUIDTag();
-				newBackpackWrapper.onContentsNbtUpdated();
-				return true;
-			}
-			return false;
-		}).orElse(false);
+		return BackpackWrapperLookup.get(entity.getItem()).resolve().flatMap(IStorageWrapper::getContentsUuid).map(backpackId -> {
+					if (backpackId.equals(newBackpackId)) {
+						newBackpackWrapper.removeContentsUUIDTag();
+						newBackpackWrapper.onContentsNbtUpdated();
+						return true;
+					}
+					return false;
+				}).orElse(false);
 	}
 }

@@ -316,8 +316,8 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void removeContentsUuid(ItemStack stack) {
-		BackpackWrapperLookup.get(stack).flatMap(IStorageWrapper::getContentsUuid)
-				.ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid));
+		BackpackWrapperLookup.get(stack)
+				.ifPresent(backpackWrapper -> backpackWrapper.getContentsUuid().ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid)));
 	}
 
 	public static void onLivingUpdate(LivingEntity entity) {

@@ -1,13 +1,13 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import io.github.fabricators_of_create.porting_lib.transfer.item.ItemItemStorages;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
 import team.reborn.energy.api.EnergyStorage;
 
 import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.world.item.ItemStack;
-import net.p3pp3rf1y.porting_lib.base.util.LazyOptional;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
@@ -31,8 +31,8 @@ public class BackpackWrapperLookup {
 		ITEM.registerForItems(BackpackItem.initCapabilities(), BACKPACKS);
 
 		ItemItemStorages.ITEM.registerForItems((stack, ctx) -> get(stack).map(IStorageWrapper::getInventoryForInputOutput).orElse(null), BACKPACKS);
-		FluidStorage.ITEM.registerForItems((stack, ctx) -> get(stack).flatMap(IStorageWrapper::getFluidHandler).orElse(null), BACKPACKS);
-		EnergyStorage.ITEM.registerForItems((stack, ctx) -> get(stack).flatMap(IStorageWrapper::getEnergyStorage).orElse(null), BACKPACKS);
+		FluidStorage.ITEM.registerForItems((stack, ctx) -> get(stack).resolve().flatMap(IStorageWrapper::getFluidHandler).orElse(null), BACKPACKS);
+		EnergyStorage.ITEM.registerForItems((stack, ctx) ->get(stack).resolve().flatMap(IStorageWrapper::getEnergyStorage).orElse(null), BACKPACKS);
 
         ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(ItemStorage.SIDED, direction).getValueUnsafer(), ModBlocks.BACKPACK_TILE_TYPE);
         FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(FluidStorage.SIDED, direction).getValueUnsafer(), ModBlocks.BACKPACK_TILE_TYPE);
