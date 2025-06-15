@@ -17,6 +17,7 @@ import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.controller.ControllerBlockEntityBase;
 import net.p3pp3rf1y.sophisticatedcore.controller.IControllableStorage;
+import net.p3pp3rf1y.sophisticatedcore.extensions.block.entity.SophisticatedBlockEntity;
 import net.p3pp3rf1y.sophisticatedcore.fluid.EmptyFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.CachedFailedInsertInventoryHandler;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
@@ -33,7 +34,7 @@ import java.util.Optional;
 import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.*;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.BACKPACK_TILE_TYPE;
 
-public class BackpackBlockEntity extends BlockEntity implements IControllableStorage {
+public class BackpackBlockEntity extends BlockEntity implements IControllableStorage, SophisticatedBlockEntity {
 	@Nullable
 	private BlockPos controllerPos = null;
 	private IBackpackWrapper backpackWrapper = IBackpackWrapper.Noop.INSTANCE;
@@ -87,7 +88,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 
 	@Override
 	public void sophisticatedCore_onLoad() {
-		super.sophisticatedCore_onLoad();
+		// super.sophisticatedCore_onLoad();
 		registerWithControllerOnLoad();
 	}
 
@@ -264,7 +265,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 
 	@Override
 	public void sophisticatedCore_onChunkUnloaded() {
-		super.sophisticatedCore_onChunkUnloaded();
+		// super.sophisticatedCore_onChunkUnloaded();
 		chunkBeingUnloaded = true;
 	}
 

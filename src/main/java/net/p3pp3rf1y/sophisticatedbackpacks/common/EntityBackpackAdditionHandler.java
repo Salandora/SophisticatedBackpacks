@@ -16,7 +16,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -322,7 +321,7 @@ public class EntityBackpackAdditionHandler {
 			return false;
 		}
 		float lootingChanceMultiplier = dropChanceMultiplier.getOrDefault(backpack.getItem(), 1F);
-		int lootingLevel = player.level().registryAccess().registry(Registries.ENCHANTMENT).map(registry -> player.getMainHandItem().getEnchantmentLevel(registry.getHolderOrThrow(Enchantments.LOOTING))).orElse(0);
+		int lootingLevel = player.level().registryAccess().registry(Registries.ENCHANTMENT).map(registry -> player.getMainHandItem().sophisticatedCore_getEnchantmentLevel(registry.getHolderOrThrow(Enchantments.LOOTING))).orElse(0);
 		return mob.level().random.nextFloat() < (additionsConfig.backpackDropChance.get() + lootingLevel * additionsConfig.lootingChanceIncreasePerLevel.get()) * lootingChanceMultiplier;
 	}
 

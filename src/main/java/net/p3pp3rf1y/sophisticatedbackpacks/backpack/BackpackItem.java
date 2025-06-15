@@ -279,7 +279,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	@Override
-	public boolean onDroppedByPlayer(ItemStack item, Player player) {
+	public boolean sophisticatedCore_onDroppedByPlayer(ItemStack item, Player player) {
 		return !(player.containerMenu instanceof BackpackContainer backpackContainer && backpackContainer.getVisibleStorageItem().map(visibleStorageItem -> visibleStorageItem == item).orElse(false));
 	}
 
@@ -290,12 +290,12 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	@Override
-	public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+	public boolean sophisticatedCore_shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
 		return slotChanged;
 	}
 
 	@Override
-	public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+	public boolean sophisticatedCore_makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
 		return stack.getItem() == ModItems.GOLD_BACKPACK.get();
 	}
 
