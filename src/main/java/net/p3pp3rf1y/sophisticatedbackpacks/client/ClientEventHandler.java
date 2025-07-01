@@ -1,7 +1,5 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
-import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
-import io.github.fabricators_of_create.porting_lib.models.geometry.RegisterGeometryLoadersCallback;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
@@ -34,13 +32,15 @@ import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockPickPayload;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestPlayerSettingsPayload;
+import net.p3pp3rf1y.sophisticatedcore.api.client.model.loading.IGeometryLoader;
+import net.p3pp3rf1y.sophisticatedcore.client.model.RegisterGeometryLoadersCallback;
 import net.p3pp3rf1y.sophisticatedcore.event.client.ClientLifecycleEvents;
 import net.p3pp3rf1y.sophisticatedcore.network.PacketDistributor;
 
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.*;
+import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks.BACKPACKS;
 import static net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems.EVERLASTING_BACKPACK_ITEM_ENTITY;
 
 public class ClientEventHandler {
@@ -51,7 +51,7 @@ public class ClientEventHandler {
 	public static final ModelLayerLocation BACKPACK_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(SophisticatedBackpacks.MOD_ID, BACKPACK_REG_NAME), "main");
 
 	public static void registerHandlers() {
-		RegisterGeometryLoadersCallback.EVENT.register(ClientEventHandler::onModelRegistry);
+		RegisterGeometryLoadersCallback.register(ClientEventHandler::onModelRegistry);
 		registerLayer();
 		registerEntityRenderers();
 		registerReloadListener();
