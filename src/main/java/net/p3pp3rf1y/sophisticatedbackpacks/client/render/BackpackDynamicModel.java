@@ -1,5 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
+import com.github.salandora.sophisticatedlibrary.model.loading.IGeometryBakingContext;
+import com.github.salandora.sophisticatedlibrary.model.loading.IGeometryLoader;
+import com.github.salandora.sophisticatedlibrary.model.loading.IUnbakedGeometry;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
@@ -26,9 +29,6 @@ import net.minecraft.world.phys.AABB;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedcore.api.client.model.loading.IGeometryBakingContext;
-import net.p3pp3rf1y.sophisticatedcore.api.client.model.loading.IGeometryLoader;
-import net.p3pp3rf1y.sophisticatedcore.api.client.model.loading.IUnbakedGeometry;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedBatteryUpgrade;

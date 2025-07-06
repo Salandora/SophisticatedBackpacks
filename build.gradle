@@ -227,6 +227,13 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
+    if (findProject(":SophisticatedLibrary") != null) {
+        implementation project(path: ":SophisticatedLibrary", configuration: "namedElements")
+        include(project(path: ":SophisticatedLibrary"))
+    } else {
+        modImplementation(include("com.github.salandora.sophisticatedlibrary:${minecraft_version}-${sophisticatedlibrary_version}"))
+    }
+
     if (findProject(":SophisticatedCore") != null) {
         implementation project(path: ":SophisticatedCore", configuration: "namedElements")
         var core = project(":SophisticatedCore")
