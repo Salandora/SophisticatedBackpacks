@@ -1,9 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.chipped;
 
+import com.github.salandora.sophisticatedlibrary.util.DeferredHolder;
 import earth.terrarium.chipped.common.compat.jei.WorkbenchCategory;
 import earth.terrarium.chipped.common.registry.ModBlocks;
 import earth.terrarium.chipped.common.registry.ModRecipeTypes;
-import io.github.fabricators_of_create.porting_lib.util.DeferredHolder;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.fabricmc.api.EnvType;

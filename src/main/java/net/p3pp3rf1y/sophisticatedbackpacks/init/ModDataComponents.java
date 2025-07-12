@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
+import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
 import com.mojang.serialization.Codec;
-import io.github.fabricators_of_create.porting_lib.util.DeferredRegister;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;

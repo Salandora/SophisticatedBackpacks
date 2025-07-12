@@ -2,9 +2,9 @@ package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
 import com.github.salandora.sophisticatedlibrary.loot.IGlobalLootModifier;
 import com.github.salandora.sophisticatedlibrary.loot.SophisticatedLoot;
+import com.github.salandora.sophisticatedlibrary.util.DeferredHolder;
+import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
 import com.mojang.serialization.MapCodec;
-import io.github.fabricators_of_create.porting_lib.util.DeferredHolder;
-import io.github.fabricators_of_create.porting_lib.util.DeferredRegister;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;

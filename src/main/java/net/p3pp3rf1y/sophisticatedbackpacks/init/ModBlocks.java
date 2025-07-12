@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
-import io.github.fabricators_of_create.porting_lib.util.DeferredRegister;
+import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
