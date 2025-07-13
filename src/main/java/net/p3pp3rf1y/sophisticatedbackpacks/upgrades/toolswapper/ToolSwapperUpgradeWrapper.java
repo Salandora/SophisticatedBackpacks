@@ -1,11 +1,11 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper;
 
+import com.github.salandora.sophisticatedlibrary.common.ItemAbilities;
+import com.github.salandora.sophisticatedlibrary.common.ItemAbility;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.AtomicDouble;
-import io.github.fabricators_of_create.porting_lib.tool.ItemAbilities;
-import io.github.fabricators_of_create.porting_lib.tool.ItemAbility;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static io.github.fabricators_of_create.porting_lib.tool.ItemAbilities.*;
+import static com.github.salandora.sophisticatedlibrary.common.ItemAbilities.*;
 
 public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpgradeWrapper, ToolSwapperUpgradeItem>
 		implements IBlockClickResponseUpgrade, IAttackEntityResponseUpgrade, IBlockToolSwapUpgrade, IEntityToolSwapUpgrade {
@@ -175,7 +175,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private static boolean canPerformAnyAction(ItemStack stack, Set<ItemAbility> toolActions) {
 		for (ItemAbility toolAction : toolActions) {
-			if (stack.canPerformAction(toolAction)) {
+			if (stack.sophisticatedLibrary$canPerformAction(toolAction)) {
 				return true;
 			}
 		}
@@ -188,7 +188,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		}
 
 		AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
-		if (!stack.isEmpty() && stack.canPerformAction(ItemAbilities.SWORD_SWEEP)) {
+		if (!stack.isEmpty() && stack.sophisticatedLibrary$canPerformAction(ItemAbilities.SWORD_SWEEP)) {
 			return attackDamage != null && attackDamage.getModifier(Item.BASE_ATTACK_DAMAGE_ID) != null;
 		}
 		return false;
@@ -229,12 +229,12 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		});
 
 		double damageValue = attribute.getValue();
-		if (stack.canPerformAction(ItemAbilities.AXE_DIG)) {
+		if (stack.sophisticatedLibrary$canPerformAction(ItemAbilities.AXE_DIG)) {
 			if (damageValue > bestAxeDamage.get()) {
 				bestAxe.set(stack);
 				bestAxeDamage.set(damageValue);
 			}
-		} else if ((SwordRegistry.isSword(stack) || stack.canPerformAction(ItemAbilities.SWORD_SWEEP)) && damageValue > bestSwordDamage.get()) {
+		} else if ((SwordRegistry.isSword(stack) || stack.sophisticatedLibrary$canPerformAction(ItemAbilities.SWORD_SWEEP)) && damageValue > bestSwordDamage.get()) {
 			bestSword.set(stack);
 			bestSwordDamage.set(damageValue);
 		}
@@ -385,7 +385,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private boolean itemWorksOnBlock(Level level, BlockPos pos, BlockState blockState, Player player, ItemStack stack) {
 		for (ItemAbility action : BLOCK_MODIFICATION_ACTIONS) {
-			if (stack.canPerformAction(action) && blockState.getToolModifiedState(
+			if (stack.sophisticatedLibrary$canPerformAction(action) && blockState.sophisticatedLibrary$getToolModifiedState(
 					new UseOnContext(level, player, InteractionHand.MAIN_HAND, stack, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true)), action, true) != null) {
 				return true;
 			}
