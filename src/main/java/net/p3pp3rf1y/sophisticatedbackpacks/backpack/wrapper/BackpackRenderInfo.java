@@ -20,11 +20,11 @@ public class BackpackRenderInfo extends RenderInfo {
 
 	@Override
 	protected void serializeRenderInfo(CompoundTag renderInfo) {
-		backpack.sophisticatedCore_set(ModCoreDataComponents.RENDER_INFO_TAG, CustomData.of(renderInfo));
+		backpack.sophisticatedLibrary_set(ModCoreDataComponents.RENDER_INFO_TAG, CustomData.of(renderInfo));
 	}
 
 	@Override
 	protected Optional<CompoundTag> getRenderInfoTag() {
-		return Optional.ofNullable(backpack.sophisticatedCore_get(ModCoreDataComponents.RENDER_INFO_TAG)).map(CustomData::copyTag);
+		return Optional.ofNullable(backpack.sophisticatedLibrary_get(ModCoreDataComponents.RENDER_INFO_TAG)).map(CustomData::copyTag);
 	}
 }

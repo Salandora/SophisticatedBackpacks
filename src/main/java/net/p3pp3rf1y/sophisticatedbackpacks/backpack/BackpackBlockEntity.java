@@ -1,6 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
-import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
+import com.github.salandora.sophisticatedlibrary.fluid.EmptyFluidHandler;
+import com.github.salandora.sophisticatedlibrary.fluid.IFluidHandler;
+import com.github.salandora.sophisticatedlibrary.transfer.SlottedStackStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -13,12 +15,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.controller.ControllerBlockEntityBase;
 import net.p3pp3rf1y.sophisticatedcore.controller.IControllableStorage;
 import net.p3pp3rf1y.sophisticatedcore.extensions.block.entity.SophisticatedBlockEntity;
-import net.p3pp3rf1y.sophisticatedcore.fluid.EmptyFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.CachedFailedInsertInventoryHandler;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
@@ -45,7 +45,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	@Nullable
 	private SlottedStackStorage externalItemHandler;
 	@Nullable
-	private IStorageFluidHandler externalFluidHandler;
+	private IFluidHandler externalFluidHandler;
 	@Nullable
 	private EnergyStorage externalEnergyStorage;
 
@@ -164,12 +164,12 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Nullable
-	public IStorageFluidHandler getExternalFluidHandler(@Nullable Direction direction) {
+	public IFluidHandler getExternalFluidHandler(@Nullable Direction direction) {
 		if (isBlockConnectionDisallowed(direction)) {
 			return null;
 		}
 		if (externalFluidHandler == null) {
-			externalFluidHandler = getBackpackWrapper().getFluidHandler().map(IStorageFluidHandler.class::cast).orElse(EmptyFluidHandler.INSTANCE);
+			externalFluidHandler = getBackpackWrapper().getFluidHandler().map(IFluidHandler.class::cast).orElse(EmptyFluidHandler.INSTANCE);
 		}
 		return externalFluidHandler;
 	}

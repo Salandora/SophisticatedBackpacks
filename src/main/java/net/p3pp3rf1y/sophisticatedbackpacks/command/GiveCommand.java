@@ -40,7 +40,7 @@ public class GiveCommand {
 			Item item = BuiltInRegistries.ITEM.get(alr.getBackpackItemRegistryName());
 			ItemStack backpack = new ItemStack(item);
 			if (!backpack.getHoverName().getString().equals(alr.getBackpackName())) {
-				backpack.sophisticatedCore_set(DataComponents.CUSTOM_NAME, Component.literal(alr.getBackpackName()));
+				backpack.sophisticatedLibrary_set(DataComponents.CUSTOM_NAME, Component.literal(alr.getBackpackName()));
 			}
 			IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(backpack);
 			backpackWrapper.setColors(alr.getClothColor(), alr.getTrimColor());

@@ -175,7 +175,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private static boolean canPerformAnyAction(ItemStack stack, Set<ItemAbility> toolActions) {
 		for (ItemAbility toolAction : toolActions) {
-			if (stack.sophisticatedLibrary$canPerformAction(toolAction)) {
+			if (stack.sophisticatedLibrary_canPerformAction(toolAction)) {
 				return true;
 			}
 		}
@@ -188,7 +188,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		}
 
 		AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
-		if (!stack.isEmpty() && stack.sophisticatedLibrary$canPerformAction(ItemAbilities.SWORD_SWEEP)) {
+		if (!stack.isEmpty() && stack.sophisticatedLibrary_canPerformAction(ItemAbilities.SWORD_SWEEP)) {
 			return attackDamage != null && attackDamage.getModifier(Item.BASE_ATTACK_DAMAGE_ID) != null;
 		}
 		return false;
@@ -229,12 +229,12 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		});
 
 		double damageValue = attribute.getValue();
-		if (stack.sophisticatedLibrary$canPerformAction(ItemAbilities.AXE_DIG)) {
+		if (stack.sophisticatedLibrary_canPerformAction(ItemAbilities.AXE_DIG)) {
 			if (damageValue > bestAxeDamage.get()) {
 				bestAxe.set(stack);
 				bestAxeDamage.set(damageValue);
 			}
-		} else if ((SwordRegistry.isSword(stack) || stack.sophisticatedLibrary$canPerformAction(ItemAbilities.SWORD_SWEEP)) && damageValue > bestSwordDamage.get()) {
+		} else if ((SwordRegistry.isSword(stack) || stack.sophisticatedLibrary_canPerformAction(ItemAbilities.SWORD_SWEEP)) && damageValue > bestSwordDamage.get()) {
 			bestSword.set(stack);
 			bestSwordDamage.set(damageValue);
 		}
@@ -268,20 +268,20 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	public boolean shouldSwapWeapon() {
-		return upgrade.sophisticatedCore_getOrDefault(ModDataComponents.SHOULD_SWAP_WEAPON, true);
+		return upgrade.sophisticatedLibrary_getOrDefault(ModDataComponents.SHOULD_SWAP_WEAPON, true);
 	}
 
 	public void setSwapWeapon(boolean shouldSwapWeapon) {
-		upgrade.sophisticatedCore_set(ModDataComponents.SHOULD_SWAP_WEAPON, shouldSwapWeapon);
+		upgrade.sophisticatedLibrary_set(ModDataComponents.SHOULD_SWAP_WEAPON, shouldSwapWeapon);
 		save();
 	}
 
 	public ToolSwapMode getToolSwapMode() {
-		return upgrade.sophisticatedCore_getOrDefault(ModDataComponents.TOOL_SWAP_MODE, ToolSwapMode.ANY);
+		return upgrade.sophisticatedLibrary_getOrDefault(ModDataComponents.TOOL_SWAP_MODE, ToolSwapMode.ANY);
 	}
 
 	public void setToolSwapMode(ToolSwapMode toolSwapMode) {
-		upgrade.sophisticatedCore_set(ModDataComponents.TOOL_SWAP_MODE, toolSwapMode);
+		upgrade.sophisticatedLibrary_set(ModDataComponents.TOOL_SWAP_MODE, toolSwapMode);
 		save();
 	}
 
@@ -385,7 +385,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private boolean itemWorksOnBlock(Level level, BlockPos pos, BlockState blockState, Player player, ItemStack stack) {
 		for (ItemAbility action : BLOCK_MODIFICATION_ACTIONS) {
-			if (stack.sophisticatedLibrary$canPerformAction(action) && blockState.sophisticatedLibrary$getToolModifiedState(
+			if (stack.sophisticatedLibrary_canPerformAction(action) && blockState.sophisticatedLibrary$getToolModifiedState(
 					new UseOnContext(level, player, InteractionHand.MAIN_HAND, stack, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true)), action, true) != null) {
 				return true;
 			}

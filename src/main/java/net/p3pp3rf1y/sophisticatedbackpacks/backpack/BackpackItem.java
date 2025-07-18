@@ -83,8 +83,8 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	public static void setColors(ItemStack backpackStack, int mainColor, int accentColor) {
-		backpackStack.sophisticatedCore_set(ModCoreDataComponents.MAIN_COLOR, mainColor);
-		backpackStack.sophisticatedCore_set(ModCoreDataComponents.ACCENT_COLOR, accentColor);
+		backpackStack.sophisticatedLibrary_set(ModCoreDataComponents.MAIN_COLOR, mainColor);
+		backpackStack.sophisticatedLibrary_set(ModCoreDataComponents.ACCENT_COLOR, accentColor);
 	}
 
 	@Override

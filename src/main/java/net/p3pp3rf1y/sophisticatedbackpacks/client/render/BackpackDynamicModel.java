@@ -1,12 +1,12 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
+import com.github.salandora.sophisticatedlibrary.fluid.FluidStack;
 import com.github.salandora.sophisticatedlibrary.model.loading.IGeometryBakingContext;
 import com.github.salandora.sophisticatedlibrary.model.loading.IGeometryLoader;
 import com.github.salandora.sophisticatedlibrary.model.loading.IUnbakedGeometry;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
-import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.impl.client.indigo.renderer.mesh.EncodingFormat;

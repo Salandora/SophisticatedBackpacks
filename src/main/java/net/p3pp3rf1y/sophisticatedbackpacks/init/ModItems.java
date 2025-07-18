@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
+import com.github.salandora.sophisticatedlibrary.items.EmptyItemHandler;
 import com.github.salandora.sophisticatedlibrary.loot.IGlobalLootModifier;
 import com.github.salandora.sophisticatedlibrary.loot.SophisticatedLoot;
 import com.github.salandora.sophisticatedlibrary.util.DeferredHolder;
@@ -115,7 +116,6 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.voiding.VoidUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeContainer;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.xppump.XpPumpUpgradeWrapper;
-import net.p3pp3rf1y.sophisticatedcore.util.EmptyItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.util.IMenuTypeExtension;
 import net.p3pp3rf1y.sophisticatedcore.util.ItemBase;
 import team.reborn.energy.api.EnergyStorage;

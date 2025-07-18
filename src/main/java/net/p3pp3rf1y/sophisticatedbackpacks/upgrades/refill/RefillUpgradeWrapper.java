@@ -1,7 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill;
 
+import com.github.salandora.sophisticatedlibrary.transfer.SlottedStackStorage;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -19,7 +22,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
-import net.p3pp3rf1y.sophisticatedcore.inventory.IInventoryHandlerHelper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogic;
@@ -55,7 +57,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	public RefillUpgradeWrapper(IStorageWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
 		super(backpackWrapper, upgrade, upgradeSaveHandler);
 		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), ModCoreDataComponents.FILTER_ATTRIBUTES);
-		targetSlots = new HashMap<>(upgrade.sophisticatedCore_getOrDefault(ModDataComponents.TARGET_SLOTS, new HashMap<>()));
+		targetSlots = new HashMap<>(upgrade.sophisticatedLibrary_getOrDefault(ModDataComponents.TARGET_SLOTS, new HashMap<>()));
 		if (upgradeItem.allowsTargetSlotSelection()) {
 			FilterLogic.ObservableFilterItemStackHandler filterHandler = filterLogic.getFilterHandler();
 			filterHandler.setOnSlotChange(s -> onFilterChange(filterHandler, s));
@@ -84,7 +86,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	}
 
 	private void saveTargetSlots() {
-		upgrade.sophisticatedCore_set(ModDataComponents.TARGET_SLOTS, ImmutableMap.copyOf(targetSlots));
+		upgrade.sophisticatedLibrary_set(ModDataComponents.TARGET_SLOTS, ImmutableMap.copyOf(targetSlots));
 		save();
 	}
 
@@ -107,7 +109,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		setCooldown(level, COOLDOWN);
 	}
 
-	private void tryRefillFilter(@Nonnull Entity entity, IInventoryHandlerHelper playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
+	private void tryRefillFilter(@Nonnull Entity entity, SlottedStackStorage playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
 		if (!(entity instanceof Player player)) {
 			return;
 		}
@@ -296,14 +298,14 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		}
 
 		private interface MissingCountGetter {
-			int getMissingCount(Player player, IInventoryHandlerHelper playerInventory, ItemStack filter);
+			int getMissingCount(Player player, SlottedStackStorage playerInventory, ItemStack filter);
 		}
 
 		private interface Filler {
-			ItemStack fill(Player player, IInventoryHandlerHelper playerInventory, ItemStack stackToAdd);
+			ItemStack fill(Player player, SlottedStackStorage playerInventory, ItemStack stackToAdd);
 		}
 
-		private static ItemStack refillAnywhereInInventory(IInventoryHandlerHelper playerInvHandler, ItemStack extracted) {
+		private static ItemStack refillAnywhereInInventory(SlottedStackStorage playerInvHandler, ItemStack extracted) {
 			AtomicReference<ItemStack> remainingStack = new AtomicReference<>(extracted);
 			InventoryHelper.iterate(playerInvHandler, (slot, stack) -> {
 				if (ItemStack.isSameItemSameComponents(stack, remainingStack.get())) {

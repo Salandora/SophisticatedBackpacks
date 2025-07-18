@@ -305,7 +305,7 @@ public class EntityBackpackAdditionHandler {
 					}
 				}
 			});
-			UUID backpackUuid = backpack.sophisticatedCore_remove(ModCoreDataComponents.STORAGE_UUID);
+			UUID backpackUuid = backpack.sophisticatedLibrary_remove(ModCoreDataComponents.STORAGE_UUID);
 			if (backpackUuid != null) {
 				BackpackStorage.get().removeBackpackContents(backpackUuid);
 			}
