@@ -1,13 +1,16 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.deposit;
 
+import com.github.salandora.sophisticatedlibrary.transfer.FabricStorageWrapper;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IItemHandlerInteractionUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
+import net.p3pp3rf1y.sophisticatedcore.inventory.FabricFilteredItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.FilteredItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IFilteredUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
@@ -38,8 +41,8 @@ public class DepositUpgradeWrapper extends UpgradeWrapperBase<DepositUpgradeWrap
 		}
 		AtomicInteger stacksAdded = new AtomicInteger(0);
 
-		InventoryHelper.transfer(storageWrapper.getInventoryForUpgradeProcessing(),
-				new FilteredItemHandler<>(itemHandler, Collections.singletonList(filterLogic), Collections.emptyList()),
+		InventoryHelper.transfer(FabricStorageWrapper.of(storageWrapper.getInventoryForUpgradeProcessing()),
+				new FabricFilteredItemHandler<>(itemHandler, Collections.singletonList(filterLogic), Collections.emptyList()),
 				s -> stacksAdded.incrementAndGet(), null);
 
 		int stacksDeposited = stacksAdded.get();

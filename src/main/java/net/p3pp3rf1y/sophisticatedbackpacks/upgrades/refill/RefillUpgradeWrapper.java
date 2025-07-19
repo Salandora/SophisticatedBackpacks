@@ -1,10 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill;
 
-import com.github.salandora.sophisticatedlibrary.transfer.SlottedStackStorage;
+import com.github.salandora.sophisticatedlibrary.transfer.IItemHandler;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -109,7 +107,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		setCooldown(level, COOLDOWN);
 	}
 
-	private void tryRefillFilter(@Nonnull Entity entity, SlottedStackStorage playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
+	private void tryRefillFilter(@Nonnull Entity entity, IItemHandler playerInvHandler, ItemStack filter, TargetSlot targetSlot) {
 		if (!(entity instanceof Player player)) {
 			return;
 		}
@@ -298,14 +296,14 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 		}
 
 		private interface MissingCountGetter {
-			int getMissingCount(Player player, SlottedStackStorage playerInventory, ItemStack filter);
+			int getMissingCount(Player player, IItemHandler playerInventory, ItemStack filter);
 		}
 
 		private interface Filler {
-			ItemStack fill(Player player, SlottedStackStorage playerInventory, ItemStack stackToAdd);
+			ItemStack fill(Player player, IItemHandler playerInventory, ItemStack stackToAdd);
 		}
 
-		private static ItemStack refillAnywhereInInventory(SlottedStackStorage playerInvHandler, ItemStack extracted) {
+		private static ItemStack refillAnywhereInInventory(IItemHandler playerInvHandler, ItemStack extracted) {
 			AtomicReference<ItemStack> remainingStack = new AtomicReference<>(extracted);
 			InventoryHelper.iterate(playerInvHandler, (slot, stack) -> {
 				if (ItemStack.isSameItemSameComponents(stack, remainingStack.get())) {

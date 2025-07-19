@@ -163,7 +163,7 @@ public class EntityBackpackAdditionHandler {
 			setLoot(monster, wrapper, difficulty, level);
 			if (playMusicDisc) {
 				wrapper.getInventoryHandler(); //just to assign uuid and real upgrade handler
-				if (wrapper.getUpgradeHandler().getSlotCount() > 0) {
+				if (wrapper.getUpgradeHandler().getSlots() > 0) {
 					monster.addTag(SPAWNED_WITH_JUKEBOX_UPGRADE);
 					addJukeboxUpgradeAndRandomDisc(level.getRandom(), wrapper, rnd);
 				}
@@ -179,12 +179,9 @@ public class EntityBackpackAdditionHandler {
 		Iterator<JukeboxUpgradeWrapper> it = w.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).iterator();
 		if (it.hasNext()) {
 			JukeboxUpgradeWrapper wrapper = it.next();
-			int numberOfDiscs = advancedJukebox ? random.nextInt(wrapper.getDiscInventory().getSlotCount() / 3) + 1 : 1;
+			int numberOfDiscs = advancedJukebox ? random.nextInt(wrapper.getDiscInventory().getSlots() / 3) + 1 : 1;
 			for (int i = 0; i < numberOfDiscs; i++) {
-				try (Transaction ctx = Transaction.openOuter()) {
-					wrapper.getDiscInventory().insertSlot(i, ItemVariant.of(getMusicDiscs().get(rnd.nextInt(getMusicDiscs().size()))), 1, ctx);
-					ctx.commit();
-				}
+				wrapper.getDiscInventory().insertItem(i, new ItemStack(getMusicDiscs().get(rnd.nextInt(getMusicDiscs().size())), 1), false);
 			}
 		}
 	}
@@ -288,21 +285,13 @@ public class EntityBackpackAdditionHandler {
 			backpackwrapper.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).forEach(wrapper -> {
 				InventoryHelper.iterate(wrapper.getDiscInventory(), (slot, stack) -> {
 					if (!stack.isEmpty()) {
-						try (Transaction ctx = Transaction.openOuter()) {
-							long extracted = wrapper.getDiscInventory().extractSlot(slot, ItemVariant.of(stack), stack.getCount(), ctx);
-							inventoryItems.add(stack.copyWithCount((int) extracted));
-							ctx.commit();
-						}
+						inventoryItems.add(wrapper.getDiscInventory().extractItem(slot, stack.getCount(), false));
 					}
 				});
 			});
 			InventoryHelper.iterate(backpackwrapper.getUpgradeHandler(), (slot, stack) -> {
 				if (!stack.isEmpty()) {
-					try (Transaction ctx = Transaction.openOuter()) {
-						long extracted = backpackwrapper.getUpgradeHandler().extractSlot(slot, ItemVariant.of(stack), stack.getCount(), ctx);
-						inventoryItems.add(stack.copyWithCount((int) extracted));
-						ctx.commit();
-					}
+					inventoryItems.add(backpackwrapper.getUpgradeHandler().extractItem(slot, stack.getCount(), false));
 				}
 			});
 			UUID backpackUuid = backpack.sophisticatedLibrary_remove(ModCoreDataComponents.STORAGE_UUID);

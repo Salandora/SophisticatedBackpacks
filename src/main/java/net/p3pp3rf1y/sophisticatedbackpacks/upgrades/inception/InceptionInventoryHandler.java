@@ -1,11 +1,12 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
+import com.github.salandora.sophisticatedlibrary.transfer.IItemHandlerModifiable;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.world.item.ItemStack;
-import com.github.salandora.sophisticatedlibrary.items.CombinedInvWrapper;
+import com.github.salandora.sophisticatedlibrary.items.wrapper.CombinedInvWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
@@ -19,7 +20,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
-	private CombinedInvWrapper<ITrackedContentsItemHandler> combinedInventories;
+	private CombinedInvWrapper combinedInventories;
 	private final ITrackedContentsItemHandler wrappedInventoryHandler;
 	private final InventoryOrder inventoryOrder;
 	private final SubBackpacksHandler subBackpacksHandler;
@@ -44,12 +45,12 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		if (inventoryOrder == InventoryOrder.INCEPTED_FIRST) {
 			handlers.add(wrappedInventoryHandler);
 		}
-		combinedInventories = new CombinedInvWrapper<>(handlers);
+		combinedInventories = new CombinedInvWrapper(handlers.toArray(new IItemHandlerModifiable[] {}));
 
 		baseIndex = new int[handlers.size()];
 		int index = 0;
 		for (int i = 0; i < handlers.size(); i++) {
-			index += handlers.get(i).getSlotCount();
+			index += handlers.get(i).getSlots();
 			baseIndex[i] = index;
 		}
 	}
@@ -60,8 +61,8 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 	}
 
 	@Override
-	public int getSlotCount() {
-		return combinedInventories.getSlotCount();
+	public int getSlots() {
+		return combinedInventories.getSlots();
 	}
 
 	@Nonnull
@@ -76,20 +77,10 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		return combinedInventories.insertItem(slot, stack, simulate);
 	}
 
-	@Override
-	public long insertSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext ctx) {
-		return combinedInventories.insertSlot(slot, resource, maxAmount, ctx);
-	}
-
 	@Nonnull
 	@Override
 	public ItemStack extractItem(int slot, int amount, boolean simulate) {
 		return combinedInventories.extractItem(slot, amount, simulate);
-	}
-
-	@Override
-	public long extractSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext ctx) {
-		return combinedInventories.extractSlot(slot, resource, maxAmount, ctx);
 	}
 
 	@Override
@@ -113,32 +104,6 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		}
 
 		return remainingStack;
-	}
-
-	@Override
-	public long insert(ItemVariant resource, long maxAmount, TransactionContext ctx) {
-		long remaining = maxAmount;
-		for (IItemHandlerSimpleInserter handler : handlers) {
-			remaining -= handler.insert(resource, remaining, ctx);
-			if (remaining <= 0) {
-				break;
-			}
-		}
-
-		return maxAmount - remaining;
-	}
-
-	@Override
-	public long extract(ItemVariant resource, long maxAmount, TransactionContext ctx) {
-		long remaining = maxAmount;
-		for (IItemHandlerSimpleInserter handler : handlers) {
-			remaining -= handler.extract(resource, remaining, ctx);
-			if (remaining <= 0) {
-				break;
-			}
-		}
-
-		return maxAmount - remaining;
 	}
 
 	@Override
@@ -194,15 +159,5 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 			return handlers.getFirst();
 		}
 		return handlers.get(index);
-	}
-
-	@Override
-	public SingleSlotStorage<ItemVariant> getSlot(int slot) {
-		return combinedInventories.getSlot(slot);
-	}
-
-	@Override
-	public Iterator<StorageView<ItemVariant>> iterator() {
-		return combinedInventories.iterator();
 	}
 }

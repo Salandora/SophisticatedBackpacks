@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
+import com.github.salandora.sophisticatedlibrary.transfer.FabricStorageWrapper;
 import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
@@ -45,7 +46,7 @@ public class ModBlocks {
     }
 
 	private static void registerCapabilities() {
-		ItemStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalItemHandler, BACKPACK_TILE_TYPE.get());
+		ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> FabricStorageWrapper.of(blockEntity.getExternalItemHandler(direction)), BACKPACK_TILE_TYPE.get());
 		FluidStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalFluidHandler, BACKPACK_TILE_TYPE.get());
 		EnergyStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalEnergyStorage, BACKPACK_TILE_TYPE.get());
 	}

@@ -2,7 +2,7 @@ package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
 import com.github.salandora.sophisticatedlibrary.fluid.EmptyFluidHandler;
 import com.github.salandora.sophisticatedlibrary.fluid.IFluidHandler;
-import com.github.salandora.sophisticatedlibrary.transfer.SlottedStackStorage;
+import com.github.salandora.sophisticatedlibrary.transfer.IItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -43,7 +43,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	private boolean chunkBeingUnloaded = false;
 
 	@Nullable
-	private SlottedStackStorage externalItemHandler;
+	private IItemHandler externalItemHandler;
 	@Nullable
 	private IFluidHandler externalFluidHandler;
 	@Nullable
@@ -153,7 +153,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Nullable
-	public SlottedStackStorage getExternalItemHandler(@Nullable Direction direction) {
+	public IItemHandler getExternalItemHandler(@Nullable Direction direction) {
 		if (isBlockConnectionDisallowed(direction)) {
 			return null;
 		}
