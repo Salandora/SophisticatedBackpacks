@@ -1,12 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
-import com.github.salandora.sophisticatedlibrary.transfer.IItemHandlerModifiable;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
-import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
-import net.minecraft.world.item.ItemStack;
 import com.github.salandora.sophisticatedlibrary.items.wrapper.CombinedInvWrapper;
+import com.github.salandora.sophisticatedlibrary.transfer.IItemHandlerModifiable;
+import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
@@ -14,7 +10,6 @@ import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -50,7 +45,7 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		baseIndex = new int[handlers.size()];
 		int index = 0;
 		for (int i = 0; i < handlers.size(); i++) {
-			index += handlers.get(i).getSlots();
+			index += handlers.get(i).getSlotCount();
 			baseIndex[i] = index;
 		}
 	}
@@ -61,8 +56,8 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 	}
 
 	@Override
-	public int getSlots() {
-		return combinedInventories.getSlots();
+	public int getSlotCount() {
+		return combinedInventories.getSlotCount();
 	}
 
 	@Nonnull

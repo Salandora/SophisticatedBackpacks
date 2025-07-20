@@ -1,9 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import com.google.common.primitives.Ints;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,7 +35,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
@@ -163,7 +161,7 @@ public class EntityBackpackAdditionHandler {
 			setLoot(monster, wrapper, difficulty, level);
 			if (playMusicDisc) {
 				wrapper.getInventoryHandler(); //just to assign uuid and real upgrade handler
-				if (wrapper.getUpgradeHandler().getSlots() > 0) {
+				if (wrapper.getUpgradeHandler().getSlotCount() > 0) {
 					monster.addTag(SPAWNED_WITH_JUKEBOX_UPGRADE);
 					addJukeboxUpgradeAndRandomDisc(level.getRandom(), wrapper, rnd);
 				}
@@ -179,7 +177,7 @@ public class EntityBackpackAdditionHandler {
 		Iterator<JukeboxUpgradeWrapper> it = w.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).iterator();
 		if (it.hasNext()) {
 			JukeboxUpgradeWrapper wrapper = it.next();
-			int numberOfDiscs = advancedJukebox ? random.nextInt(wrapper.getDiscInventory().getSlots() / 3) + 1 : 1;
+			int numberOfDiscs = advancedJukebox ? random.nextInt(wrapper.getDiscInventory().getSlotCount() / 3) + 1 : 1;
 			for (int i = 0; i < numberOfDiscs; i++) {
 				wrapper.getDiscInventory().insertItem(i, new ItemStack(getMusicDiscs().get(rnd.nextInt(getMusicDiscs().size())), 1), false);
 			}

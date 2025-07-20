@@ -9,7 +9,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.api.IItemHandlerInteractionUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.inventory.FabricFilteredItemHandler;
-import net.p3pp3rf1y.sophisticatedcore.inventory.FilteredItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.settings.memory.MemorySettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ContentsFilterLogic;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IContentsFilteredUpgrade;

@@ -71,7 +71,7 @@ public class SubBackpacksHandler {
 	private void refreshSubBackpacks() {
 		subBackpacks.clear();
 
-		for (int slot = 0; slot < inventoryHandler.getSlots(); slot++) {
+		for (int slot = 0; slot < inventoryHandler.getSlotCount(); slot++) {
 			ItemStack slotStack = inventoryHandler.getStackInSlot(slot);
 			if (slotStack.getItem() instanceof BackpackItem) {
 				subBackpacks.put(slot, BackpackWrapper.fromStack(slotStack));
