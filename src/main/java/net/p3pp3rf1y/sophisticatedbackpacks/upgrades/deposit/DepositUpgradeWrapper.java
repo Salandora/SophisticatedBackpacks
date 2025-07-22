@@ -1,6 +1,5 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.deposit;
 
-import com.github.salandora.sophisticatedlibrary.transfer.FabricStorageWrapper;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.network.chat.Component;
@@ -39,8 +38,8 @@ public class DepositUpgradeWrapper extends UpgradeWrapperBase<DepositUpgradeWrap
 		}
 		AtomicInteger stacksAdded = new AtomicInteger(0);
 
-		InventoryHelper.transfer(FabricStorageWrapper.of(storageWrapper.getInventoryForUpgradeProcessing()),
-				new FabricFilteredItemHandler<>(itemHandler, Collections.singletonList(filterLogic), Collections.emptyList()),
+		InventoryHelper.transfer(storageWrapper.getInventoryForUpgradeProcessing(),
+				new FabricFilteredItemHandler(itemHandler, Collections.singletonList(filterLogic), Collections.emptyList()),
 				s -> stacksAdded.incrementAndGet(), null);
 
 		int stacksDeposited = stacksAdded.get();

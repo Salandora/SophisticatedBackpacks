@@ -3,7 +3,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.init;
 import com.github.salandora.sophisticatedlibrary.items.EmptyItemHandler;
 import com.github.salandora.sophisticatedlibrary.loot.IGlobalLootModifier;
 import com.github.salandora.sophisticatedlibrary.loot.SophisticatedLoot;
-import com.github.salandora.sophisticatedlibrary.transfer.FabricStorageWrapper;
 import com.github.salandora.sophisticatedlibrary.util.DeferredHolder;
 import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
 import com.mojang.serialization.MapCodec;
@@ -396,7 +395,7 @@ public class ModItems {
 		var backpacks = ModItems.BACKPACKS.stream().map(Supplier::get).toArray(BackpackItem[]::new);
 		ItemStorage.ITEM.registerForItems((stack, ctx) -> {
 					IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(stack);
-					return FabricStorageWrapper.of(backpackWrapper.getContentsUuid().isEmpty() ? EmptyItemHandler.INSTANCE : backpackWrapper.getInventoryForInputOutput());
+					return backpackWrapper.getContentsUuid().isEmpty() ? EmptyItemHandler.INSTANCE : backpackWrapper.getInventoryForInputOutput();
 				}, backpacks);
 		FluidStorage.ITEM.registerForItems((stack, ctx) -> {
 					if (Boolean.FALSE.equals(Config.SERVER.itemFluidHandlerEnabled.get())) {

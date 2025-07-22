@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
-import com.github.salandora.sophisticatedlibrary.items.wrapper.CombinedInvWrapper;
+import com.github.salandora.sophisticatedlibrary.transfer.wrapper.CombinedInvWrapper;
 import com.github.salandora.sophisticatedlibrary.transfer.IItemHandlerModifiable;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;

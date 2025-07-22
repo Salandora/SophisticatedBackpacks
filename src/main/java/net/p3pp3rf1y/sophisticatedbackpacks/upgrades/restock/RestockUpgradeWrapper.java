@@ -40,7 +40,7 @@ public class RestockUpgradeWrapper extends UpgradeWrapperBase<RestockUpgradeWrap
 		AtomicInteger stacksAdded = new AtomicInteger(0);
 
 		InventoryHelper.transfer(itemHandler,
-				new FabricFilteredItemHandler<>(storageWrapper.getInventoryForUpgradeProcessing(), Collections.singletonList(filterLogic), Collections.emptyList()),
+				new FabricFilteredItemHandler(storageWrapper.getInventoryForUpgradeProcessing(), Collections.singletonList(filterLogic), Collections.emptyList()),
 				s -> stacksAdded.incrementAndGet(), null);
 
 		int stacksRestocked = stacksAdded.get();

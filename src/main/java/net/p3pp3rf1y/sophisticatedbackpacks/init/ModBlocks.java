@@ -1,17 +1,16 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
-import com.github.salandora.sophisticatedlibrary.transfer.FabricStorageWrapper;
 import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import team.reborn.energy.api.EnergyStorage;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlockEntity;
+import team.reborn.energy.api.EnergyStorage;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -46,7 +45,7 @@ public class ModBlocks {
     }
 
 	private static void registerCapabilities() {
-		ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> FabricStorageWrapper.of(blockEntity.getExternalItemHandler(direction)), BACKPACK_TILE_TYPE.get());
+		ItemStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalItemHandler, BACKPACK_TILE_TYPE.get());
 		FluidStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalFluidHandler, BACKPACK_TILE_TYPE.get());
 		EnergyStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalEnergyStorage, BACKPACK_TILE_TYPE.get());
 	}
