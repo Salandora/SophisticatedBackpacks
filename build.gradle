@@ -437,10 +437,10 @@ tasks.register('generateChangelog') {
         }
 
         // Get the latest commit hash
-        def latestCommitHash = "git rev-parse HEAD".execute().text.trim()
+        def latestCommitHash = "git rev-parse HEAD".execute(null, project.projectDir).text.trim()
 
         // Check if the latest commit is a merge commit
-        def parentCommits = "git rev-list --parents -n 1 ${latestCommitHash}".execute().text.split()
+        def parentCommits = "git rev-list --parents -n 1 ${latestCommitHash}".execute(null, project.projectDir).text.split()
         logger.info("Parent commits: ${parentCommits}")
 
         def commitMessages = []
@@ -450,11 +450,11 @@ tasks.register('generateChangelog') {
             def gitLogCommand = [
                     "bash", "-c", "git log --pretty=format:%B ${firstParent}..${secondParent}"
             ]
-            commitMessages = gitLogCommand.execute().text.split('\n\n')  // Split by two newlines for each commit
+            commitMessages = gitLogCommand.execute(null, project.projectDir).text.split('\n\n')  // Split by two newlines for each commit
             logger.info("Merge commit, ran git log command: ${gitLogCommand.join(' ')} and got ${commitMessages}")
         } else {
             // Single commit log
-            commitMessages = "git log -1 --pretty=%B".execute().text.split('\n\n')
+            commitMessages = "git log -1 --pretty=%B".execute(null, project.projectDir).text.split('\n\n')
             // Split by two newlines for each commit
             logger.info("Single commit, ran git log command: git log -1 --pretty=%B and got ${commitMessages}");
         }
@@ -499,24 +499,23 @@ tasks.register('generateChangelog') {
         if (generals) {
             generals.each { general -> changelog.append("- ${formatMultilineMessage(general)}\n") }
         }
-        changelog.append("\n")
 
         if (features) {
+            changelog.append("\n")
             changelog.append("### Features\n")
             features.each { feature -> changelog.append("- ${formatMultilineMessage(feature)}\n") }
-            changelog.append("\n")
         }
 
         if (fixes) {
+            changelog.append("\n")
             changelog.append("### Fixes\n")
             fixes.each { fix -> changelog.append("- ${formatMultilineMessage(fix)}\n") }
-            changelog.append("\n")
         }
 
         if (compatibility) {
+            changelog.append("\n")
             changelog.append("### Compatibility\n")
             compatibility.each { comp -> changelog.append("- ${formatMultilineMessage(comp)}\n") }
-            changelog.append("\n")
         }
 
         if (mergedFeatures || mergedFixes) {
@@ -524,15 +523,15 @@ tasks.register('generateChangelog') {
             changelog.append("## Merged from upstream\n")
 
             if (mergedFeatures) {
+                changelog.append("\n")
                 changelog.append("### Features\n")
                 mergedFeatures.each { feature -> changelog.append("- ${formatMultilineMessage(feature)}\n") }
-                changelog.append("\n")
             }
 
             if (mergedFixes) {
+                changelog.append("\n")
                 changelog.append("### Fixes\n")
                 mergedFixes.each { fix -> changelog.append("- ${formatMultilineMessage(fix)}\n") }
-                changelog.append("\n")
             }
         }
 
