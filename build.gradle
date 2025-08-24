@@ -23,7 +23,7 @@ apply from: getProject().file('gradle/package-info.gradle')
 idea {
     module {
         downloadJavadoc = true
-        downloadSources = true
+        // downloadSources = true
     }
 }
 
