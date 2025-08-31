@@ -229,27 +229,14 @@ dependencies {
 
     if (findProject(":SophisticatedLibrary") != null) {
         implementation project(path: ":SophisticatedLibrary", configuration: "namedElements")
-        include(project(path: ":SophisticatedLibrary"))
     } else {
         modImplementation(include("com.github.salandora.sophisticatedlibrary:${minecraft_version}-${sophisticatedlibrary_version}"))
     }
 
     if (findProject(":SophisticatedCore") != null) {
         implementation project(path: ":SophisticatedCore", configuration: "namedElements")
-        var core = project(":SophisticatedCore")
-        if (core.porting_lib_modules != "none") {
-            for (def module in core.porting_lib_modules.split(',')) {
-                modApi("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$core.porting_lib_version+$minecraft_version")
-            }
-        }
     } else {
         modImplementation("sophisticatedcore:sophisticatedcore:${sc_version}")
-    }
-
-    if (porting_lib_modules != "none") {
-        for (def module in porting_lib_modules.split(',')) {
-            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$porting_lib_version+$minecraft_version"))
-        }
     }
 
     // EMI
@@ -359,8 +346,7 @@ processResources {
             minecraft_version   : project.minecraft_version,
             loader_version      : project.loader_version,
             fabric_version      : project.fabric_version,
-            sc_version          : mavenVersionToFabric(project.sc_version),
-            porting_lib_version : project.porting_lib_version
+            sc_version          : mavenVersionToFabric(project.sc_version)
     ]
 
     inputs.properties replaceProperties
