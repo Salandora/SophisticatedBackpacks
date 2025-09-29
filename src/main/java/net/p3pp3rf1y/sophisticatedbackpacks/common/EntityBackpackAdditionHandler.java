@@ -15,6 +15,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -331,14 +332,14 @@ public class EntityBackpackAdditionHandler {
 		BackpackWrapper.fromStack(stack).getContentsUuid().ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid));
 	}
 
-	public static void onLivingUpdate(LivingEntity livingEntity) {
-		if (!livingEntity.getTags().contains(SPAWNED_WITH_JUKEBOX_UPGRADE)) {
+	public static void onLivingUpdate(Entity entity) {
+		if (!(entity instanceof LivingEntity livingEntity) || !entity.getTags().contains(SPAWNED_WITH_JUKEBOX_UPGRADE)) {
 			return;
 		}
 		IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(livingEntity.getItemBySlot(EquipmentSlot.CHEST));
 		backpackWrapper.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).forEach(wrapper -> {
 			if (wrapper.isPlaying()) {
-				wrapper.tick(livingEntity, livingEntity.level(), livingEntity.blockPosition());
+				wrapper.tick(livingEntity, entity.level(), entity.blockPosition());
 			} else {
 				wrapper.play(livingEntity);
 			}

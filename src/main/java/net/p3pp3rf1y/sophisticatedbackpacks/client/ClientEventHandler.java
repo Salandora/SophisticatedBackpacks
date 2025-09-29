@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
+import com.github.salandora.sophisticatedlibrary.event.api.client.ClientLifecycleEvents;
 import com.github.salandora.sophisticatedlibrary.model.loading.IGeometryLoader;
 import com.github.salandora.sophisticatedlibrary.model.loading.RegisterGeometryLoadersCallback;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -34,7 +35,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockPickPayload;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestPlayerSettingsPayload;
-import net.p3pp3rf1y.sophisticatedcore.event.client.ClientLifecycleEvents;
 import net.p3pp3rf1y.sophisticatedcore.network.PacketDistributor;
 
 import java.util.Map;

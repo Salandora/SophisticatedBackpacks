@@ -385,7 +385,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private boolean itemWorksOnBlock(Level level, BlockPos pos, BlockState blockState, Player player, ItemStack stack) {
 		for (ItemAbility action : BLOCK_MODIFICATION_ACTIONS) {
-			if (stack.sophisticatedLibrary_canPerformAction(action) && blockState.sophisticatedLibrary$getToolModifiedState(
+			if (stack.sophisticatedLibrary_canPerformAction(action) && blockState.sophisticatedLibrary_getToolModifiedState(
 					new UseOnContext(level, player, InteractionHand.MAIN_HAND, stack, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true)), action, true) != null) {
 				return true;
 			}

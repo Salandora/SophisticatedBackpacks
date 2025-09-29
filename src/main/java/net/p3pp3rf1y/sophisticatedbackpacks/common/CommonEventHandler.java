@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
+import com.github.salandora.sophisticatedlibrary.event.api.common.*;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -50,10 +51,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenPay
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.compat.CompatRegistry;
-import net.p3pp3rf1y.sophisticatedcore.event.common.EntityEvents;
-import net.p3pp3rf1y.sophisticatedcore.event.common.ItemEntityEvents;
-import net.p3pp3rf1y.sophisticatedcore.event.common.LivingEntityEvents;
-import net.p3pp3rf1y.sophisticatedcore.event.common.MobSpawnEvents;
 import net.p3pp3rf1y.sophisticatedcore.network.PacketDistributor;
 import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsPayload;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
@@ -84,7 +81,7 @@ public class CommonEventHandler {
 		EntityTrackingEvents.STOP_TRACKING.register(this::onEntityLeaveWorld);
 		AttackBlockCallback.EVENT.register(this::onBlockClick);
 		AttackEntityCallback.EVENT.register(this::onAttackEntity);
-		LivingEntityEvents.TICK.register(EntityBackpackAdditionHandler::onLivingUpdate);
+		EntityTickEvents.POST.register(EntityBackpackAdditionHandler::onLivingUpdate);
 		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(this::onPlayerChangedDimension);
 		ServerPlayerEvents.AFTER_RESPAWN.register(this::onPlayerRespawn);
 		ServerTickEvents.END_WORLD_TICK.register(this::onWorldTick);
