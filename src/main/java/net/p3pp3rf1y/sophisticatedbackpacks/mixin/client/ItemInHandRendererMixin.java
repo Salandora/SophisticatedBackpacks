@@ -35,7 +35,7 @@ public class ItemInHandRendererMixin {
 			changed = slot != slotMainHand;
 			slotMainHand = slot;
 		}
-		return from.getItem().sophisticatedCore_shouldCauseReequipAnimation(from, to, changed);
+		return from.getItem().sophisticatedLibrary_shouldCauseReequipAnimation(from, to, changed);
 	}
 
 	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F"))

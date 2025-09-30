@@ -18,7 +18,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.controller.ControllerBlockEntityBase;
 import net.p3pp3rf1y.sophisticatedcore.controller.IControllableStorage;
-import net.p3pp3rf1y.sophisticatedcore.extensions.block.entity.SophisticatedBlockEntity;
+import com.github.salandora.sophisticatedlibrary.common.extensions.block.entity.SophisticatedBlockEntity;
 import net.p3pp3rf1y.sophisticatedcore.inventory.CachedFailedInsertInventoryHandler;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
@@ -87,7 +87,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void sophisticatedCore_onLoad() {
+	public void sophisticatedLibrary_onLoad() {
 		// super.sophisticatedCore_onLoad();
 		registerWithControllerOnLoad();
 	}
@@ -142,7 +142,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	private void invalidateHandlers() {
-		sophisticatedCore_invalidateCapabilities();
+		sophisticatedLibrary_invalidateCapabilities();
 		externalItemHandler = null;
 		externalFluidHandler = null;
 		externalEnergyStorage = null;
@@ -264,7 +264,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void sophisticatedCore_onChunkUnloaded() {
+	public void sophisticatedLibrary_onChunkUnloaded() {
 		// super.sophisticatedCore_onChunkUnloaded();
 		chunkBeingUnloaded = true;
 	}

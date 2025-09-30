@@ -84,7 +84,7 @@ public class SmithingUpgradeTab extends UpgradeSettingsTab<SmithingUpgradeContai
 	}
 
 	private void renderSlotBg(GuiGraphics guiGraphics, Slot slot) {
-		GuiHelper.renderSlotsBackground(guiGraphics, slot.x + screen.sophisticatedCore_getGuiLeft() - 1, slot.y + screen.sophisticatedCore_getGuiTop() - 1, 1, 1);
+		GuiHelper.renderSlotsBackground(guiGraphics, slot.x + screen.sophisticatedLibrary_getGuiLeft() - 1, slot.y + screen.sophisticatedLibrary_getGuiTop() - 1, 1, 1);
 	}
 
 	@Override
@@ -102,9 +102,9 @@ public class SmithingUpgradeTab extends UpgradeSettingsTab<SmithingUpgradeContai
 		}
 
 		Slot resultSlot = getContainer().getResultSlot();
-		int inputSlotsY = resultSlot.y + screen.sophisticatedCore_getGuiTop();
-		int additionalSlotX = getContainer().getAdditionalSlot().x + screen.sophisticatedCore_getGuiLeft();
-		int resultSlotX = resultSlot.x + screen.sophisticatedCore_getGuiLeft();
+		int inputSlotsY = resultSlot.y + screen.sophisticatedLibrary_getGuiTop();
+		int additionalSlotX = getContainer().getAdditionalSlot().x + screen.sophisticatedLibrary_getGuiLeft();
+		int resultSlotX = resultSlot.x + screen.sophisticatedLibrary_getGuiLeft();
 
 		int arrowX = getArrowX(additionalSlotX, resultSlotX);
 		int arrowY = getArrowY(inputSlotsY);
@@ -143,31 +143,31 @@ public class SmithingUpgradeTab extends UpgradeSettingsTab<SmithingUpgradeContai
 	@Override
 	protected void moveSlotsToTab() {
 		Slot templateSlot = getContainer().getTemplateSlot();
-		templateSlot.x = x - screen.sophisticatedCore_getGuiLeft() + 4;
-		templateSlot.y = y - screen.sophisticatedCore_getGuiTop() + 1 + 24;
+		templateSlot.x = x - screen.sophisticatedLibrary_getGuiLeft() + 4;
+		templateSlot.y = y - screen.sophisticatedLibrary_getGuiTop() + 1 + 24;
 
 		Slot baseSlot = getContainer().getBaseSlot();
 		baseSlot.x = templateSlot.x + 18;
-		baseSlot.y = y - screen.sophisticatedCore_getGuiTop() + 1 + 24;
+		baseSlot.y = y - screen.sophisticatedLibrary_getGuiTop() + 1 + 24;
 
 		Slot additionalSlot = getContainer().getAdditionalSlot();
 		additionalSlot.x = baseSlot.x + 18;
-		additionalSlot.y = y - screen.sophisticatedCore_getGuiTop() + 1 + 24;
+		additionalSlot.y = y - screen.sophisticatedLibrary_getGuiTop() + 1 + 24;
 
 		Slot resultSlot = getContainer().getResultSlot();
-		resultSlot.x = x - screen.sophisticatedCore_getGuiLeft() + getWidth() - 2 - 3 - 18;
-		resultSlot.y = y - screen.sophisticatedCore_getGuiTop() + 1 + 24;
+		resultSlot.x = x - screen.sophisticatedLibrary_getGuiLeft() + getWidth() - 2 - 3 - 18;
+		resultSlot.y = y - screen.sophisticatedLibrary_getGuiTop() + 1 + 24;
 	}
 
 	private boolean isHoveringRedCross(int mouseX, int mouseY) {
 		Slot additionalSlot = getContainer().getAdditionalSlot();
-		int arrowX = getArrowX(additionalSlot.x + screen.sophisticatedCore_getGuiLeft(), getContainer().getResultSlot().x + screen.sophisticatedCore_getGuiLeft());
-		int arrowY = getArrowY(additionalSlot.y + screen.sophisticatedCore_getGuiTop());
+		int arrowX = getArrowX(additionalSlot.x + screen.sophisticatedLibrary_getGuiLeft(), getContainer().getResultSlot().x + screen.sophisticatedLibrary_getGuiLeft());
+		int arrowY = getArrowY(additionalSlot.y + screen.sophisticatedLibrary_getGuiTop());
 		return mouseX >= arrowX && mouseX < arrowX + RED_CROSS.getWidth() && mouseY >= arrowY && mouseY < arrowY + RED_CROSS.getHeight();
 	}
 
 	private boolean isHoveringEmptySlot(Slot slot, int mouseX, int mouseY) {
-		return mouseX >= slot.x + screen.sophisticatedCore_getGuiLeft() && mouseX < slot.x + screen.sophisticatedCore_getGuiLeft() + 16 && mouseY >= slot.y + screen.sophisticatedCore_getGuiTop() && mouseY < slot.y + screen.sophisticatedCore_getGuiTop() + 16 && slot.getItem().isEmpty();
+		return mouseX >= slot.x + screen.sophisticatedLibrary_getGuiLeft() && mouseX < slot.x + screen.sophisticatedLibrary_getGuiLeft() + 16 && mouseY >= slot.y + screen.sophisticatedLibrary_getGuiTop() && mouseY < slot.y + screen.sophisticatedLibrary_getGuiTop() + 16 && slot.getItem().isEmpty();
 	}
 
 	private void renderOnboardingTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {

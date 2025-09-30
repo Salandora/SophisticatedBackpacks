@@ -21,7 +21,7 @@ public class PiglinAiMixin {
 	@Inject(method = "isWearingGold", at = @At(value = "HEAD"), cancellable = true)
 	private static void sophisticatedBackpacks$isWearingGold(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
 		for (ItemStack itemStack : sophisticatedBackpacks_getArmorSlots(entity)) {
-			if (itemStack.sophisticatedCore_makesPiglinsNeutral(entity)) {
+			if (itemStack.sophisticatedLibrary_makesPiglinsNeutral(entity)) {
 				cir.setReturnValue(true);
 				return;
 			}
