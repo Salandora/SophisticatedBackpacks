@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import com.github.salandora.sophisticatedlibrary.network.handling.IPayloadContext;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -24,7 +24,7 @@ public record BlockPickPayload(ItemStack filter) implements CustomPacketPayload 
 		return TYPE;
 	}
 
-	public static void handlePayload(BlockPickPayload payload, ServerPlayNetworking.Context context) {
+	public static void handlePayload(BlockPickPayload payload, IPayloadContext context) {
 		Player player = context.player();
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> {
 			IBackpackWrapper wrapper = BackpackWrapper.fromStack(backpack);

@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.handling.IPayloadContext;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,7 +26,7 @@ public record BlockToolSwapPayload(BlockPos pos) implements CustomPacketPayload 
 		return TYPE;
 	}
 
-	public static void handlePayload(BlockToolSwapPayload payload, ServerPlayNetworking.Context context) {
+	public static void handlePayload(BlockToolSwapPayload payload, IPayloadContext context) {
 		Player player = context.player();
 		AtomicBoolean result = new AtomicBoolean(false);
 		AtomicBoolean anyUpgradeCanInteract = new AtomicBoolean(false);

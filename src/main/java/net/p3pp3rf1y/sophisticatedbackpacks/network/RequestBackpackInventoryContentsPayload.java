@@ -1,7 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.PacketDistributor;
+import com.github.salandora.sophisticatedlibrary.network.handling.IPayloadContext;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -11,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedcore.inventory.InventoryHandler;
-import net.p3pp3rf1y.sophisticatedcore.network.PacketDistributor;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeHandler;
 
 import java.util.UUID;
@@ -28,7 +28,7 @@ public record RequestBackpackInventoryContentsPayload(UUID backpackUuid) impleme
 		return TYPE;
 	}
 
-	public static void handlePayload(RequestBackpackInventoryContentsPayload payload, ServerPlayNetworking.Context context) {
+	public static void handlePayload(RequestBackpackInventoryContentsPayload payload, IPayloadContext context) {
 		CompoundTag backpackContents = BackpackStorage.get().getOrCreateBackpackContents(payload.backpackUuid);
 
 		CompoundTag inventoryContents = new CompoundTag();

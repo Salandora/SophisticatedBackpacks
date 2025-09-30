@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.handling.IPayloadContext;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,7 +28,7 @@ public record EntityToolSwapPayload(int entityId) implements CustomPacketPayload
 		return TYPE;
 	}
 
-	public static void handlePayload(EntityToolSwapPayload payload, ServerPlayNetworking.Context context) {
+	public static void handlePayload(EntityToolSwapPayload payload, IPayloadContext context) {
 		Player player = context.player();
 		Level level = player.level();
 		Entity entity = level.getEntity(payload.entityId);

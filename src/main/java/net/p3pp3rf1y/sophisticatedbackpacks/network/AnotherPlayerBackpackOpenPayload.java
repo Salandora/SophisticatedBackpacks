@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.handling.IPayloadContext;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -31,7 +31,7 @@ public record AnotherPlayerBackpackOpenPayload(int anotherPlayerId) implements C
 		return TYPE;
 	}
 
-	public static void handlePayload(AnotherPlayerBackpackOpenPayload payload, ServerPlayNetworking.Context context) {
+	public static void handlePayload(AnotherPlayerBackpackOpenPayload payload, IPayloadContext context) {
 		Player player = context.player();
 		if (Boolean.FALSE.equals(Config.SERVER.allowOpeningOtherPlayerBackpacks.get())) {
 			return;

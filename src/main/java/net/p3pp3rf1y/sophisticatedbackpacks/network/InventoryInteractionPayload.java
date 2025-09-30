@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.handling.IPayloadContext;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,7 +26,7 @@ public record InventoryInteractionPayload(BlockPos pos, Direction face) implemen
 		return TYPE;
 	}
 
-	public static void handlePayload(InventoryInteractionPayload payload, ServerPlayNetworking.Context context) {
+	public static void handlePayload(InventoryInteractionPayload payload, IPayloadContext context) {
 		Player player = context.player();
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier, slot) -> {
 			InventoryInteractionHelper.tryInventoryInteraction(payload.pos, player.level(), backpack, payload.face, player);

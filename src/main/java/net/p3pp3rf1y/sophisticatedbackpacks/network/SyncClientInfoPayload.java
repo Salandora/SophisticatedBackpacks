@@ -1,9 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.handling.IPayloadContext;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -35,8 +33,7 @@ public record SyncClientInfoPayload(int slotIndex, @Nullable CompoundTag renderI
 		return TYPE;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public static void handlePayload(SyncClientInfoPayload payload, ClientPlayNetworking.Context context) {
+	public static void handlePayload(SyncClientInfoPayload payload, IPayloadContext context) {
 		Player player = context.player();
 		if (payload.renderInfoNbt == null || !(player.containerMenu instanceof BackpackContainer)) {
 			return;

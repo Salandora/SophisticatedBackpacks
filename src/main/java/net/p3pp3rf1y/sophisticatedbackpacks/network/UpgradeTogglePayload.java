@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.handling.IPayloadContext;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,7 +26,7 @@ public record UpgradeTogglePayload(int upgradeSlot) implements CustomPacketPaylo
 		return TYPE;
 	}
 
-	public static void handlePayload(UpgradeTogglePayload payload, ServerPlayNetworking.Context context) {
+	public static void handlePayload(UpgradeTogglePayload payload, IPayloadContext context) {
 		Player player = context.player();
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier, slot) -> {
 			Map<Integer, IUpgradeWrapper> slotWrappers = BackpackWrapper.fromStack(backpack).getUpgradeHandler().getSlotWrappers();
