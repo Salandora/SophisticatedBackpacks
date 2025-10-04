@@ -25,8 +25,3 @@ accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe resul
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe template Lnet/minecraft/world/item/crafting/Ingredient;
 
 accessible field net/minecraft/world/item/SpawnEggItem BY_ID Ljava/util/Map;
-
-accessible field net/minecraft/world/level/storage/loot/LootTable functions Ljava/util/List;
-accessible field net/minecraft/world/level/storage/loot/LootTable pools Ljava/util/List;
-
-
