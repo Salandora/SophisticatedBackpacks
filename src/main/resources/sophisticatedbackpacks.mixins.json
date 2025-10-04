@@ -14,9 +14,6 @@
         "common.WitherBossMixin",
         "common.WitherSkullMixin"
     ],
-    "client": [
-        "client.ItemInHandRendererMixin"
-    ],
     "injectors": {
         "defaultRequire": 1
     }
