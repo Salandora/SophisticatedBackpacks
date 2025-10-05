@@ -6,9 +6,7 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "common.CreeperMixin",
-        "common.PiglinAiMixin",
-        "common.ShearableBlocksMixin",
-        "common.ShearableMixin"
+        "common.PiglinAiMixin"
     ],
     "injectors": {
         "defaultRequire": 1
