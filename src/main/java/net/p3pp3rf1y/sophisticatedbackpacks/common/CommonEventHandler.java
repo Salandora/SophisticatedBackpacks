@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import com.github.salandora.sophisticatedlibrary.event.api.common.*;
-import com.github.salandora.sophisticatedlibrary.network.PacketDistributor;
+import com.github.salandora.sophisticatedlibrary.network.api.v1.PacketDistributor;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;

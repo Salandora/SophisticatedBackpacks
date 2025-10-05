@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 
-import com.github.salandora.sophisticatedlibrary.network.PacketDistributor;
+import com.github.salandora.sophisticatedlibrary.network.api.v1.PacketDistributor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

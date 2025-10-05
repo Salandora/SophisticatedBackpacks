@@ -1,9 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
-import com.github.salandora.sophisticatedlibrary.fluid.FluidStack;
-import com.github.salandora.sophisticatedlibrary.model.loading.IGeometryBakingContext;
-import com.github.salandora.sophisticatedlibrary.model.loading.IGeometryLoader;
-import com.github.salandora.sophisticatedlibrary.model.loading.IUnbakedGeometry;
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidStack;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IGeometryBakingContext;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IGeometryLoader;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IUnbakedGeometry;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.util.ModelData;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
@@ -37,7 +38,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
@@ -137,7 +137,6 @@ public class BackpackDynamicModel implements IUnbakedGeometry {
 			this.modelTransform = modelTransform;
 		}
 
-		@Nonnull
 		@Override
 		public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
 			List<BakedQuad> ret = new ArrayList<>(models.get(ModelPart.BASE).getQuads(state, side, rand));

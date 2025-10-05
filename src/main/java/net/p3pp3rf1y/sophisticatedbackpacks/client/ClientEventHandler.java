@@ -1,9 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
 import com.github.salandora.sophisticatedlibrary.event.api.client.ClientLifecycleEvents;
-import com.github.salandora.sophisticatedlibrary.model.loading.IGeometryLoader;
-import com.github.salandora.sophisticatedlibrary.model.loading.RegisterGeometryLoadersCallback;
-import com.github.salandora.sophisticatedlibrary.network.PacketDistributor;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IGeometryLoader;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.RegisterGeometryLoadersCallback;
+import com.github.salandora.sophisticatedlibrary.network.api.v1.PacketDistributor;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;

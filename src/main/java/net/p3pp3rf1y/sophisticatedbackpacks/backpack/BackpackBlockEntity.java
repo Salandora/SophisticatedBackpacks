@@ -1,7 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
-import com.github.salandora.sophisticatedlibrary.fluid.EmptyFluidHandler;
-import com.github.salandora.sophisticatedlibrary.fluid.IFluidHandler;
+import com.github.salandora.sophisticatedlibrary.common.api.v1.extensions.block.entity.SophisticatedBlockEntity;
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.EmptyFluidHandler;
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.IFluidHandler;
 import com.github.salandora.sophisticatedlibrary.transfer.IItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,7 +19,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.controller.ControllerBlockEntityBase;
 import net.p3pp3rf1y.sophisticatedcore.controller.IControllableStorage;
-import com.github.salandora.sophisticatedlibrary.common.extensions.block.entity.SophisticatedBlockEntity;
 import net.p3pp3rf1y.sophisticatedcore.inventory.CachedFailedInsertInventoryHandler;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;

@@ -1,8 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
-import com.github.salandora.sophisticatedlibrary.items.EmptyItemHandler;
-import com.github.salandora.sophisticatedlibrary.loot.IGlobalLootModifier;
 import com.github.salandora.sophisticatedlibrary.loot.SophisticatedLoot;
+import com.github.salandora.sophisticatedlibrary.loot.api.v1.IGlobalLootModifier;
+import com.github.salandora.sophisticatedlibrary.transfer.EmptyItemHandler;
 import com.github.salandora.sophisticatedlibrary.util.DeferredHolder;
 import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
 import com.mojang.serialization.MapCodec;

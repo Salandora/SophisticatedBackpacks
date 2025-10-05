@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.smithing;
 
-import com.github.salandora.sophisticatedlibrary.items.ComponentItemHandler;
+import com.github.salandora.sophisticatedlibrary.transfer.ComponentItemHandler;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
