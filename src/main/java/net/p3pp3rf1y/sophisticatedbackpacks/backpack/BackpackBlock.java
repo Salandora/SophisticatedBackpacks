@@ -68,7 +68,7 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BackpackBlock extends Block implements EntityBlock, SimpleWaterloggedBlock, BlockInterfaceHelper {
+public class BackpackBlock extends Block implements EntityBlock, SimpleWaterloggedBlock {
 	public static final BooleanProperty LEFT_TANK = BooleanProperty.create("left_tank");
 	public static final BooleanProperty RIGHT_TANK = BooleanProperty.create("right_tank");
 	public static final BooleanProperty BATTERY = BooleanProperty.create("battery");
@@ -115,7 +115,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public float getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
+	public float sophisticatedLibrary_getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return BEDROCK_RESISTANCE;
 		}
@@ -272,11 +272,11 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public boolean canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity) {
+	public boolean sophisticatedLibrary_canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return false;
 		}
-		return BlockInterfaceHelper.super.canEntityDestroy(state, world, pos, entity);
+		return super.sophisticatedLibrary_canEntityDestroy(state, world, pos, entity);
 	}
 
 	private void tryToPickup(Level level, ItemEntity itemEntity, IStorageWrapper w) {
