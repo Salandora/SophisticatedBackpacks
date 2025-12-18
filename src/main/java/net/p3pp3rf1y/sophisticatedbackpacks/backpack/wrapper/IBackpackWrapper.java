@@ -1,10 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.IFluidHandlerItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
-import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.NoopStorageWrapper;
 
@@ -55,7 +55,7 @@ public interface IBackpackWrapper extends IStorageWrapper {
 		//noop
 	}
 
-	default Optional<IStorageFluidHandler> getItemFluidHandler() {
+	default Optional<IFluidHandlerItem> getItemFluidHandler() {
 		return Optional.empty();
 	}
 

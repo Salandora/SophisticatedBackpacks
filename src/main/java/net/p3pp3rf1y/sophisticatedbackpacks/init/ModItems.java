@@ -2,13 +2,17 @@ package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
 import com.github.salandora.sophisticatedlibrary.loot.SophisticatedLoot;
 import com.github.salandora.sophisticatedlibrary.loot.api.v1.IGlobalLootModifier;
-import com.github.salandora.sophisticatedlibrary.transfer.EmptyItemHandler;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.EmptyItemHandler;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.wrapper.fabric.FabricFluidHandlerWrapper;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.wrapper.fabric.FabricItemHandlerWrapper;
+import com.github.salandora.sophisticatedlibrary.util.Capabilities;
 import com.github.salandora.sophisticatedlibrary.util.DeferredHolder;
 import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.cauldron.CauldronInteraction;
@@ -393,15 +397,27 @@ public class ModItems {
 
 	private static void registerCapabilities() {
 		var backpacks = ModItems.BACKPACKS.stream().map(Supplier::get).toArray(BackpackItem[]::new);
+
+		Capabilities.ItemHandler.ITEM.registerForItems((stack, ctx) -> {
+			IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(stack);
+			return backpackWrapper.getContentsUuid().isEmpty() ? EmptyItemHandler.INSTANCE : backpackWrapper.getInventoryForInputOutput();
+		}, backpacks);
+		Capabilities.FluidHandler.ITEM.registerForItems((stack, ctx) -> {
+			if (Boolean.FALSE.equals(Config.SERVER.itemFluidHandlerEnabled.get())) {
+				return null;
+			}
+			return BackpackWrapper.fromStack(stack).getItemFluidHandler().orElse(null);
+		}, backpacks);
+
 		ItemStorage.ITEM.registerForItems((stack, ctx) -> {
 					IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(stack);
-					return backpackWrapper.getContentsUuid().isEmpty() ? EmptyItemHandler.INSTANCE : backpackWrapper.getInventoryForInputOutput();
+					return backpackWrapper.getContentsUuid().isEmpty() ? Storage.empty() : FabricItemHandlerWrapper.of(backpackWrapper.getInventoryForInputOutput());
 				}, backpacks);
 		FluidStorage.ITEM.registerForItems((stack, ctx) -> {
 					if (Boolean.FALSE.equals(Config.SERVER.itemFluidHandlerEnabled.get())) {
 						return null;
 					}
-					return BackpackWrapper.fromStack(stack).getItemFluidHandler().orElse(null);
+					return BackpackWrapper.fromStack(stack).getItemFluidHandler().map(FabricFluidHandlerWrapper::of).orElse(null);
 				}, backpacks);
 		EnergyStorage.ITEM.registerForItems((stack, ctx) -> BackpackWrapper.fromStack(stack).getEnergyStorage().orElse(null), backpacks);
 	}

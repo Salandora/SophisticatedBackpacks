@@ -1,5 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.wrapper.fabric.FabricFluidHandlerWrapper;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.wrapper.fabric.FabricItemHandlerWrapper;
+import com.github.salandora.sophisticatedlibrary.util.Capabilities;
 import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -45,8 +48,11 @@ public class ModBlocks {
     }
 
 	private static void registerCapabilities() {
-		ItemStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalItemHandler, BACKPACK_TILE_TYPE.get());
-		FluidStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalFluidHandler, BACKPACK_TILE_TYPE.get());
+		Capabilities.ItemHandler.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalItemHandler, BACKPACK_TILE_TYPE.get());
+		Capabilities.FluidHandler.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalFluidHandler, BACKPACK_TILE_TYPE.get());
+
+		ItemStorage.SIDED.registerForBlockEntity((be,dir) -> FabricItemHandlerWrapper.of(be.getExternalItemHandler(dir)), BACKPACK_TILE_TYPE.get());
+		FluidStorage.SIDED.registerForBlockEntity((be, dir) -> FabricFluidHandlerWrapper.of(be.getExternalFluidHandler(dir)), BACKPACK_TILE_TYPE.get());
 		EnergyStorage.SIDED.registerForBlockEntity(BackpackBlockEntity::getExternalEnergyStorage, BACKPACK_TILE_TYPE.get());
 	}
 }

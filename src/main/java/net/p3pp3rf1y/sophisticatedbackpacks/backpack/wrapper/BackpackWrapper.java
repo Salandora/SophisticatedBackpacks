@@ -1,9 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
 import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidStack;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.IFluidHandler;
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.IFluidHandlerItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -11,12 +10,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEnergyStorageUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IFluidHandlerWrapperUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
@@ -194,7 +191,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	@Override
-	public Optional<IStorageFluidHandler> getItemFluidHandler() {
+	public Optional<IFluidHandlerItem> getItemFluidHandler() {
 		return getFluidHandler().map(fh -> new FluidHandlerItemWrapper(getBackpackStack(), fh));
 	}
 
@@ -591,57 +588,60 @@ public class BackpackWrapper implements IBackpackWrapper {
 		return getBackpack().getHoverName();
 	}
 
-	private static class FluidHandlerItemWrapper implements IStorageFluidHandler {
-		private final IStorageFluidHandler delegate;
+	private static class FluidHandlerItemWrapper implements IFluidHandlerItem {
+		private final IFluidHandler delegate;
 		private final ItemStack container;
 
-		public FluidHandlerItemWrapper(ItemStack container, IStorageFluidHandler delegate) {
+		public FluidHandlerItemWrapper(ItemStack container, IFluidHandler delegate) {
 			this.container = container;
 			this.delegate = delegate;
 		}
 
+
+		@Override
 		public ItemStack getContainer() {
 			return container;
 		}
 
 		@Override
-		public long insert(FluidVariant resource, long maxFill, TransactionContext ctx, boolean ignoreInOutLimit) {
-			return delegate.insert(resource, maxFill, ctx, ignoreInOutLimit);
+		public int getTanks() {
+			return delegate.getTanks();
 		}
 
 		@Override
-		public long extract(FluidVariant resource, long maxDrain, TransactionContext ctx, boolean ignoreInOutLimit) {
-			return delegate.extract(resource, maxDrain, ctx, ignoreInOutLimit);
+		public FluidStack getFluidInTank(int tank) {
+			return delegate.getFluidInTank(tank);
+		}
+
+		// Fabric: Added for internal use to reset the content when a Transaction was cancelled
+		@Override
+		public void setFluidInTank(int tank, FluidStack fluidStack) {
+			delegate.setFluidInTank(tank, fluidStack);
 		}
 
 		@Override
-		public FluidStack extract(TagKey<Fluid> resourceTag, long maxDrain, TransactionContext ctx, boolean ignoreInOutLimit) {
-			return delegate.extract(resourceTag, maxDrain, ctx, ignoreInOutLimit);
+		public long getTankCapacity(int tank) {
+			return delegate.getTankCapacity(tank);
 		}
 
 		@Override
-		public FluidStack extract(int maxDrain, TransactionContext ctx, boolean ignoreInOutLimit) {
-			return delegate.extract(maxDrain, ctx, ignoreInOutLimit);
+		public boolean isFluidValid(int tank, FluidStack stack) {
+			return delegate.isFluidValid(tank, stack);
 		}
 
 		@Override
-		public FluidStack extract(FluidStack resource, TransactionContext ctx, boolean ignoreInOutLimit) {
-			return delegate.extract(resource, ctx, ignoreInOutLimit);
+		public long fill(FluidStack resource, FluidAction action) {
+			return delegate.fill(resource, action);
 		}
 
 		@Override
-		public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-			return delegate.insert(resource, maxAmount, transaction);
+		public FluidStack drain(FluidStack resource, FluidAction action) {
+			return delegate.drain(resource, action);
 		}
 
 		@Override
-		public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
-			return delegate.extract(resource, maxAmount, transaction);
-		}
-
-		@Override
-		public Iterator<StorageView<FluidVariant>> iterator() {
-			return delegate.iterator();
+		public FluidStack drain(long maxDrain, FluidAction action) {
+			return delegate.drain(maxDrain, action);
 		}
 	}
 }

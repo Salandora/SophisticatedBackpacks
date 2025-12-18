@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
-import com.github.salandora.sophisticatedlibrary.transfer.wrapper.CombinedInvWrapper;
-import com.github.salandora.sophisticatedlibrary.transfer.IItemHandlerModifiable;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.IItemHandlerModifiable;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.wrapper.CombinedInvWrapper;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
-	private CombinedInvWrapper combinedInventories;
+	private IItemHandlerModifiable combinedInventories;
 	private final ITrackedContentsItemHandler wrappedInventoryHandler;
 	private final InventoryOrder inventoryOrder;
 	private final SubBackpacksHandler subBackpacksHandler;

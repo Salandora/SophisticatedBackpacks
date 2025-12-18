@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.IItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -17,8 +16,7 @@ import net.p3pp3rf1y.sophisticatedcore.util.CapabilityHelper;
 import java.util.List;
 
 public class InventoryInteractionHelper {
-	private InventoryInteractionHelper() {
-	}
+	private InventoryInteractionHelper() {}
 
 	public static boolean tryInventoryInteraction(UseOnContext context) {
 		Player player = context.getPlayer();
@@ -38,12 +36,12 @@ public class InventoryInteractionHelper {
 				false);
 	}
 
-	private static boolean tryRunningInteractionWrappers(Storage<ItemVariant> storage, IStorageWrapper wrapper, Player player) {
+	private static boolean tryRunningInteractionWrappers(IItemHandler itemHandler, IStorageWrapper wrapper, Player player) {
 		List<IItemHandlerInteractionUpgrade> wrappers = wrapper.getUpgradeHandler().getWrappersThatImplement(IItemHandlerInteractionUpgrade.class);
 		if (wrappers.isEmpty()) {
 			return false;
 		}
-		wrappers.forEach(upgrade -> upgrade.onHandlerInteract(storage, player));
+		wrappers.forEach(upgrade -> upgrade.onHandlerInteract(itemHandler, player));
 		return true;
 	}
 }
