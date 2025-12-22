@@ -66,7 +66,7 @@ public class BackpackSettingsContainerMenu extends SettingsContainerMenu<IBackpa
 				CompoundTag settingsNbt = storageWrapper.getSettingsHandler().getNbt();
 				if (!settingsNbt.isEmpty()) {
 					settingsContents.put(BackpackSettingsHandler.SETTINGS_TAG, settingsNbt);
-					SBPPacketHandler.sendToClient((ServerPlayer) player, new BackpackContentsMessage(uuid, settingsContents));
+					SBPPacketHandler.INSTANCE.sendToClient((ServerPlayer) player, new BackpackContentsMessage(uuid, settingsContents));
 				}
 			});
 		}

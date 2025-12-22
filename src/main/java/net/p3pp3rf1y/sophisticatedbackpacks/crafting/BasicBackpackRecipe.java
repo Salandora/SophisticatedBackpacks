@@ -5,8 +5,8 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.ShapedRecipeAccessor;
 import net.p3pp3rf1y.sophisticatedcore.crafting.IWrapperRecipe;
@@ -33,7 +33,7 @@ public class BasicBackpackRecipe extends ShapedRecipe implements IWrapperRecipe<
 	}
 
 	private void removeUuid(ItemStack backpack) {
-		BackpackWrapperLookup.get(backpack).ifPresent(IBackpackWrapper::removeContentsUuid);
+		backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(IBackpackWrapper::removeContentsUuid);
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
+import com.github.salandora.sophisticatedlibrary.loot.SophisticatedLoot;
+import com.github.salandora.sophisticatedlibrary.loot.api.v1.IGlobalLootModifier;
+import com.github.salandora.sophisticatedlibrary.util.LazyOptional;
 import com.mojang.serialization.Codec;
-import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
-import io.github.fabricators_of_create.porting_lib.loot.PortingLibLoot;
-import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
@@ -38,10 +38,10 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackSettingsContainerMenu;
 import net.p3pp3rf1y.sophisticatedbackpacks.crafting.BackpackDyeRecipe;
@@ -313,7 +313,7 @@ public class ModItems {
 		return Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, SophisticatedBackpacks.getRL(id), supplier.get());
 	}
 	public static <T extends Codec<? extends IGlobalLootModifier>> T registerLootModifier(String id, Supplier<T> supplier) {
-		return Registry.register(PortingLibLoot.GLOBAL_LOOT_MODIFIER_SERIALIZERS.get(), SophisticatedBackpacks.getRL(id), supplier.get());
+		return Registry.register(SophisticatedLoot.GLOBAL_LOOT_MODIFIER_SERIALIZERS, SophisticatedBackpacks.getRL(id), supplier.get());
 	}
 
 	public static void register() {
@@ -432,7 +432,7 @@ public class ModItems {
 	private static class BackpackCauldronInteraction implements CauldronInteraction {
 		@Override
 		public InteractionResult interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, ItemStack stack) {
-			LazyOptional<IBackpackWrapper> backpackWrapperCapability = BackpackWrapperLookup.get(stack);
+			LazyOptional<IBackpackWrapper> backpackWrapperCapability = stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance());
 			if (backpackWrapperCapability.map(ModItems::hasDefaultColor).orElse(true)) {
 				return InteractionResult.PASS;
 			}

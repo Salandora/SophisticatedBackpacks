@@ -4,8 +4,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 
@@ -22,7 +22,7 @@ public class UUIDDeduplicator {
 	public static void checkForDuplicateBackpacksAndRemoveTheirUUID(Player player, UUID backpackUuid, ItemStack backpack) {
 		PlayerInventoryProvider.get().runOnBackpacks(player, (otherBackpack, inventoryHandlerName, identifier, slot) -> {
 			if (otherBackpack != backpack) {
-				BackpackWrapperLookup.get(otherBackpack)
+				otherBackpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 						.ifPresent(wrapper -> wrapper.getContentsUuid().ifPresent(uuid -> {
 							if (uuid.equals(backpackUuid)) {
 								wrapper.removeContentsUUIDTag();
@@ -35,7 +35,7 @@ public class UUIDDeduplicator {
 	}
 
 	public static void dedupeBackpackItemEntityInArea(ItemEntity newBackpackItemEntity) {
-		BackpackWrapperLookup.get(newBackpackItemEntity.getItem())
+		newBackpackItemEntity.getItem().sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.ifPresent(newBackpackWrapper -> newBackpackWrapper.getContentsUuid()
 						.ifPresent(backpackId -> dedupeBackpackItemEntityInArea(newBackpackWrapper, newBackpackItemEntity, backpackId))
 				);
@@ -50,13 +50,13 @@ public class UUIDDeduplicator {
 	}
 
 	private static boolean checkEntityBackpackIdMatchAndRemoveIfItDoes(IBackpackWrapper newBackpackWrapper, UUID newBackpackId, ItemEntity entity) {
-		return BackpackWrapperLookup.get(entity.getItem()).resolve().flatMap(IStorageWrapper::getContentsUuid).map(backpackId -> {
-					if (backpackId.equals(newBackpackId)) {
-						newBackpackWrapper.removeContentsUUIDTag();
-						newBackpackWrapper.onContentsNbtUpdated();
-						return true;
-					}
-					return false;
-				}).orElse(false);
+		return entity.getItem().sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).resolve().flatMap(IStorageWrapper::getContentsUuid).map(backpackId -> {
+			if (backpackId.equals(newBackpackId)) {
+				newBackpackWrapper.removeContentsUUIDTag();
+				newBackpackWrapper.onContentsNbtUpdated();
+				return true;
+			}
+			return false;
+		}).orElse(false);
 	}
 }

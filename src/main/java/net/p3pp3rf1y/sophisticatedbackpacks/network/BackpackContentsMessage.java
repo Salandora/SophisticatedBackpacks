@@ -1,18 +1,18 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedcore.client.render.ClientStorageContentsTooltipBase;
-import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 
-import java.util.UUID;
 import javax.annotation.Nullable;
+import java.util.UUID;
+import java.util.function.Supplier;
 
-public class BackpackContentsMessage extends SimplePacketBase {
+public class BackpackContentsMessage {
 	private final UUID backpackUuid;
 	@Nullable
 	private final CompoundTag backpackContents;
@@ -21,27 +21,29 @@ public class BackpackContentsMessage extends SimplePacketBase {
 		this.backpackUuid = backpackUuid;
 		this.backpackContents = backpackContents;
 	}
-	public BackpackContentsMessage(FriendlyByteBuf buffer) { this(buffer.readUUID(), buffer.readNbt()); }
 
-	@Override
-	public void write(FriendlyByteBuf buffer) {
-		buffer.writeUUID(this.backpackUuid);
-		buffer.writeNbt(this.backpackContents);
+	public static void encode(BackpackContentsMessage msg, FriendlyByteBuf packetBuffer) {
+		packetBuffer.writeUUID(msg.backpackUuid);
+		packetBuffer.writeNbt(msg.backpackContents);
 	}
 
-	@Override
-	@Environment(EnvType.CLIENT)
-	public boolean handle(Context context) {
-		context.enqueueWork(() -> {
-			Player player = context.getClientPlayer();
-			if (player == null || backpackContents == null) {
-				return;
-			}
-
-			BackpackStorage.get().setBackpackContents(backpackUuid, backpackContents);
-			ClientStorageContentsTooltipBase.refreshContents();
-		});
-		return true;
+	public static BackpackContentsMessage decode(FriendlyByteBuf packetBuffer) {
+		return new BackpackContentsMessage(packetBuffer.readUUID(), packetBuffer.readNbt());
 	}
 
+	static void onMessage(BackpackContentsMessage msg, Supplier<NetworkEvent.Context> contextSupplier) {
+		NetworkEvent.Context context = contextSupplier.get();
+		context.enqueueWork(() -> handleMessage(msg));
+		context.setPacketHandled(true);
+	}
+
+	private static void handleMessage(BackpackContentsMessage msg) {
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player == null || msg.backpackContents == null) {
+			return;
+		}
+
+		BackpackStorage.get().setBackpackContents(msg.backpackUuid, msg.backpackContents);
+		ClientStorageContentsTooltipBase.refreshContents();
+	}
 }

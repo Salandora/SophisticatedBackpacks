@@ -172,22 +172,16 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-    if (findProject(":SophisticatedCore") != null) {
-        implementation project(path: ":SophisticatedCore", configuration: "namedElements")
-        var core = project(":SophisticatedCore")
-        if (core.port_lib_modules != "none") {
-            for (def module in core.port_lib_modules.split(',')) {
-                modApi("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$core.port_lib_version+$minecraft_version")
-            }
-        }
+    if (findProject(":SophisticatedLibrary") != null) {
+        implementation project(path: ":SophisticatedLibrary", configuration: "namedElements")
     } else {
-        modImplementation("sophisticatedcore:sophisticatedcore:${sc_version}")
+        modImplementation("com.github.salandora:sophisticatedlibrary:${project.sl_version}")
     }
 
-    if (port_lib_modules != "none") {
-        for (def module in port_lib_modules.split(',')) {
-            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
-        }
+    if (findProject(":SophisticatedCore") != null) {
+        implementation project(path: ":SophisticatedCore", configuration: "namedElements")
+    } else {
+        modImplementation("sophisticatedcore:sophisticatedcore:${sc_version}")
     }
 
     // EMI
@@ -293,9 +287,9 @@ processResources {
             loader_version      : project.loader_version,
             fabric_version      : project.fabric_version,
             sc_version          : mavenVersionToFabric(project.sc_version),
+            sl_version          : mavenVersionToFabric(project.sl_version),
             forge_config_version: project.forge_config_api_port_version,
-            energy_version      : project.energy_version,
-            port_lib_version    : project.port_lib_version
+            energy_version      : project.energy_version
     ]
 
     inputs.properties replaceProperties

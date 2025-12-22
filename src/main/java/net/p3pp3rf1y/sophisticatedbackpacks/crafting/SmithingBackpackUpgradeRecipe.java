@@ -6,8 +6,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.SmithingTransformRecipeAccessor;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
@@ -38,7 +38,7 @@ public class SmithingBackpackUpgradeRecipe extends SmithingTransformRecipe imple
 		ItemStack upgradedBackpack = ((SmithingTransformRecipeAccessor) this).getResult().copy();
 		if (SophisticatedCore.getCurrentServer() != null && SophisticatedCore.getCurrentServer().isSameThread()) {
 			getBackpack(inv).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
-			BackpackWrapperLookup.get(upgradedBackpack)
+			upgradedBackpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 					.ifPresent(wrapper -> {
 						BackpackItem backpackItem = ((BackpackItem) upgradedBackpack.getItem());
 						wrapper.setSlotNumbers(backpackItem.getNumberOfSlots(), backpackItem.getNumberOfUpgradeSlots());

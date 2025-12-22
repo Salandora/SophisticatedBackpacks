@@ -6,12 +6,6 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "common.CreeperMixin",
-        "common.EnderDragonMixin",
-        "common.ExplosionDamageCalculatorMixin",
-        "common.PiglinAiMixin",
-        "common.PlayerInventoryMixin",
-        "common.WitherBossMixin",
-        "common.WitherSkullMixin",
         "common.accessor.AnvilMenuAccessor",
         "common.accessor.ItemAccessor",
         "common.accessor.ItemEntityAccessor",

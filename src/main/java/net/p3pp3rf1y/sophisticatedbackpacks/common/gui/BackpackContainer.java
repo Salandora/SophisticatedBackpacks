@@ -73,7 +73,7 @@ public class BackpackContainer extends StorageContainerMenuBase<IBackpackWrapper
 			CompoundTag settingsNbt = storageWrapper.getSettingsHandler().getNbt();
 			if (!settingsNbt.isEmpty()) {
 				settingsContents.put(BackpackSettingsHandler.SETTINGS_TAG, settingsNbt);
-				SBPPacketHandler.sendToClient((ServerPlayer) player, new BackpackContentsMessage(uuid, settingsContents));
+				SBPPacketHandler.INSTANCE.sendToClient((ServerPlayer) player, new BackpackContentsMessage(uuid, settingsContents));
 			}
 		});
 	}
@@ -102,7 +102,7 @@ public class BackpackContainer extends StorageContainerMenuBase<IBackpackWrapper
 			sendToServer(data -> data.putString(ACTION_TAG, "openSettings"));
 			return;
 		}
-		player.sophisticatedCore_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackSettingsContainerMenu(w, pl, backpackContext),
+		player.sophisticatedLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackSettingsContainerMenu(w, pl, backpackContext),
 				Component.translatable(SBPTranslationHelper.INSTANCE.translGui("settings.title")), false), backpackContext::toBuffer);
 	}
 
@@ -139,6 +139,6 @@ public class BackpackContainer extends StorageContainerMenuBase<IBackpackWrapper
 	@Override
 	protected boolean shouldSlotItemBeDroppedFromStorage(Slot slot) {
 		return slot.getItem().getItem() instanceof BackpackItem &&
-				!storageWrapper.getInventoryHandler().isItemValid(0, slot.getItemVariant(), slot.getItem().getCount());
+				!storageWrapper.getInventoryHandler().isItemValid(0, slot.getItem());
 	}
 }

@@ -1,8 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidActionResult;
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidType;
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidUtil;
+import com.github.salandora.sophisticatedlibrary.util.Capabilities;
 import com.mojang.math.Axis;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -42,8 +44,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
@@ -58,7 +60,6 @@ import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.UpgradeRenderDataType;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.infinity.InfinityUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
-import net.p3pp3rf1y.sophisticatedcore.util.FluidHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
 import org.joml.Vector3f;
@@ -69,7 +70,7 @@ import java.util.Map;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BackpackBlock extends Block implements EntityBlock, SimpleWaterloggedBlock, BlockInterfaceHelper {
+public class BackpackBlock extends Block implements EntityBlock, SimpleWaterloggedBlock {
 	public static final BooleanProperty LEFT_TANK = BooleanProperty.create("left_tank");
 	public static final BooleanProperty RIGHT_TANK = BooleanProperty.create("right_tank");
 	public static final BooleanProperty BATTERY = BooleanProperty.create("battery");
@@ -120,7 +121,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public float getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
+	public float sophisticatedLibrary_getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return BEDROCK_RESISTANCE;
 		}
@@ -161,14 +162,26 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 		}
 
-		if (!heldItem.isEmpty() && FluidHelper.isFluidStorage(heldItem)) {
+		if (!heldItem.isEmpty() && heldItem.sophisticatedLibrary_getCapability(Capabilities.FluidHandler.ITEM).isPresent()) {
 			WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class)
-				.flatMap(te -> te.getBackpackWrapper().getFluidHandler()).ifPresent(backpackFluidHandler -> FluidStorageUtil.interactWithFluidStorage(backpackFluidHandler, player, hand));
+					.flatMap(te -> te.getBackpackWrapper().getFluidHandler()).ifPresent(backpackFluidHandler ->
+							player.sophisticatedLibrary_getCapability(Capabilities.ItemHandler.ENTITY).ifPresent(playerInventory -> {
+								FluidActionResult resultOfEmptying = FluidUtil.tryEmptyContainerAndStow(heldItem, backpackFluidHandler, playerInventory, FluidType.BUCKET_VOLUME, player, true);
+								if (resultOfEmptying.isSuccess()) {
+									player.setItemInHand(hand, resultOfEmptying.getResult());
+								} else {
+									FluidActionResult resultOfFilling = FluidUtil.tryFillContainerAndStow(heldItem, backpackFluidHandler, playerInventory, FluidType.BUCKET_VOLUME, player, true);
+									if (resultOfFilling.isSuccess()) {
+										player.setItemInHand(hand, resultOfFilling.getResult());
+									}
+								}
+							}));
 			return InteractionResult.SUCCESS;
 		}
 
 		BackpackContext.Block backpackContext = new BackpackContext.Block(pos);
-		player.sophisticatedCore_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), getBackpackDisplayName(level, pos)), backpackContext::toBuffer);
+		player.sophisticatedLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext),
+				getBackpackDisplayName(level, pos)), backpackContext::toBuffer);
 		return InteractionResult.SUCCESS;
 	}
 
@@ -216,7 +229,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	private static void stopBackpackSounds(ItemStack backpack, Level world, BlockPos pos) {
-		BackpackWrapperLookup.get(backpack).ifPresent(wrapper -> wrapper.getContentsUuid().ifPresent(uuid ->
+		backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(wrapper -> wrapper.getContentsUuid().ifPresent(uuid ->
 				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid))
 		);
 	}
@@ -265,19 +278,16 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public boolean canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity) {
+	public boolean sophisticatedLibrary_canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return false;
 		}
-		return BlockInterfaceHelper.super.canEntityDestroy(state, world, pos, entity);
+		return super.sophisticatedLibrary_canEntityDestroy(state, world, pos, entity);
 	}
 
 	private void tryToPickup(Level world, ItemEntity itemEntity, IStorageWrapper w) {
 		ItemStack remainingStack = itemEntity.getItem().copy();
-		try (Transaction ctx = Transaction.openOuter()) {
-			remainingStack = InventoryHelper.runPickupOnPickupResponseUpgrades(world, w.getUpgradeHandler(), remainingStack, ctx);
-			ctx.commit();
-		}
+		remainingStack = InventoryHelper.runPickupOnPickupResponseUpgrades(world, w.getUpgradeHandler(), remainingStack, false);
 		if (remainingStack.getCount() < itemEntity.getItem().getCount()) {
 			itemEntity.setItem(remainingStack);
 		}

@@ -2,7 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;

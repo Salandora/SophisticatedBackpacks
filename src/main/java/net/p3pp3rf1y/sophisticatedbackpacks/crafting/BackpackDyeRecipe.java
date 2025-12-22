@@ -5,9 +5,9 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.crafting.StorageDyeRecipeBase;
 import net.p3pp3rf1y.sophisticatedcore.util.ColorHelper;
@@ -31,7 +31,7 @@ public class BackpackDyeRecipe extends StorageDyeRecipeBase {
 
 	@Override
 	protected void applyColors(ItemStack coloredStorage, List<DyeColor> mainDyes, List<DyeColor> trimDyes) {
-		BackpackWrapperLookup.get(coloredStorage)
+		coloredStorage.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.ifPresent(coloredWrapper -> coloredWrapper.setColors(ColorHelper.calculateColor(coloredWrapper.getMainColor(), BackpackWrapper.DEFAULT_CLOTH_COLOR, mainDyes),
 						ColorHelper.calculateColor(coloredWrapper.getAccentColor(), BackpackWrapper.DEFAULT_BORDER_COLOR, trimDyes)
 				));

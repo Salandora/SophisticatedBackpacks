@@ -21,13 +21,13 @@ public class SophisticatedBackpacksClient implements ClientModInitializer {
 		KeybindHandler.registerKeyMappings();
 		KeybindHandler.register();
 
-		ClientEventHandler.registerHandlers();
-
 		ModItems.registerScreens();
 
 		TooltipComponentCallback.EVENT.register(SophisticatedBackpacksClient::registerTooltipComponent);
 
-		SBPPacketHandler.getChannel().initClientListener();
+		ClientEventHandler.registerHandlers();
+
+		SBPPacketHandler.INSTANCE.initClientListener();
 	}
 	@Nullable
 	private static ClientTooltipComponent registerTooltipComponent(TooltipComponent data) {

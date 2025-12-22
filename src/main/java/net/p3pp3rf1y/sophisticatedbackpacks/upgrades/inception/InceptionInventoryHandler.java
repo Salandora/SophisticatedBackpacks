@@ -1,25 +1,21 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
-import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
-import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.IItemHandlerModifiable;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.wrapper.CombinedInvWrapper;
 import net.minecraft.world.item.ItemStack;
-import net.p3pp3rf1y.sophisticatedbackpacks.util.CombinedInvWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.IItemHandlerSimpleInserter;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 
 public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
-	private CombinedInvWrapper<ITrackedContentsItemHandler> combinedInventories;
+	private IItemHandlerModifiable combinedInventories;
 	private final ITrackedContentsItemHandler wrappedInventoryHandler;
 	private final InventoryOrder inventoryOrder;
 	private final SubBackpacksHandler subBackpacksHandler;
@@ -44,7 +40,7 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		if (inventoryOrder == InventoryOrder.INCEPTED_FIRST) {
 			handlers.add(wrappedInventoryHandler);
 		}
-		combinedInventories = new CombinedInvWrapper<>(handlers);
+		combinedInventories = new CombinedInvWrapper(handlers.toArray(new IItemHandlerModifiable[] {}));
 
 		baseIndex = new int[handlers.size()];
 		int index = 0;
@@ -64,25 +60,22 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 		return combinedInventories.getSlotCount();
 	}
 
-	@Override
-	public SingleSlotStorage<ItemVariant> getSlot(int slot) {
-		return combinedInventories.getSlot(slot);
-	}
-
 	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int slot) {
 		return combinedInventories.getStackInSlot(slot);
 	}
 
+	@Nonnull
 	@Override
-	public long insertSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext ctx) {
-		return combinedInventories.insertSlot(slot, resource, maxAmount, ctx);
+	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+		return combinedInventories.insertItem(slot, stack, simulate);
 	}
 
+	@Nonnull
 	@Override
-	public long extractSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext ctx) {
-		return combinedInventories.extractSlot(slot, resource, maxAmount, ctx);
+	public ItemStack extractItem(int slot, int amount, boolean simulate) {
+		return combinedInventories.extractItem(slot, amount, simulate);
 	}
 
 	@Override
@@ -91,39 +84,21 @@ public class InceptionInventoryHandler implements ITrackedContentsItemHandler {
 	}
 
 	@Override
-	public boolean isItemValid(int slot, ItemVariant resource, int count) {
-		return combinedInventories.isItemValid(slot, resource, count);
+	public boolean isItemValid(int slot, ItemStack stack) {
+		return combinedInventories.isItemValid(slot, stack);
 	}
 
 	@Override
-	public long insert(ItemVariant resource, long maxAmount, TransactionContext ctx) {
-		long remaining = maxAmount;
+	public ItemStack insertItem(ItemStack stack, boolean simulate) {
+		ItemStack remainingStack = stack;
 		for (IItemHandlerSimpleInserter handler : handlers) {
-			remaining -= handler.insert(resource, remaining, ctx);
-			if (remaining <= 0) {
+			remainingStack = handler.insertItem(remainingStack, simulate);
+			if (remainingStack.isEmpty()) {
 				break;
 			}
 		}
 
-		return maxAmount - remaining;
-	}
-
-	@Override
-	public long extract(ItemVariant resource, long maxAmount, TransactionContext ctx) {
-		long remaining = maxAmount;
-		for (IItemHandlerSimpleInserter handler : handlers) {
-			remaining -= handler.extract(resource, remaining, ctx);
-			if (remaining <= 0) {
-				break;
-			}
-		}
-
-		return maxAmount - remaining;
-	}
-
-	@Override
-	public Iterator<StorageView<ItemVariant>> iterator() {
-		return combinedInventories.iterator();
+		return remainingStack;
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.registry.tool;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import net.minecraft.util.GsonHelper;
 
 import java.util.Optional;

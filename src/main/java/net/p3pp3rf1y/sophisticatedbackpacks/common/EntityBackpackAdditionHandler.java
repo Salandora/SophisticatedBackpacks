@@ -1,10 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
 import com.google.common.primitives.Ints;
-
 import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
@@ -26,16 +23,13 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.RecordItem;
-import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
@@ -116,8 +110,10 @@ public class EntityBackpackAdditionHandler {
 			return;
 		}
 
+		// Farbic: Changes as it was causing a crash with another mod
+		float localDifficulty = difficultyInstance.getEffectiveDifficulty(); // level.getCurrentDifficultyAt(monster.blockPosition()).getEffectiveDifficulty();
 		//noinspection UnstableApiUsage
-		int index = Ints.constrainToRange((int) Math.floor(DIFFICULTY_BACKPACK_CHANCES.size() / MAX_LOCAL_DIFFICULTY * difficultyInstance.getEffectiveDifficulty() - 0.1f), 0, DIFFICULTY_BACKPACK_CHANCES.size());
+		int index = Ints.constrainToRange((int) Math.floor(DIFFICULTY_BACKPACK_CHANCES.size() / MAX_LOCAL_DIFFICULTY * localDifficulty - 0.1f), 0, DIFFICULTY_BACKPACK_CHANCES.size());
 
 		RandHelper.getRandomWeightedElement(rnd, DIFFICULTY_BACKPACK_CHANCES.get(index)).ifPresent(backpackAddition -> {
 			ItemStack backpack = new ItemStack(backpackAddition.getBackpackItem());
@@ -140,7 +136,8 @@ public class EntityBackpackAdditionHandler {
 			if (armorPiece != Items.AIR) {
 				ItemStack armorStack = new ItemStack(armorPiece);
 				if (rnd.nextInt(6 - minDifficulty) == 0) {
-					float additionalDifficulty = difficultyInstance.getSpecialMultiplier();
+					// Farbic: Changes as it was causing a crash with another mod
+					float additionalDifficulty = difficultyInstance.getSpecialMultiplier(); // level.getCurrentDifficultyAt(monster.blockPosition()).getSpecialMultiplier();
 					int enchantmentLevel = (int) (5F + additionalDifficulty * 18F + minDifficulty * 6);
 					EnchantmentHelper.enchantItem(rnd, armorStack, enchantmentLevel, true);
 				}
@@ -150,7 +147,7 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void equipBackpack(Monster monster, ItemStack backpack, int difficulty, boolean playMusicDisc, LevelAccessor level, RandomSource rnd) {
-		getSpawnEgg(monster.getType()).ifPresent(egg -> BackpackWrapperLookup.get(backpack)
+		getSpawnEgg(monster.getType()).ifPresent(egg -> backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.ifPresent(w -> {
 					w.setColors(getPrimaryColor(egg), getSecondaryColor(egg));
 					setLoot(monster, w, difficulty, level);
@@ -175,11 +172,7 @@ public class EntityBackpackAdditionHandler {
 			JukeboxUpgradeWrapper wrapper = it.next();
 			int numberOfDiscs = advancedJukebox ? random.nextInt(wrapper.getDiscInventory().getSlotCount() / 3) + 1 : 1;
 			for (int i = 0; i < numberOfDiscs; i++) {
-				try (Transaction ctx = Transaction.openOuter()) {
-					ItemVariant variant = ItemVariant.of(musicDiscs.get(rnd.nextInt(musicDiscs.size())));
-					wrapper.getDiscInventory().insertSlot(i, variant, 1, ctx);
-					ctx.commit();
-				}
+				wrapper.getDiscInventory().insertItem(i, new ItemStack(musicDiscs.get(rnd.nextInt(musicDiscs.size()))), false);
 			}
 		}
 	}
@@ -316,7 +309,7 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void removeContentsUuid(ItemStack stack) {
-		BackpackWrapperLookup.get(stack)
+		stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.ifPresent(backpackWrapper -> backpackWrapper.getContentsUuid().ifPresent(uuid -> BackpackStorage.get().removeBackpackContents(uuid)));
 	}
 
@@ -324,7 +317,7 @@ public class EntityBackpackAdditionHandler {
 		if (!entity.getTags().contains(SPAWNED_WITH_JUKEBOX_UPGRADE)) {
 			return;
 		}
-		BackpackWrapperLookup.get(entity.getItemBySlot(EquipmentSlot.CHEST))
+		entity.getItemBySlot(EquipmentSlot.CHEST).sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.ifPresent(backpackWrapper -> backpackWrapper.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).forEach(wrapper -> {
 					if (wrapper.isPlaying()) {
 						wrapper.tick(entity, entity.level(), entity.blockPosition());

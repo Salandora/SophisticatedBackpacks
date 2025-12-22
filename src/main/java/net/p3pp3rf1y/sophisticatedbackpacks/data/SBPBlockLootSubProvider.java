@@ -28,7 +28,7 @@ public class SBPBlockLootSubProvider extends FabricBlockLootTableProvider {
 
 	private static LootTable.Builder dropBackpackWithContents(BackpackItem item) {
 		LootPoolEntryContainer.Builder<?> entry = LootItem.lootTableItem(item);
-		LootPool.Builder pool = LootPool.lootPool().name("main").setRolls(ConstantValue.exactly(1)).add(entry).apply(CopyBackpackDataFunction.builder());
+		LootPool.Builder pool = LootPool.lootPool()/*.name("main")*/.setRolls(ConstantValue.exactly(1)).add(entry).apply(CopyBackpackDataFunction.builder());
 		return LootTable.lootTable().withPool(pool);
 	}
 }

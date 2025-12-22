@@ -15,9 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.block.Block;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackSettingsScreen;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.common.DyeRecipesMaker;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.compat.emi.EmiGridMenuInfo;
@@ -63,8 +63,8 @@ public class EmiCompat implements EmiPlugin {
         registerCraftingRecipes(registry, DyeRecipesMaker.getRecipes());
 
         Comparison compareColor = Comparison.of((a, b) ->
-            BackpackWrapperLookup.get(a.getItemStack())
-                .map(stackA -> BackpackWrapperLookup.get(b.getItemStack())
+            a.getItemStack().sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+                .map(stackA -> b.getItemStack().sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
                     .map(stackB -> stackA.getMainColor() == stackB.getMainColor() && stackA.getAccentColor() == stackB.getAccentColor())
                     .orElse(false))
                 .orElse(false));

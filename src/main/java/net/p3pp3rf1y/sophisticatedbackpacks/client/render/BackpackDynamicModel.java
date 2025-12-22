@@ -1,18 +1,14 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
+import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidStack;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IGeometryBakingContext;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IGeometryLoader;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IUnbakedGeometry;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.datafixers.util.Either;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
-
-import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
-import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
-import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -33,24 +29,25 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.client.accessor.VertexFormatAccessor;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedBatteryUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IRenderedTankUpgrade;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.BATTERY;
-import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.LEFT_TANK;
-import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.RIGHT_TANK;
+import static net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock.*;
 
 @Environment(EnvType.CLIENT)
-public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicModel> {
+public class BackpackDynamicModel implements IUnbakedGeometry {
 	public static int STRIDE = DefaultVertexFormat.BLOCK.getIntegerSize();
 	public static int POSITION = findOffset(DefaultVertexFormat.ELEMENT_POSITION);
 	public static int COLOR = findOffset(DefaultVertexFormat.ELEMENT_COLOR);
@@ -70,7 +67,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 	}
 
 	@Override
-	public BakedModel bake(BlockModel context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation, boolean isGui3d) {
+	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
 		ImmutableMap.Builder<ModelPart, BakedModel> builder = ImmutableMap.builder();
 		modelParts.forEach((part, model) -> {
 			BakedModel bakedModel = model.bake(baker, spriteGetter, modelTransform, modelLocation);
@@ -82,7 +79,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 	}
 
 	@Override
-	public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, BlockModel context) {
+	public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
 		modelParts.values().forEach(model -> model.resolveParents(modelGetter));
 	}
 
@@ -215,7 +212,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			double yMax = yMin + (ratio * 6) / 16d;
 			AABB bounds = new AABB(xMin, yMin, 6.75 / 16d, xMin + 2.5 / 16d, yMax, 9.25 / 16d);
 
-			FluidVariant fluidVariant = fluidStack.getType();
+			FluidVariant fluidVariant = fluidStack.getVariant();
 			TextureAtlasSprite still = FluidVariantRendering.getSprite(fluidVariant);
 
 			float bx1 = 0;
@@ -348,7 +345,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 			backpackModel.tankRight = false;
 			backpackModel.tankLeft = false;
 			backpackModel.battery = false;
-			BackpackWrapperLookup.get(stack).ifPresent(backpackWrapper -> {
+			stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(backpackWrapper -> {
 				RenderInfo renderInfo = backpackWrapper.getRenderInfo();
 				Map<TankPosition, IRenderedTankUpgrade.TankRenderInfo> tankRenderInfos = renderInfo.getTankRenderInfos();
 				tankRenderInfos.forEach((pos, info) -> {
@@ -374,7 +371,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry<BackpackDynamicMod
 		public static final Loader INSTANCE = new Loader();
 
 		@Override
-		public BackpackDynamicModel read(JsonObject modelContents, JsonDeserializationContext deserializationContext) {
+		public BackpackDynamicModel read(JsonObject modelContents) {
 			ImmutableMap.Builder<ModelPart, UnbakedModel> builder = ImmutableMap.builder();
 
 			ImmutableMap.Builder<String, Either<Material, String>> texturesBuilder = ImmutableMap.builder();

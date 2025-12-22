@@ -6,11 +6,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.Tab;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.ImageButton;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Dimension;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.GuiHelper;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.Position;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.TextureBlitData;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.UV;
+import net.p3pp3rf1y.sophisticatedcore.client.gui.utils.*;
 
 public class BackToBackpackTab extends Tab {
 	private static final TextureBlitData ICON = new TextureBlitData(GuiHelper.ICONS, Dimension.SQUARE_256, new UV(64, 80), Dimension.SQUARE_16);
@@ -22,6 +18,6 @@ public class BackToBackpackTab extends Tab {
 
 	@Override
 	protected void onTabIconClicked(int button) {
-		SBPPacketHandler.sendToServer(new BackpackOpenMessage());
+		SBPPacketHandler.INSTANCE.sendToServer(new BackpackOpenMessage());
 	}
 }

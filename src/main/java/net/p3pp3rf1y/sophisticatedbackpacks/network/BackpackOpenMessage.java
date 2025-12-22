@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -8,9 +9,11 @@ import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.IContextAwareContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SophisticatedMenuProvider;
-import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 
-public class BackpackOpenMessage extends SimplePacketBase {
+import javax.annotation.Nullable;
+import java.util.function.Supplier;
+
+public class BackpackOpenMessage {
 	private static final int CHEST_SLOT = 38;
 	private static final int OFFHAND_SLOT = 40;
 	private final int slotIndex;
@@ -35,59 +38,63 @@ public class BackpackOpenMessage extends SimplePacketBase {
 		this(backpackSlot, identifier, "");
 	}
 
-	public BackpackOpenMessage(FriendlyByteBuf buffer) { this(buffer.readInt(), buffer.readUtf(), buffer.readUtf()); }
-
-	@Override
-	public void write(FriendlyByteBuf buffer) {
-		buffer.writeInt(this.slotIndex);
-		buffer.writeUtf(this.identifier);
-		buffer.writeUtf(this.handlerName);
+	public static void encode(BackpackOpenMessage msg, FriendlyByteBuf packetBuffer) {
+		packetBuffer.writeInt(msg.slotIndex);
+		packetBuffer.writeUtf(msg.identifier);
+		packetBuffer.writeUtf(msg.handlerName);
 	}
 
-	@Override
-	public boolean handle(Context context) {
-		context.enqueueWork(() -> {
-			ServerPlayer player = context.getSender();
-			if (player == null) {
-				return;
-			}
+	public static BackpackOpenMessage decode(FriendlyByteBuf packetBuffer) {
+		return new BackpackOpenMessage(packetBuffer.readInt(), packetBuffer.readUtf(), packetBuffer.readUtf());
+	}
 
-			if (!this.handlerName.isEmpty()) {
-				int slotIndex1 = this.slotIndex;
-				if (this.slotIndex == CHEST_SLOT) {
-					slotIndex1 -= 36;
-				} else if (this.slotIndex == OFFHAND_SLOT) {
-					slotIndex1 = 0;
-				}
-				BackpackContext.Item backpackContext = new BackpackContext.Item(this.handlerName, this.identifier, slotIndex1,
-						player.containerMenu instanceof InventoryMenu || (player.containerMenu instanceof BackpackContainer backpackContainer && backpackContainer.getBackpackContext().wasOpenFromInventory()));
-				openBackpack(player, backpackContext);
-			} else if (player.containerMenu instanceof BackpackContainer backpackContainer) {
-				BackpackContext backpackContext = backpackContainer.getBackpackContext();
-				if (this.slotIndex == -1) {
-					openBackpack(player, backpackContext.getParentBackpackContext());
-				} else if (backpackContainer.isStorageInventorySlot(this.slotIndex)) {
-					openBackpack(player, backpackContext.getSubBackpackContext(this.slotIndex));
-				}
-			} else if (player.containerMenu instanceof IContextAwareContainer contextAwareContainer) {
-				BackpackContext backpackContext = contextAwareContainer.getBackpackContext();
-				openBackpack(player, backpackContext);
-			} else {
-				findAndOpenFirstBackpack(player);
+	static void onMessage(BackpackOpenMessage msg, Supplier<NetworkEvent.Context> contextSupplier) {
+		NetworkEvent.Context context = contextSupplier.get();
+		context.enqueueWork(() -> handleMessage(context.getSender(), msg));
+		context.setPacketHandled(true);
+	}
+
+	private static void handleMessage(@Nullable ServerPlayer player, BackpackOpenMessage msg) {
+		if (player == null) {
+			return;
+		}
+
+		if (!msg.handlerName.isEmpty()) {
+			int slotIndex = msg.slotIndex;
+			if (msg.slotIndex == CHEST_SLOT) {
+				slotIndex -= 36;
+			} else if (msg.slotIndex == OFFHAND_SLOT) {
+				slotIndex = 0;
 			}
-		});
-		return true;
+			BackpackContext.Item backpackContext = new BackpackContext.Item(msg.handlerName, msg.identifier, slotIndex,
+					player.containerMenu instanceof InventoryMenu || (player.containerMenu instanceof BackpackContainer backpackContainer && backpackContainer.getBackpackContext().wasOpenFromInventory()));
+			openBackpack(player, backpackContext);
+		} else if (player.containerMenu instanceof BackpackContainer backpackContainer) {
+			BackpackContext backpackContext = backpackContainer.getBackpackContext();
+			if (msg.slotIndex == -1) {
+				openBackpack(player, backpackContext.getParentBackpackContext());
+			} else if (backpackContainer.isStorageInventorySlot(msg.slotIndex)) {
+				openBackpack(player, backpackContext.getSubBackpackContext(msg.slotIndex));
+			}
+		} else if (player.containerMenu instanceof IContextAwareContainer contextAwareContainer) {
+			BackpackContext backpackContext = contextAwareContainer.getBackpackContext();
+			openBackpack(player, backpackContext);
+		} else {
+			findAndOpenFirstBackpack(player);
+		}
 	}
 
 	private static void findAndOpenFirstBackpack(ServerPlayer player) {
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier, slot) -> {
 			BackpackContext.Item backpackContext = new BackpackContext.Item(inventoryName, identifier, slot);
-			player.sophisticatedCore_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName(), false), backpackContext::toBuffer);
+			player.sophisticatedLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName(), false),
+					backpackContext::toBuffer);
 			return true;
 		});
 	}
 
 	private static void openBackpack(ServerPlayer player, BackpackContext backpackContext) {
-		player.sophisticatedCore_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext.getDisplayName(player), false), backpackContext::toBuffer);
+		player.sophisticatedLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext.getDisplayName(player), false),
+				backpackContext::toBuffer);
 	}
 }

@@ -1,7 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
-import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
-import io.github.fabricators_of_create.porting_lib.models.geometry.RegisterGeometryLoadersCallback;
+import com.github.salandora.sophisticatedlibrary.event.api.v0.client.ClientLifecycleEvents;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IGeometryLoader;
+import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.RegisterGeometryLoadersCallback;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
@@ -27,17 +28,11 @@ import net.minecraft.world.phys.HitResult;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.init.ModBlockColors;
 import net.p3pp3rf1y.sophisticatedbackpacks.client.init.ModItemColors;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.render.BackpackBlockEntityRenderer;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.render.BackpackDynamicModel;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.render.BackpackItemStackRenderer;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.render.BackpackLayerRenderer;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.render.BackpackModel;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.render.ClientBackpackContentsTooltip;
+import net.p3pp3rf1y.sophisticatedbackpacks.client.render.*;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModBlocks;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockPickMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
-import net.p3pp3rf1y.sophisticatedcore.event.client.ClientLifecycleEvent;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -52,10 +47,10 @@ public class ClientEventHandler {
 	public static final ModelLayerLocation BACKPACK_LAYER = new ModelLayerLocation(new ResourceLocation(SophisticatedBackpacks.MOD_ID, BACKPACK_REG_NAME), "main");
 
 	public static void registerHandlers() {
-		ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register((client, world) -> ClientBackpackContentsTooltip.onWorldLoad());
+		ClientLifecycleEvents.CLIENT_LEVEL_LOAD.register((client, world) -> ClientBackpackContentsTooltip.onWorldLoad());
 
 		ClientPickBlockApplyCallback.EVENT.register(ClientEventHandler::handleBlockPick);
-		RegisterGeometryLoadersCallback.EVENT.register(ClientEventHandler::onModelRegistry);
+		RegisterGeometryLoadersCallback.register(ClientEventHandler::onModelRegistry);
 
 		registerRenderers();
 		registerLayer();
@@ -104,7 +99,7 @@ public class ClientEventHandler {
 			return stack;
 		}
 
-		SBPPacketHandler.sendToServer(new BlockPickMessage(stackResult));
+		SBPPacketHandler.INSTANCE.sendToServer(new BlockPickMessage(stackResult));
 		return stack;
 	}
 }

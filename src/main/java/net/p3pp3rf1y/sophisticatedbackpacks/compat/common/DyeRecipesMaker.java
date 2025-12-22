@@ -12,8 +12,8 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedcore.util.ColorHelper;
 
@@ -48,7 +48,7 @@ public class DyeRecipesMaker {
 				DyeColor.BLUE, DyeColor.BLACK
 		));
 
-		BackpackWrapperLookup.get(backpackOutput).ifPresent(wrapper -> wrapper.setColors(clothColor, trimColor));
+		backpackOutput.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(wrapper -> wrapper.setColors(clothColor, trimColor));
 
 		ResourceLocation id = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "multiple_colors");
 		recipes.add(new ShapedRecipe(id, "", CraftingBookCategory.MISC, 3, 1, ingredients, backpackOutput));
@@ -58,7 +58,7 @@ public class DyeRecipesMaker {
 		for (DyeColor color : DyeColor.values()) {
 			ResourceLocation id = new ResourceLocation(SophisticatedBackpacks.MOD_ID, "single_color_" + color.getSerializedName());
 			ItemStack backpackOutput = new ItemStack(ModItems.BACKPACK);
-			BackpackWrapperLookup.get(backpackOutput).ifPresent(
+			backpackOutput.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(
 					wrapper -> wrapper.setColors(ColorHelper.getColor(color.getTextureDiffuseColors()), ColorHelper.getColor(color.getTextureDiffuseColors())));
 			NonNullList<Ingredient> ingredients = NonNullList.create();
 			ingredients.add(Ingredient.of(ModItems.BACKPACK));

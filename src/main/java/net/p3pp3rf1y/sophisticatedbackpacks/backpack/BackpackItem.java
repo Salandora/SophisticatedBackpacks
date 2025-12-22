@@ -1,12 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
+import com.github.salandora.sophisticatedlibrary.util.LazyOptional;
 import com.google.common.collect.MapMaker;
-import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -23,6 +20,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -43,9 +41,9 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
@@ -120,7 +118,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		super.appendHoverText(stack, worldIn, tooltip, flagIn);
 		if (flagIn == TooltipFlag.ADVANCED) {
-			BackpackWrapperLookup.get(stack)
+			stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 					.ifPresent(w -> w.getContentsUuid().ifPresent(uuid -> tooltip.add(Component.literal("UUID: " + uuid).withStyle(ChatFormatting.DARK_GRAY))));
 		}
 		if (!Screen.hasShiftDown()) {
@@ -144,7 +142,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	private boolean hasEverlastingUpgrade(ItemStack stack) {
-		return BackpackWrapperLookup.get(stack).map(w -> !w.getUpgradeHandler().getTypeWrappers(EverlastingUpgradeItem.TYPE).isEmpty()).orElse(false);
+		return stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).map(w -> !w.getUpgradeHandler().getTypeWrappers(EverlastingUpgradeItem.TYPE).isEmpty()).orElse(false);
 	}
 
 	@Nullable
@@ -228,7 +226,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	private static void stopBackpackSounds(ItemStack backpack, Level world, BlockPos pos) {
-		BackpackWrapperLookup.get(backpack).ifPresent(wrapper -> wrapper.getContentsUuid().ifPresent(uuid ->
+		backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(wrapper -> wrapper.getContentsUuid().ifPresent(uuid ->
 				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid))
 		);
 	}
@@ -237,7 +235,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		if (player == null || !player.isCreative()) {
 			return backpack.copy();
 		}
-		return BackpackWrapperLookup.get(backpack)
+		return backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.map(IBackpackWrapper::cloneBackpack).orElse(new ItemStack(ModItems.BACKPACK));
 	}
 
@@ -255,7 +253,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			String handlerName = hand == InteractionHand.MAIN_HAND ? PlayerInventoryProvider.MAIN_INVENTORY : PlayerInventoryProvider.OFFHAND_INVENTORY;
 			int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 0;
 			BackpackContext.Item context = new BackpackContext.Item(handlerName, slot);
-			player.sophisticatedCore_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), stack.getHoverName()), context::toBuffer);
+			player.sophisticatedLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), stack.getHoverName()), context::toBuffer);
 		}
 		return InteractionResultHolder.success(stack);
 	}
@@ -280,15 +278,15 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	@Override
-	public void onArmorTick(ItemStack stack, Level level, Player player) {
+	public void sophisticatedLibrary_onArmorTick(ItemStack stack, Level level, Player player) {
 		if (level.isClientSide || player.isSpectator() || player.isDeadOrDying() || Boolean.FALSE.equals(Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get())) {
 			return;
 		}
-		BackpackWrapperLookup.get(stack).ifPresent(
+		stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(
 				wrapper -> wrapper.getUpgradeHandler().getWrappersThatImplement(ITickableUpgrade.class)
 						.forEach(upgrade -> upgrade.tick(player, player.level(), player.blockPosition()))
 		);
-		super.onArmorTick(stack, level, player);
+		super.sophisticatedLibrary_onArmorTick(stack, level, player);
 	}
 
 	@Override
@@ -296,7 +294,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		if (level.isClientSide || !(entityIn instanceof Player player) || player.isSpectator() || player.isDeadOrDying() || (Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get() && itemSlot > -1)) {
 			return;
 		}
-		BackpackWrapperLookup.get(stack).ifPresent(
+		stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(
 				wrapper -> wrapper.getUpgradeHandler().getWrappersThatImplement(ITickableUpgrade.class)
 						.forEach(upgrade -> upgrade.tick(player, player.level(), player.blockPosition()))
 		);
@@ -312,7 +310,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	@Override
-	public boolean onDroppedByPlayer(ItemStack item, Player player) {
+	public boolean sophisticatedLibrary_onDroppedByPlayer(ItemStack item, Player player) {
 		return !(player.containerMenu instanceof BackpackContainer backpackContainer && backpackContainer.getVisibleStorageItem().map(visibleStorageItem -> visibleStorageItem == item).orElse(false));
 	}
 
@@ -323,25 +321,28 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	@Override
+	public boolean sophisticatedLibrary_shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+		return slotChanged;
+	}
+
+	@Override
+	public boolean sophisticatedLibrary_makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+		return stack.getItem() == ModItems.GOLD_BACKPACK;
+	}
+
+	@Override
 	public Optional<TooltipComponent> getInventoryTooltip(ItemStack stack) {
 		return Optional.of(new BackpackItem.BackpackContentsTooltip(stack));
 	}
 
-	public ItemStack stash(ItemStack storageStack, ItemStack stack, @Nullable Transaction ctx) {
-		return BackpackWrapperLookup.get(storageStack)
-				.map(wrapper -> {
-					try (Transaction inner = Transaction.openNested(ctx)) {
-						long inserted = wrapper.getInventoryForUpgradeProcessing().insert(ItemVariant.of(stack), stack.getCount(), inner);
-						inner.commit();
-						return stack.copyWithCount(stack.getCount() - (int) inserted);
-					}
-				}).orElse(stack);
+	public ItemStack stash(ItemStack storageStack, ItemStack stack, boolean simulate) {
+		return storageStack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).map(wrapper -> wrapper.getInventoryForUpgradeProcessing().insertItem(stack, simulate)).orElse(stack);
 	}
 
 	@Override
 	public StashResult getItemStashable(ItemStack storageStack, ItemStack stack) {
-		return BackpackWrapperLookup.get(storageStack).map(wrapper -> {
-			if (StorageUtil.simulateInsert(wrapper.getInventoryForUpgradeProcessing(), ItemVariant.of(stack), stack.getCount(), null) == 0) {
+		return storageStack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).map(wrapper -> {
+			if (wrapper.getInventoryForUpgradeProcessing().insertItem(stack, true).getCount() == stack.getCount()) {
 				return StashResult.NO_SPACE;
 			}
 			if (wrapper.getInventoryHandler().getSlotTracker().getItems().contains(stack.getItem()) || wrapper.getSettingsHandler().getTypeCategory(MemorySettingsCategory.class).matchesFilter(stack)) {
@@ -365,10 +366,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 		}
 
 		ItemStack stackToStash = slot.getItem();
-		ItemStack stashResult;
-		try(Transaction simulate = Transaction.openOuter()) {
-			stashResult = stash(storageStack, stackToStash, simulate);
-		}
+		ItemStack stashResult = stash(storageStack, stackToStash, true);
 		if (stashResult.getCount() < stackToStash.getCount()) {
 			int countToTake = stackToStash.getCount() - stashResult.getCount();
 			while (countToTake > 0) {
@@ -376,7 +374,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 				if (takeResult.isEmpty()) {
 					break;
 				}
-				stash(storageStack, takeResult, null);
+				stash(storageStack, takeResult, false);
 				countToTake -= takeResult.getCount();
 			}
 			return true;
@@ -391,7 +389,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			return super.overrideOtherStackedOnMe(storageStack, otherStack, slot, action, player, carriedAccess);
 		}
 
-		ItemStack result = stash(storageStack, otherStack, null);
+		ItemStack result = stash(storageStack, otherStack, false);
 		if (result.getCount() != otherStack.getCount()) {
 			carriedAccess.set(result);
 			slot.set(storageStack);

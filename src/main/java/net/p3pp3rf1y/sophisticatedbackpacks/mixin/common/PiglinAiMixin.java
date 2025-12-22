@@ -1,3 +1,4 @@
+/*
 package net.p3pp3rf1y.sophisticatedbackpacks.mixin.common;
 
 import com.google.common.collect.Iterables;
@@ -41,3 +42,4 @@ public class PiglinAiMixin {
 		return entity.getArmorSlots();
 	}
 }
+*/

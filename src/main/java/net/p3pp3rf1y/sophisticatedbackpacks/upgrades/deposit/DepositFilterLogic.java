@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.deposit;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.IItemHandler;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.FilterLogic;
@@ -43,7 +42,7 @@ public class DepositFilterLogic extends FilterLogic {
 		}
 	}
 
-	public void setInventory(Storage<ItemVariant> inventory) {
+	public void setInventory(IItemHandler inventory) {
 		inventoryFilterStacks = InventoryHelper.getUniqueStacks(inventory);
 	}
 

@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -29,12 +28,7 @@ import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.SBPTranslationHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.CompatModIds;
 import net.p3pp3rf1y.sophisticatedbackpacks.compat.trinkets.TrinketsCompat;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackOpenMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.BlockToolSwapMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.EntityToolSwapMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.InventoryInteractionMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.UpgradeToggleMessage;
+import net.p3pp3rf1y.sophisticatedbackpacks.network.*;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.mixin.client.accessor.AbstractContainerScreenAccessor;
 
@@ -127,7 +121,7 @@ public class KeybindHandler {
 		} else {
 			for (Map.Entry<Integer, KeyMapping> slotKeybind : UPGRADE_SLOT_TOGGLE_KEYBINDS.entrySet()) {
 				if (slotKeybind.getValue().consumeClick()) {
-					SBPPacketHandler.sendToServer(new UpgradeToggleMessage(slotKeybind.getKey()));
+					SBPPacketHandler.INSTANCE.sendToServer(new UpgradeToggleMessage(slotKeybind.getKey()));
 				}
 			}
 		}
@@ -162,10 +156,10 @@ public class KeybindHandler {
 		if (rayTrace.getType() == HitResult.Type.BLOCK) {
 			BlockHitResult blockRayTraceResult = (BlockHitResult) rayTrace;
 			BlockPos pos = blockRayTraceResult.getBlockPos();
-			SBPPacketHandler.sendToServer(new BlockToolSwapMessage(pos));
+			SBPPacketHandler.INSTANCE.sendToServer(new BlockToolSwapMessage(pos));
 		} else if (rayTrace.getType() == HitResult.Type.ENTITY) {
 			EntityHitResult entityRayTraceResult = (EntityHitResult) rayTrace;
-			SBPPacketHandler.sendToServer(new EntityToolSwapMessage(entityRayTraceResult.getEntity().getId()));
+			SBPPacketHandler.INSTANCE.sendToServer(new EntityToolSwapMessage(entityRayTraceResult.getEntity().getId()));
 		}
 	}
 
@@ -182,12 +176,12 @@ public class KeybindHandler {
 			return;
 		}
 
-		SBPPacketHandler.sendToServer(new InventoryInteractionMessage(pos, blockraytraceresult.getDirection()));
+		SBPPacketHandler.INSTANCE.sendToServer(new InventoryInteractionMessage(pos, blockraytraceresult.getDirection()));
 	}
 
 	public static boolean sendBackpackOpenOrCloseMessage() {
 		if (Minecraft.getInstance().screen == null) {
-			SBPPacketHandler.sendToServer(new BackpackOpenMessage());
+			SBPPacketHandler.INSTANCE.sendToServer(new BackpackOpenMessage());
 			return false;
 		}
 
@@ -198,12 +192,12 @@ public class KeybindHandler {
 				Optional<PlayerInventoryReturn> ret = getPlayerInventory(slot);
 
 				if (ret.isPresent() && slot.getItem().getItem() instanceof BackpackItem) {
-					SBPPacketHandler.sendToServer(new BackpackOpenMessage(slot.getContainerSlot(), ret.get().identifier(), ret.get().handlerName()));
+					SBPPacketHandler.INSTANCE.sendToServer(new BackpackOpenMessage(slot.getContainerSlot(), ret.get().identifier(), ret.get().handlerName()));
 					return true;
 				}
 			}
 			if (screen instanceof BackpackScreen && slot != null && slot.getItem().getItem() instanceof BackpackItem && slot.getItem().getCount() == 1) {
-				SBPPacketHandler.sendToServer(new BackpackOpenMessage(slot.getContainerSlot()));
+				SBPPacketHandler.INSTANCE.sendToServer(new BackpackOpenMessage(slot.getContainerSlot()));
 				return true;
 			}
 		}

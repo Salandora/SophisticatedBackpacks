@@ -2,7 +2,6 @@ package net.p3pp3rf1y.sophisticatedbackpacks.registry.tool;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.BuiltInRegistries;

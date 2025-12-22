@@ -1,11 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
-import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
-import team.reborn.energy.api.EnergyStorage;
-
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.IntTag;
@@ -18,12 +14,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEnergyStorageUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IFluidHandlerWrapperUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
+import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageFluidHandler;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SortBy;
@@ -37,21 +34,12 @@ import net.p3pp3rf1y.sophisticatedcore.settings.nosort.NoSortSettingsCategory;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeHandler;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.stack.StackUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.tank.TankUpgradeItem;
-import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.InventorySorter;
-import net.p3pp3rf1y.sophisticatedcore.util.LootHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
-import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
+import net.p3pp3rf1y.sophisticatedcore.util.*;
+import team.reborn.energy.api.EnergyStorage;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.IntConsumer;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.IntConsumer;
 
 public class BackpackWrapper implements IBackpackWrapper {
 	public static final int DEFAULT_CLOTH_COLOR = 13394234;
@@ -250,9 +238,9 @@ public class BackpackWrapper implements IBackpackWrapper {
 					upgradeCachesInvalidatedHandler.run();
 				}) {
 					@Override
-					public boolean isItemValid(int slot, ItemVariant resource, int count) {
-						//noinspection ConstantConditions - by this time the upgrade has registryName, so it can't be null
-						return super.isItemValid(slot, resource, count) && (SophisticatedBackpacks.MOD_ID.equals(BuiltInRegistries.ITEM.getKey(resource.getItem()).getNamespace()) || resource.toStack(count).is(ModItems.BACKPACK_UPGRADE_TAG));
+					public boolean isItemValid(int slot, ItemStack stack) {
+						//noinspection ConstantConditions - by this time the upgrade has registryName so it can't be null
+						return super.isItemValid(slot, stack) && (stack.isEmpty() || SophisticatedBackpacks.MOD_ID.equals(BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace()) || stack.is(ModItems.BACKPACK_UPGRADE_TAG));
 					}
 				};
 			} else {
@@ -388,7 +376,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	@Override
 	public ItemStack cloneBackpack() {
 		ItemStack clonedBackpack = cloneBackpack(this);
-		BackpackWrapperLookup.get(clonedBackpack).ifPresent(this::cloneSubbackpacks);
+		clonedBackpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(this::cloneSubbackpacks);
 		return clonedBackpack;
 	}
 
@@ -399,14 +387,14 @@ public class BackpackWrapper implements IBackpackWrapper {
 				return;
 			}
 			inventoryHandler.setStackInSlot(slot,
-					BackpackWrapperLookup.get(stack).map(this::cloneBackpack).orElse(ItemStack.EMPTY));
+					stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).map(this::cloneBackpack).orElse(ItemStack.EMPTY));
 		});
 	}
 
 	private ItemStack cloneBackpack(IBackpackWrapper originalWrapper) {
 		ItemStack backpackCopy = originalWrapper.getBackpack().copy();
 		backpackCopy.removeTagKey(CONTENTS_UUID_TAG);
-		return BackpackWrapperLookup.get(backpackCopy)
+		return backpackCopy.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.map(wrapperCopy -> {
 							originalWrapper.copyDataTo(wrapperCopy);
 							return wrapperCopy.getBackpack();

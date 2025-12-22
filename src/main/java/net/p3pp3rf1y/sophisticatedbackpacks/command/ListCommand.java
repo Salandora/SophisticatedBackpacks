@@ -1,15 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.command;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.*;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.AccessLogRecord;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackAccessLogger;
 

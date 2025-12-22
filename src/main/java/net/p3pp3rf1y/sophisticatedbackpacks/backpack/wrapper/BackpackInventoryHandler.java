@@ -1,11 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception.InceptionUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.InventoryHandler;
@@ -16,9 +15,9 @@ public class BackpackInventoryHandler extends InventoryHandler {
 	}
 
 	@Override
-	protected boolean isAllowed(ItemVariant resource) {
-		return !Config.SERVER.disallowedItems.isItemDisallowed(resource.getItem())
-				&& (!(resource.getItem() instanceof BackpackItem) || (hasInceptionUpgrade() && isBackpackWithoutInceptionUpgrade(resource.toStack())));
+	protected boolean isAllowed(ItemStack stack) {
+		return !Config.SERVER.disallowedItems.isItemDisallowed(stack.getItem())
+				&& (!(stack.getItem() instanceof BackpackItem) || (hasInceptionUpgrade() && isBackpackWithoutInceptionUpgrade(stack)));
 	}
 
 	private boolean hasInceptionUpgrade() {
@@ -26,7 +25,7 @@ public class BackpackInventoryHandler extends InventoryHandler {
 	}
 
 	private boolean isBackpackWithoutInceptionUpgrade(ItemStack stack) {
-		return (stack.getItem() instanceof BackpackItem) && !BackpackWrapperLookup.get(stack)
+		return (stack.getItem() instanceof BackpackItem) && !stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.map(w -> w.getUpgradeHandler().hasUpgrade(InceptionUpgradeItem.TYPE)).orElse(false);
 	}
 }

@@ -1,5 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
+import com.github.salandora.sophisticatedlibrary.event.api.v0.common.EntityEvents;
+import com.github.salandora.sophisticatedlibrary.event.api.v0.common.ItemEntityEvents;
+import com.github.salandora.sophisticatedlibrary.event.api.v0.common.LivingEntityEvents;
+import com.github.salandora.sophisticatedlibrary.event.api.v0.common.MobSpawnEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -9,7 +13,6 @@ import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -35,6 +38,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IAttackEntityResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IBlockClickResponseUpgrade;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlock;
@@ -48,10 +52,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.network.AnotherPlayerBackpackOpenMes
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.settings.BackpackMainSettingsCategory;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
-import net.p3pp3rf1y.sophisticatedcore.event.common.EntityEvents;
-import net.p3pp3rf1y.sophisticatedcore.event.common.ItemEntityEvents;
-import net.p3pp3rf1y.sophisticatedcore.event.common.LivingEntityEvents;
-import net.p3pp3rf1y.sophisticatedcore.event.common.MobSpawnEvents;
 import net.p3pp3rf1y.sophisticatedcore.network.PacketHandler;
 import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsMessage;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
@@ -119,7 +119,7 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 		if (targetPlayer.level().isClientSide) {
-			SBPPacketHandler.sendToServer(new AnotherPlayerBackpackOpenMessage(targetPlayer.getId()));
+			SBPPacketHandler.INSTANCE.sendToServer(new AnotherPlayerBackpackOpenMessage(targetPlayer.getId()));
 			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
@@ -144,7 +144,7 @@ public class CommonEventHandler {
 					numberOfBackpacks.incrementAndGet();
 				}
 				if (runDedupeLogic) {
-					BackpackWrapperLookup.get(backpack).ifPresent(backpackWrapper ->
+					backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(backpackWrapper ->
 							addBackpackIdIfUniqueOrDedupe(backpackIds, backpackWrapper));
 				}
 				return false;
@@ -182,7 +182,7 @@ public class CommonEventHandler {
 
 	private void sendPlayerSettingsToClient(Player player) {
 		String playerTagName = BackpackMainSettingsCategory.SOPHISTICATED_BACKPACK_SETTINGS_PLAYER_TAG;
-		PacketHandler.sendToClient((ServerPlayer) player, new SyncPlayerSettingsMessage(playerTagName, SettingsManager.getPlayerSettingsTag(player, playerTagName)));
+		PacketHandler.INSTANCE.sendToClient((ServerPlayer) player, new SyncPlayerSettingsMessage(playerTagName, SettingsManager.getPlayerSettingsTag(player, playerTagName)));
 	}
 
 	private void onPlayerRespawn(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean alive) {
@@ -194,7 +194,7 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 
-		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.map(wrapper -> {
 					for (IBlockClickResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IBlockClickResponseUpgrade.class)) {
 						if (upgrade.onBlockClick(player, pos)) {
@@ -210,7 +210,7 @@ public class CommonEventHandler {
 		if (level.isClientSide) {
 			return InteractionResult.PASS;
 		}
-		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 				.map(wrapper -> {
 					for (IAttackEntityResponseUpgrade upgrade : wrapper.getUpgradeHandler().getWrappersThatImplement(IAttackEntityResponseUpgrade.class)) {
 						if (upgrade.onAttackEntity(player)) {
@@ -252,21 +252,26 @@ public class CommonEventHandler {
 			return InteractionResult.PASS;
 		}
 
-		AtomicReference<ItemStack> remainingStack = new AtomicReference<>(stack.copy());
+		AtomicReference<ItemStack> remainingStackSimulated = new AtomicReference<>(stack.copy());
 		Level world = player.getCommandSenderWorld();
-		try(Transaction ctx = Transaction.openOuter()) {
-			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
-					.map(wrapper -> {
-						remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(world, player, wrapper.getUpgradeHandler(), remainingStack.get(), ctx));
-						return remainingStack.get().isEmpty();
-					}).orElse(false), Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
-			);
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+				.map(wrapper -> {
+					remainingStackSimulated.set(InventoryHelper.runPickupOnPickupResponseUpgrades(world, wrapper.getUpgradeHandler(), remainingStackSimulated.get(), true));
+					return remainingStackSimulated.get().isEmpty();
+				}).orElse(false), Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
+		);
 
-			if (remainingStack.get().getCount() != stack.getCount()) {
-				itemEntity.setItem(remainingStack.get());
-				ctx.commit();
-				return InteractionResult.SUCCESS;
-			}
+		if (remainingStackSimulated.get().getCount() != itemEntity.getItem().getCount()) {
+			AtomicReference<ItemStack> remainingStack = new AtomicReference<>(itemEntity.getItem().copy());
+			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryHandlerName, identifier, slot) -> backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+							.map(wrapper -> {
+								remainingStack.set(InventoryHelper.runPickupOnPickupResponseUpgrades(world, player, wrapper.getUpgradeHandler(), remainingStack.get(), false));
+								return remainingStack.get().isEmpty();
+							}).orElse(false)
+					, Config.SERVER.nerfsConfig.onlyWornBackpackTriggersUpgrades.get()
+			);
+			itemEntity.setItem(remainingStack.get());
+			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
 	}

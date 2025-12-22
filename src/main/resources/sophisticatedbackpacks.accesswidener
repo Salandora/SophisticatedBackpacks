@@ -4,6 +4,8 @@ accessible field net/minecraft/client/gui/screens/inventory/SmithingScreen EMPTY
 accessible field net/minecraft/client/gui/screens/inventory/SmithingScreen ERROR_TOOLTIP Lnet/minecraft/network/chat/Component;
 accessible field net/minecraft/client/gui/screens/inventory/SmithingScreen MISSING_TEMPLATE_TOOLTIP Lnet/minecraft/network/chat/Component;
 
+accessible method net/minecraft/client/renderer/block/model/ItemOverrides <init> ()V
+
 accessible field net/minecraft/world/inventory/SmithingMenu selectedRecipe Lnet/minecraft/world/item/crafting/SmithingRecipe;
 extendable method net/minecraft/world/inventory/ItemCombinerMenu createContainer (I)Lnet/minecraft/world/SimpleContainer;
 extendable method net/minecraft/world/inventory/ItemCombinerMenu createInputSlots (Lnet/minecraft/world/inventory/ItemCombinerMenuSlotDefinition;)V

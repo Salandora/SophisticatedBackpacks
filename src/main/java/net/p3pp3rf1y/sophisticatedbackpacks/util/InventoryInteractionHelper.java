@@ -1,9 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.util;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.IItemHandler;
+import com.github.salandora.sophisticatedlibrary.util.Capabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -11,11 +9,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IItemHandlerInteractionUpgrade;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 
 import java.util.List;
+import java.util.Optional;
 
 public class InventoryInteractionHelper {
 	private InventoryInteractionHelper() {}
@@ -28,23 +27,19 @@ public class InventoryInteractionHelper {
 		return tryInventoryInteraction(context.getClickedPos(), context.getLevel(), context.getItemInHand(), context.getClickedFace(), player);
 	}
 
-	@SuppressWarnings("unused")
 	public static boolean tryInventoryInteraction(BlockPos pos, Level world, ItemStack backpack, Direction face, Player player) {
 		if (Config.SERVER.noInteractionBlocks.isBlockInteractionDisallowed(world.getBlockState(pos).getBlock())) {
 			return false;
 		}
 
-		Storage<ItemVariant> storage = ItemStorage.SIDED.find(world, pos, null);
-		if (storage instanceof SlottedStorage<ItemVariant> invStorage) {
-			return player.level().isClientSide || BackpackWrapperLookup.get(backpack)
-					.map(wrapper -> tryRunningInteractionWrappers(invStorage, wrapper, player))
-					.orElse(false);
-		}
-
-		return false;
+		return Optional.ofNullable(Capabilities.ItemHandler.SIDED.find(world, pos, face))
+				.map(itemHandler -> player.level().isClientSide || backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+						.map(wrapper -> tryRunningInteractionWrappers(itemHandler, wrapper, player))
+						.orElse(false)
+				).orElse(false);
 	}
 
-	private static boolean tryRunningInteractionWrappers(SlottedStorage<ItemVariant> itemHandler, IStorageWrapper wrapper, Player player) {
+	private static boolean tryRunningInteractionWrappers(IItemHandler itemHandler, IStorageWrapper wrapper, Player player) {
 		List<IItemHandlerInteractionUpgrade> wrappers = wrapper.getUpgradeHandler().getWrappersThatImplement(IItemHandlerInteractionUpgrade.class);
 		if (wrappers.isEmpty()) {
 			return false;

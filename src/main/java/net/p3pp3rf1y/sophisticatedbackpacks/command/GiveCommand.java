@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.command;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
-
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -13,8 +12,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackAccessLogger;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
 
 import java.util.Collection;
@@ -40,7 +39,7 @@ public class GiveCommand {
 			if (!backpack.getHoverName().getString().equals(alr.getBackpackName())) {
 				backpack.setHoverName(Component.literal(alr.getBackpackName()));
 			}
-			BackpackWrapperLookup.get(backpack).ifPresent(backpackWrapper -> {
+			backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(backpackWrapper -> {
 				backpackWrapper.setColors(alr.getClothColor(), alr.getTrimColor());
 				backpackWrapper.setColumnsTaken(alr.getColumnsTaken(), false);
 				backpackWrapper.setContentsUuid(backpackUuid);

@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.restock;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage;
+import com.github.salandora.sophisticatedlibrary.transfer.api.v1.IItemHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -33,12 +32,12 @@ public class RestockUpgradeWrapper extends UpgradeWrapperBase<RestockUpgradeWrap
 	}
 
 	@Override
-	public void onHandlerInteract(SlottedStorage<ItemVariant> itemHandler, Player player) {
+	public void onHandlerInteract(IItemHandler itemHandler, Player player) {
 		AtomicInteger stacksAdded = new AtomicInteger(0);
 
 		InventoryHelper.transfer(itemHandler,
-				new FilteredItemHandler<>(storageWrapper.getInventoryForUpgradeProcessing(), Collections.singletonList(filterLogic), Collections.emptyList()),
-				s -> stacksAdded.incrementAndGet(), null);
+				new FilteredItemHandler(storageWrapper.getInventoryForUpgradeProcessing(), Collections.singletonList(filterLogic), Collections.emptyList()),
+				s -> stacksAdded.incrementAndGet());
 
 		int stacksRestocked = stacksAdded.get();
 		String translKey = stacksRestocked > 0 ? "gui.sophisticatedbackpacks.status.stacks_restocked" : "gui.sophisticatedbackpacks.status.nothing_to_restock";

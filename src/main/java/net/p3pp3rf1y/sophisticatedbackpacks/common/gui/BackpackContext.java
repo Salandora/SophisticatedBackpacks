@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 
+import com.github.salandora.sophisticatedlibrary.util.LazyOptional;
 import com.google.common.collect.ImmutableMap;
-import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -10,9 +10,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlockEntity;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SyncClientInfoMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryHandler;
@@ -156,7 +156,7 @@ public abstract class BackpackContext {
 				return IBackpackWrapper.Noop.INSTANCE;
 			}
 
-			LazyOptional<IBackpackWrapper> backpackWrapper = BackpackWrapperLookup.get(stack);
+			LazyOptional<IBackpackWrapper> backpackWrapper = stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance());
 			if (!backpackWrapper.isPresent()) {
 				SophisticatedBackpacks.LOGGER.error("Error getting backpack wrapper - Unable to find backpack at slot index {} in \"{}\" inventory handler", backpackSlotIndex, handlerName);
 				return IBackpackWrapper.Noop.INSTANCE;
@@ -168,7 +168,7 @@ public abstract class BackpackContext {
 		public void onUpgradeChanged(Player player) {
 			if (!player.level().isClientSide && handlerName.equals(PlayerInventoryProvider.MAIN_INVENTORY)) {
 				IStorageWrapper backpackWrapper = getBackpackWrapper(player);
-				SBPPacketHandler.sendToClient((ServerPlayer) player, new SyncClientInfoMessage(backpackSlotIndex, backpackWrapper.getRenderInfo().getNbt(), backpackWrapper.getColumnsTaken()));
+				SBPPacketHandler.INSTANCE.sendToClient((ServerPlayer) player, new SyncClientInfoMessage(backpackSlotIndex, backpackWrapper.getRenderInfo().getNbt(), backpackWrapper.getColumnsTaken()));
 			}
 		}
 
@@ -230,7 +230,7 @@ public abstract class BackpackContext {
 
 		@Override
 		public IBackpackWrapper getBackpackWrapper(Player player) {
-			return getParentBackpackWrapper(player).map(parent -> BackpackWrapperLookup.get(parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex))
+			return getParentBackpackWrapper(player).map(parent -> parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex).sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 					.orElse(IBackpackWrapper.Noop.INSTANCE)).orElse(IBackpackWrapper.Noop.INSTANCE);
 		}
 
@@ -355,7 +355,7 @@ public abstract class BackpackContext {
 
 		@Override
 		public IBackpackWrapper getBackpackWrapper(Player player) {
-			return getParentBackpackWrapper(player).map(parent -> BackpackWrapperLookup.get(parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex))
+			return getParentBackpackWrapper(player).map(parent -> parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex).sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 					.orElse(IBackpackWrapper.Noop.INSTANCE)).orElse(IBackpackWrapper.Noop.INSTANCE);
 		}
 
@@ -464,7 +464,7 @@ public abstract class BackpackContext {
 
 		@Override
 		public IBackpackWrapper getBackpackWrapper(Player player) {
-			return getParentBackpackWrapper(otherPlayer).map(parent -> BackpackWrapperLookup.get(parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex))
+			return getParentBackpackWrapper(otherPlayer).map(parent -> parent.getInventoryHandler().getStackInSlot(subBackpackSlotIndex).sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 					.orElse(IBackpackWrapper.Noop.INSTANCE)).orElse(IBackpackWrapper.Noop.INSTANCE);
 		}
 

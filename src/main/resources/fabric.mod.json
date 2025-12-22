@@ -45,13 +45,9 @@
         "fabric-api": ">=${fabric_version}",
         "minecraft": "${minecraft_version}",
         "sophisticatedcore": "${sc_version}",
+        "sophisticatedlibrary": "${sl_version}",
         "forgeconfigapiport": ">=${forge_config_version}",
-        "team_reborn_energy": ">=${energy_version}",
-        "porting_lib_loot": ">=${port_lib_version}",
-        "porting_lib_model_loader": ">=${port_lib_version}",
-        "porting_lib_tool_actions": ">=${port_lib_version}",
-        "porting_lib_networking": ">=${port_lib_version}",
-        "porting_lib_transfer": ">=${port_lib_version}"
+        "team_reborn_energy": ">=${energy_version}"
     },
     "suggests": {
         "modmenu": "*"

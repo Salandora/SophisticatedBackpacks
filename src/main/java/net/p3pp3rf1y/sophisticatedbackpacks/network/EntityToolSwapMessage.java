@@ -1,72 +1,76 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEntityToolSwapUpgrade;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
-import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
-public class EntityToolSwapMessage extends SimplePacketBase {
+public class EntityToolSwapMessage {
 	private final int entityId;
 
 	public EntityToolSwapMessage(int entityId) {
 		this.entityId = entityId;
 	}
 
-	public EntityToolSwapMessage(FriendlyByteBuf buffer) { this(buffer.readInt()); }
-
-	@Override
-	public void write(FriendlyByteBuf buffer) {
-		buffer.writeInt(this.entityId);
+	public static void encode(EntityToolSwapMessage msg, FriendlyByteBuf packetBuffer) {
+		packetBuffer.writeInt(msg.entityId);
 	}
 
-	@Override
-	public boolean handle(Context context) {
-		context.enqueueWork(() -> {
-			ServerPlayer sender = context.getSender();
-			if (sender == null) {
-				return;
-			}
+	public static EntityToolSwapMessage decode(FriendlyByteBuf packetBuffer) {
+		return new EntityToolSwapMessage(packetBuffer.readInt());
+	}
 
-			Level level = sender.level();
-			Entity entity = level.getEntity(entityId);
+	static void onMessage(EntityToolSwapMessage msg, Supplier<NetworkEvent.Context> contextSupplier) {
+		NetworkEvent.Context context = contextSupplier.get();
+		context.enqueueWork(() -> handleMessage(msg, context.getSender()));
+		context.setPacketHandled(true);
+	}
 
-			if (entity == null) {
-				return;
-			}
+	private static void handleMessage(EntityToolSwapMessage msg, @Nullable ServerPlayer sender) {
+		if (sender == null) {
+			return;
+		}
 
-			AtomicBoolean result = new AtomicBoolean(false);
-			AtomicBoolean anyUpgradeCanInteract = new AtomicBoolean(false);
-			PlayerInventoryProvider.get().runOnBackpacks(sender, (backpack, inventoryName, identifier, slot) -> BackpackWrapperLookup.get(backpack)
-					.map(backpackWrapper -> {
-								backpackWrapper.getUpgradeHandler().getWrappersThatImplement(IEntityToolSwapUpgrade.class)
-										.forEach(upgrade -> {
-											if (!upgrade.canProcessEntityInteract() || result.get()) {
-												return;
-											}
-											anyUpgradeCanInteract.set(true);
+		Level world = sender.level();
+		Entity entity = world.getEntity(msg.entityId);
 
-											result.set(upgrade.onEntityInteract(level, entity, sender));
-										});
-								return result.get();
-							}
-					).orElse(false)
-			);
+		if (entity == null) {
+			return;
+		}
 
-			if (!anyUpgradeCanInteract.get()) {
-				sender.displayClientMessage(Component.translatable("gui.sophisticatedbackpacks.status.no_tool_swap_upgrade_present"), true);
-				return;
-			}
-			if (!result.get()) {
-				sender.displayClientMessage(Component.translatable("gui.sophisticatedbackpacks.status.no_tool_found_for_entity"), true);
-			}
-		});
-		return true;
+		AtomicBoolean result = new AtomicBoolean(false);
+		AtomicBoolean anyUpgradeCanInteract = new AtomicBoolean(false);
+		PlayerInventoryProvider.get().runOnBackpacks(sender, (backpack, inventoryName, identifier, slot) -> backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+				.map(backpackWrapper -> {
+							backpackWrapper.getUpgradeHandler().getWrappersThatImplement(IEntityToolSwapUpgrade.class)
+									.forEach(upgrade -> {
+										if (!upgrade.canProcessEntityInteract() || result.get()) {
+											return;
+										}
+										anyUpgradeCanInteract.set(true);
+
+										result.set(upgrade.onEntityInteract(world, entity, sender));
+									});
+							return result.get();
+						}
+				).orElse(false)
+		);
+
+		if (!anyUpgradeCanInteract.get()) {
+			sender.displayClientMessage(Component.translatable("gui.sophisticatedbackpacks.status.no_tool_swap_upgrade_present"), true);
+			return;
+		}
+		if (!result.get()) {
+			sender.displayClientMessage(Component.translatable("gui.sophisticatedbackpacks.status.no_tool_found_for_entity"), true);
+		}
 	}
 }

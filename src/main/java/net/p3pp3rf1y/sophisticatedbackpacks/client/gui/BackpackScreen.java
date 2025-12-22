@@ -37,7 +37,7 @@ public class BackpackScreen extends StorageScreenBase<BackpackContainer> {
 				}
 				return true;
 			} else if (!getMenu().isFirstLevelStorage()) {
-				SBPPacketHandler.sendToServer(new BackpackOpenMessage());
+				SBPPacketHandler.INSTANCE.sendToServer(new BackpackOpenMessage());
 				return true;
 			}
 		}

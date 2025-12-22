@@ -6,8 +6,8 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModItems;
 import net.p3pp3rf1y.sophisticatedbackpacks.mixin.common.accessor.ShapedRecipeAccessor;
 import net.p3pp3rf1y.sophisticatedcore.crafting.IWrapperRecipe;
@@ -41,7 +41,7 @@ public class BackpackUpgradeRecipe extends ShapedRecipe implements IWrapperRecip
 	public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
 		ItemStack upgradedBackpack = super.assemble(inv, registryAccess);
 		getBackpack(inv).flatMap(backpack -> Optional.ofNullable(backpack.getTag())).ifPresent(tag -> upgradedBackpack.setTag(tag.copy()));
-		BackpackWrapperLookup.get(upgradedBackpack).ifPresent(wrapper -> {
+		upgradedBackpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(wrapper -> {
 			BackpackItem backpackItem = ((BackpackItem) upgradedBackpack.getItem());
 			wrapper.setSlotNumbers(backpackItem.getNumberOfSlots(), backpackItem.getNumberOfUpgradeSlots());
 		});

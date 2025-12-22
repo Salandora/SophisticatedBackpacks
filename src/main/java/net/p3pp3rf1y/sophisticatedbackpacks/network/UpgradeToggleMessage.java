@@ -1,52 +1,56 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.p3pp3rf1y.sophisticatedbackpacks.common.BackpackWrapperLookup;
+import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
-import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeWrapper;
 
+import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public class UpgradeToggleMessage extends SimplePacketBase {
+public class UpgradeToggleMessage {
 	private final int upgradeSlot;
 
 	public UpgradeToggleMessage(int upgradeSlot) {
 		this.upgradeSlot = upgradeSlot;
 	}
 
-	public UpgradeToggleMessage(FriendlyByteBuf buffer) { this(buffer.readInt()); }
-
-	@Override
-	public void write(FriendlyByteBuf buffer) {
-		buffer.writeInt(this.upgradeSlot);
+	public static void encode(UpgradeToggleMessage msg, FriendlyByteBuf packetBuffer) {
+		packetBuffer.writeInt(msg.upgradeSlot);
 	}
 
-	@Override
-	public boolean handle(Context context) {
-		context.enqueueWork(() -> {
-			ServerPlayer player = context.getSender();
-			if (player == null) {
-				return;
-			}
+	public static UpgradeToggleMessage decode(FriendlyByteBuf packetBuffer) {
+		return new UpgradeToggleMessage(packetBuffer.readInt());
+	}
 
-			PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier, slot) -> {
-				BackpackWrapperLookup.get(backpack).ifPresent(w -> {
-					Map<Integer, IUpgradeWrapper> slotWrappers = w.getUpgradeHandler().getSlotWrappers();
-					if (slotWrappers.containsKey(upgradeSlot)) {
-						IUpgradeWrapper upgradeWrapper = slotWrappers.get(upgradeSlot);
-						if (upgradeWrapper.canBeDisabled()) {
-							upgradeWrapper.setEnabled(!upgradeWrapper.isEnabled());
-							String translKey = upgradeWrapper.isEnabled() ? "gui.sophisticatedbackpacks.status.upgrade_switched_on" : "gui.sophisticatedbackpacks.status.upgrade_switched_off";
-							player.displayClientMessage(Component.translatable(translKey, upgradeWrapper.getUpgradeStack().getHoverName()), true);
-						}
+	static void onMessage(UpgradeToggleMessage msg, Supplier<NetworkEvent.Context> contextSupplier) {
+		NetworkEvent.Context context = contextSupplier.get();
+		context.enqueueWork(() -> handleMessage(context.getSender(), msg));
+		context.setPacketHandled(true);
+	}
+
+	private static void handleMessage(@Nullable ServerPlayer player, UpgradeToggleMessage msg) {
+		if (player == null) {
+			return;
+		}
+
+		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier, slot) -> {
+			backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(w -> {
+				Map<Integer, IUpgradeWrapper> slotWrappers = w.getUpgradeHandler().getSlotWrappers();
+				if (slotWrappers.containsKey(msg.upgradeSlot)) {
+					IUpgradeWrapper upgradeWrapper = slotWrappers.get(msg.upgradeSlot);
+					if (upgradeWrapper.canBeDisabled()) {
+						upgradeWrapper.setEnabled(!upgradeWrapper.isEnabled());
+						String translKey = upgradeWrapper.isEnabled() ? "gui.sophisticatedbackpacks.status.upgrade_switched_on" : "gui.sophisticatedbackpacks.status.upgrade_switched_off";
+						player.displayClientMessage(Component.translatable(translKey, upgradeWrapper.getUpgradeStack().getHoverName()), true);
 					}
-				});
-				return true;
+				}
 			});
+			return true;
 		});
-		return true;
 	}
 }

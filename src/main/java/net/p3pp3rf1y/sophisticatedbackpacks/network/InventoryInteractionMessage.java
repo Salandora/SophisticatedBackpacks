@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
+import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -7,9 +8,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.InventoryInteractionHelper;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
-import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 
-public class InventoryInteractionMessage extends SimplePacketBase {
+import javax.annotation.Nullable;
+import java.util.function.Supplier;
+
+public class InventoryInteractionMessage {
 	private final BlockPos pos;
 	private final Direction face;
 
@@ -18,28 +21,29 @@ public class InventoryInteractionMessage extends SimplePacketBase {
 		this.face = face;
 	}
 
-	public InventoryInteractionMessage(FriendlyByteBuf buffer) { this(buffer.readBlockPos(), buffer.readEnum(Direction.class)); }
-
-	@Override
-	public void write(FriendlyByteBuf buffer) {
-		buffer.writeLong(this.pos.asLong());
-		buffer.writeEnum(this.face);
+	public static void encode(InventoryInteractionMessage msg, FriendlyByteBuf packetBuffer) {
+		packetBuffer.writeLong(msg.pos.asLong());
+		packetBuffer.writeEnum(msg.face);
 	}
 
-	@Override
-	public boolean handle(Context context) {
-		context.enqueueWork(() -> {
-			ServerPlayer sender = context.getSender();
-			if (sender == null) {
-				return;
-			}
+	public static InventoryInteractionMessage decode(FriendlyByteBuf packetBuffer) {
+		return new InventoryInteractionMessage(BlockPos.of(packetBuffer.readLong()), packetBuffer.readEnum(Direction.class));
+	}
 
-			PlayerInventoryProvider.get().runOnBackpacks(sender, (backpack, inventoryName, identifier, slot) -> {
-				InventoryInteractionHelper.tryInventoryInteraction(pos, sender.level(), backpack, face, sender);
-				sender.swing(InteractionHand.MAIN_HAND, true);
-				return true;
-			});
+	static void onMessage(InventoryInteractionMessage msg, Supplier<NetworkEvent.Context> contextSupplier) {
+		NetworkEvent.Context context = contextSupplier.get();
+		context.enqueueWork(() -> handleMessage(msg, context.getSender()));
+		context.setPacketHandled(true);
+	}
+
+	private static void handleMessage(InventoryInteractionMessage msg, @Nullable ServerPlayer sender) {
+		if (sender == null) {
+			return;
+		}
+		PlayerInventoryProvider.get().runOnBackpacks(sender, (backpack, inventoryName, identifier, slot) -> {
+			InventoryInteractionHelper.tryInventoryInteraction(msg.pos, sender.level(), backpack, msg.face, sender);
+			sender.swing(InteractionHand.MAIN_HAND, true);
+			return true;
 		});
-		return true;
 	}
 }

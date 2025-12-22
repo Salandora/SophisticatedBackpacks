@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks;
 
 import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
-
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -12,7 +11,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.common.CommonEventHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModCompat;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.registry.RegistryLoader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +29,9 @@ public class SophisticatedBackpacks implements ModInitializer {
 		ModCompat.initCompats();
 		Config.SERVER.initListeners();
 		SBPCommand.init();
-		SBPPacketHandler.init();
+		SBPPacketHandler.INSTANCE.init();
+		SBPPacketHandler.INSTANCE.initServerListener();
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(registryLoader);
-		SBPPacketHandler.getChannel().initServerListener();
 		ModCompat.compatsSetup();
 	}
 
