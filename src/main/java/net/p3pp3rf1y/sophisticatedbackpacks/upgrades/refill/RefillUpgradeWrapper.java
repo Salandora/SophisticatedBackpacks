@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.refill;
 
-import com.github.salandora.sophisticatedlibrary.transfer.api.v1.IItemHandler;
-import com.github.salandora.sophisticatedlibrary.util.Capabilities;
+import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.IItemHandler;
+import com.github.salandora.sophisticatedfabriclib.util.Capabilities;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;

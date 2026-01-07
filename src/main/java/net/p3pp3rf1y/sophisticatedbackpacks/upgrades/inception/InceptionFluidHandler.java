@@ -1,8 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.EmptyFluidHandler;
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidStack;
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.IFluidHandler;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.EmptyFluidHandler;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.FluidStack;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.IFluidHandler;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;

@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
-import com.github.salandora.sophisticatedlibrary.util.LazyOptional;
+import com.github.salandora.sophisticatedfabriclib.util.LazyOptional;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.CapabilityBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;

@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
-import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
+import com.github.salandora.sophisticatedfabriclib.network.api.v0.NetworkEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;

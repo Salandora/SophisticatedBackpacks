@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidStack;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.FluidStack;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;

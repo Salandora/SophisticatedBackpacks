@@ -1,9 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common;
 
-import com.github.salandora.sophisticatedlibrary.event.api.v0.common.EntityEvents;
-import com.github.salandora.sophisticatedlibrary.event.api.v0.common.ItemEntityEvents;
-import com.github.salandora.sophisticatedlibrary.event.api.v0.common.LivingEntityEvents;
-import com.github.salandora.sophisticatedlibrary.event.api.v0.common.MobSpawnEvents;
+import com.github.salandora.sophisticatedfabriclib.event.api.v0.common.EntityEvents;
+import com.github.salandora.sophisticatedfabriclib.event.api.v0.common.ItemEntityEvents;
+import com.github.salandora.sophisticatedfabriclib.event.api.v0.common.LivingEntityEvents;
+import com.github.salandora.sophisticatedfabriclib.event.api.v0.common.MobSpawnEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;

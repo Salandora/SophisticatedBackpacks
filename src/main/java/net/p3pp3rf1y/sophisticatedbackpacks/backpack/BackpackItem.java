@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
-import com.github.salandora.sophisticatedlibrary.util.LazyOptional;
+import com.github.salandora.sophisticatedfabriclib.util.LazyOptional;
 import com.google.common.collect.MapMaker;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;

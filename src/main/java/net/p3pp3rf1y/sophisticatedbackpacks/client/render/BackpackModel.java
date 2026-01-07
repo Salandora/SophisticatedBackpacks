@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidStack;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.FluidStack;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

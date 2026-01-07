@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
-import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
+import com.github.salandora.sophisticatedfabriclib.network.api.v0.NetworkEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContainer;
 

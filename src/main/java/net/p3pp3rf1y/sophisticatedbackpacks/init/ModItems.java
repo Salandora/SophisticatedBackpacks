@@ -1,8 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
-import com.github.salandora.sophisticatedlibrary.loot.SophisticatedLoot;
-import com.github.salandora.sophisticatedlibrary.loot.api.v1.IGlobalLootModifier;
-import com.github.salandora.sophisticatedlibrary.util.LazyOptional;
+import com.github.salandora.sophisticatedfabriclib.loot.SophisticatedLoot;
+import com.github.salandora.sophisticatedfabriclib.loot.api.v1.IGlobalLootModifier;
+import com.github.salandora.sophisticatedfabriclib.util.LazyOptional;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;

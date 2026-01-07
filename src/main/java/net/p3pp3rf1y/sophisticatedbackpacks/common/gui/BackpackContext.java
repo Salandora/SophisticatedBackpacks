@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.common.gui;
 
-import com.github.salandora.sophisticatedlibrary.util.LazyOptional;
+import com.github.salandora.sophisticatedfabriclib.util.LazyOptional;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

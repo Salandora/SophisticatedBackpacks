@@ -1,9 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.data;
 
-import com.github.salandora.sophisticatedlibrary.loot.api.v1.GlobalLootModifierProvider;
-import com.github.salandora.sophisticatedlibrary.loot.api.v1.IGlobalLootModifier;
-import com.github.salandora.sophisticatedlibrary.loot.api.v1.LootModifier;
-import com.github.salandora.sophisticatedlibrary.loot.api.v1.LootTableIdCondition;
+import com.github.salandora.sophisticatedfabriclib.loot.api.v1.GlobalLootModifierProvider;
+import com.github.salandora.sophisticatedfabriclib.loot.api.v1.IGlobalLootModifier;
+import com.github.salandora.sophisticatedfabriclib.loot.api.v1.LootModifier;
+import com.github.salandora.sophisticatedfabriclib.loot.api.v1.LootTableIdCondition;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

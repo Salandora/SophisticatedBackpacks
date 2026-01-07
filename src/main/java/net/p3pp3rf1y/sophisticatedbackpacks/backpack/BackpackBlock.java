@@ -1,9 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidActionResult;
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidType;
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidUtil;
-import com.github.salandora.sophisticatedlibrary.util.Capabilities;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.FluidActionResult;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.FluidType;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.FluidUtil;
+import com.github.salandora.sophisticatedfabriclib.util.Capabilities;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
