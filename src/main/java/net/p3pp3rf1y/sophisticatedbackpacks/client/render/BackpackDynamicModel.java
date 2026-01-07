@@ -1,10 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.FluidStack;
-import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IGeometryBakingContext;
-import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IGeometryLoader;
-import com.github.salandora.sophisticatedlibrary.model.api.v1.loading.IUnbakedGeometry;
-import com.github.salandora.sophisticatedlibrary.model.api.v1.util.ModelData;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.FluidStack;
+import com.github.salandora.sophisticatedfabriclib.model.api.v1.loading.IGeometryBakingContext;
+import com.github.salandora.sophisticatedfabriclib.model.api.v1.loading.IGeometryLoader;
+import com.github.salandora.sophisticatedfabriclib.model.api.v1.loading.IUnbakedGeometry;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;

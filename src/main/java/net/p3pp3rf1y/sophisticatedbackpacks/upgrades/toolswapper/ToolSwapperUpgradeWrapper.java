@@ -1,8 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.toolswapper;
 
-import com.github.salandora.sophisticatedlibrary.common.api.v1.ItemAbilities;
-import com.github.salandora.sophisticatedlibrary.common.api.v1.ItemAbility;
-import com.github.salandora.sophisticatedlibrary.common.api.v1.extensions.entity.SophisticatedShearable;
+import com.github.salandora.sophisticatedfabriclib.common.api.v1.ItemAbilities;
+import com.github.salandora.sophisticatedfabriclib.common.api.v1.ItemAbility;
+import com.github.salandora.sophisticatedfabriclib.common.api.v1.extensions.entity.SophisticatedShearable;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static com.github.salandora.sophisticatedlibrary.common.api.v1.ItemAbilities.*;
+import static com.github.salandora.sophisticatedfabriclib.common.api.v1.ItemAbilities.*;
 
 public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpgradeWrapper, ToolSwapperUpgradeItem>
 		implements IBlockClickResponseUpgrade, IAttackEntityResponseUpgrade, IBlockToolSwapUpgrade, IEntityToolSwapUpgrade {

@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.anvil;
 
-import com.github.salandora.sophisticatedlibrary.transfer.api.v1.ComponentItemHandler;
+import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.ComponentItemHandler;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;

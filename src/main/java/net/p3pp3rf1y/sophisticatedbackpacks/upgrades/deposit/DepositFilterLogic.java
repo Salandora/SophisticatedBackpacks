@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.deposit;
 
-import com.github.salandora.sophisticatedlibrary.transfer.api.v1.IItemHandler;
-import com.github.salandora.sophisticatedlibrary.util.DeferredHolder;
+import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.IItemHandler;
+import com.github.salandora.sophisticatedfabriclib.util.DeferredHolder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.init.ModDataComponents;

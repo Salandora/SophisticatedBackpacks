@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
-import com.github.salandora.sophisticatedlibrary.fluid.api.v1.IFluidHandlerItem;
+import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.IFluidHandlerItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;

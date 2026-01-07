@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.network;
 
-import com.github.salandora.sophisticatedlibrary.network.api.v1.IPayloadContext;
-import com.github.salandora.sophisticatedlibrary.network.api.v1.PacketDistributor;
+import com.github.salandora.sophisticatedfabriclib.network.api.v1.IPayloadContext;
+import com.github.salandora.sophisticatedfabriclib.network.api.v1.PacketDistributor;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

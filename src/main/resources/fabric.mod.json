@@ -45,7 +45,7 @@
         "fabric-api": ">=${fabric_version}",
         "minecraft": "${minecraft_version}",
         "sophisticatedcore": "${sc_version}",
-        "sophisticatedlibrary": "${sl_version}"
+        "sophisticatedfabriclib": "${sl_version}"
     },
     "suggests": {
         "modmenu": "*"

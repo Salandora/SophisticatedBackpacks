@@ -1,9 +1,9 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
-import com.github.salandora.sophisticatedlibrary.transfer.api.v1.wrapper.fabric.FabricFluidHandlerWrapper;
-import com.github.salandora.sophisticatedlibrary.transfer.api.v1.wrapper.fabric.FabricItemHandlerWrapper;
-import com.github.salandora.sophisticatedlibrary.util.Capabilities;
-import com.github.salandora.sophisticatedlibrary.util.DeferredRegister;
+import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.wrapper.fabric.FabricFluidHandlerWrapper;
+import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.wrapper.fabric.FabricItemHandlerWrapper;
+import com.github.salandora.sophisticatedfabriclib.util.Capabilities;
+import com.github.salandora.sophisticatedfabriclib.util.DeferredRegister;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;

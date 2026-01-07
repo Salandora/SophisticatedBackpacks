@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.compat.chipped;
 
-import com.github.salandora.sophisticatedlibrary.util.DeferredHolder;
+import com.github.salandora.sophisticatedfabriclib.util.DeferredHolder;
 import earth.terrarium.chipped.common.compat.jei.WorkbenchCategory;
 import earth.terrarium.chipped.common.registry.ModBlocks;
 import earth.terrarium.chipped.common.registry.ModRecipeTypes;

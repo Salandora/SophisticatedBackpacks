@@ -1,6 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.client.render;
 
-import com.github.salandora.sophisticatedlibrary.network.api.v1.PacketDistributor;
+import com.github.salandora.sophisticatedfabriclib.network.api.v1.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
