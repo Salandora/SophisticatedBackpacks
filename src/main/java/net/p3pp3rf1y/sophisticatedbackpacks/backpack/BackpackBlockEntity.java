@@ -1,6 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
 import com.github.salandora.sophisticatedfabriclib.common.api.v1.extensions.block.entity.SophisticatedBlockEntity;
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.EmptyEnergyStorage;
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.IEnergyStorage;
 import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.EmptyFluidHandler;
 import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.IFluidHandler;
 import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.IItemHandler;
@@ -25,7 +27,6 @@ import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.util.RegistryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
-import team.reborn.energy.api.EnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -47,7 +48,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	@Nullable
 	private IFluidHandler externalFluidHandler;
 	@Nullable
-	private EnergyStorage externalEnergyStorage;
+	private IEnergyStorage externalEnergyStorage;
 
 	public BackpackBlockEntity(BlockPos pos, BlockState state) {
 		super(BACKPACK_TILE_TYPE.get(), pos, state);
@@ -175,12 +176,12 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Nullable
-	public EnergyStorage getExternalEnergyStorage(@Nullable Direction direction) {
+	public IEnergyStorage getExternalEnergyStorage(@Nullable Direction direction) {
 		if (isBlockConnectionDisallowed(direction)) {
 			return null;
 		}
 		if (externalEnergyStorage == null) {
-			externalEnergyStorage = getBackpackWrapper().getEnergyStorage().map(EnergyStorage.class::cast).orElse(EnergyStorage.EMPTY);
+			externalEnergyStorage = getBackpackWrapper().getEnergyStorage().map(IEnergyStorage.class::cast).orElse(EmptyEnergyStorage.INSTANCE);
 		}
 		return externalEnergyStorage;
 	}

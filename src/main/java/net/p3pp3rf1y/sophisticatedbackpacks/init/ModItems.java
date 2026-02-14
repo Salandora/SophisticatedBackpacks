@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.init;
 
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.wrapper.teamreborn.IEnergyStorageWrapper;
 import com.github.salandora.sophisticatedfabriclib.loot.SophisticatedLoot;
 import com.github.salandora.sophisticatedfabriclib.loot.api.v1.IGlobalLootModifier;
 import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.EmptyItemHandler;
@@ -408,6 +409,7 @@ public class ModItems {
 			}
 			return BackpackWrapper.fromStack(stack).getItemFluidHandler().orElse(null);
 		}, backpacks);
+		Capabilities.EnergyStorage.ITEM.registerForItems((stack, ctx) -> BackpackWrapper.fromStack(stack).getEnergyStorage().orElse(null), backpacks);
 
 		ItemStorage.ITEM.registerForItems((stack, ctx) -> {
 					IBackpackWrapper backpackWrapper = BackpackWrapper.fromStack(stack);
@@ -419,7 +421,7 @@ public class ModItems {
 					}
 					return BackpackWrapper.fromStack(stack).getItemFluidHandler().map(FabricFluidHandlerWrapper::of).orElse(null);
 				}, backpacks);
-		EnergyStorage.ITEM.registerForItems((stack, ctx) -> BackpackWrapper.fromStack(stack).getEnergyStorage().orElse(null), backpacks);
+		EnergyStorage.ITEM.registerForItems((stack, ctx) -> BackpackWrapper.fromStack(stack).getEnergyStorage().map(IEnergyStorageWrapper::of).orElse(null), backpacks);
 	}
 
 	private static class BackpackCauldronInteraction implements CauldronInteraction {

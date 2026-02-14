@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper;
 
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.IEnergyStorage;
 import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.FluidStack;
 import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.IFluidHandler;
 import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.IFluidHandlerItem;
@@ -35,7 +36,6 @@ import net.p3pp3rf1y.sophisticatedcore.util.InventoryHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.InventorySorter;
 import net.p3pp3rf1y.sophisticatedcore.util.LootHelper;
 import net.p3pp3rf1y.sophisticatedcore.util.RandHelper;
-import team.reborn.energy.api.EnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -67,7 +67,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	private IStorageFluidHandler fluidHandler = null;
 	private boolean energyStorageInitialized = false;
 	@Nullable
-	private EnergyStorage energyStorage = null;
+	private IEnergyStorage energyStorage = null;
 
 	@Nullable
 	private BackpackRenderInfo renderInfo;
@@ -196,9 +196,9 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	@Override
-	public Optional<EnergyStorage> getEnergyStorage() {
+	public Optional<IEnergyStorage> getEnergyStorage() {
 		if (!energyStorageInitialized) {
-			EnergyStorage wrappedStorage = getUpgradeHandler().getWrappersThatImplement(EnergyStorage.class).stream().findFirst().orElse(null);
+			IEnergyStorage wrappedStorage = getUpgradeHandler().getWrappersThatImplement(IEnergyStorage.class).stream().findFirst().orElse(null);
 
 			for (IEnergyStorageUpgradeWrapper energyStorageWrapperUpgrade : getUpgradeHandler().getWrappersThatImplement(IEnergyStorageUpgradeWrapper.class)) {
 				wrappedStorage = energyStorageWrapperUpgrade.wrapStorage(wrappedStorage);
@@ -207,7 +207,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 			energyStorage = wrappedStorage;
 		}
 
-		return energyStorage == null || energyStorage.getCapacity() == 0 ? Optional.empty() : Optional.of(energyStorage);
+		return energyStorage == null || energyStorage.getMaxEnergyStored() == 0 ? Optional.empty() : Optional.of(energyStorage);
 	}
 
 	@Override

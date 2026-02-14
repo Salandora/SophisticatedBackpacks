@@ -1,7 +1,7 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.IEnergyStorage;
 import net.minecraft.world.item.ItemStack;
-import team.reborn.energy.api.EnergyStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEnergyStorageUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IFluidHandlerWrapperUpgrade;
@@ -75,7 +75,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 
 	@Override
 	@Nullable
-	public EnergyStorage wrapStorage(@Nullable EnergyStorage energyStorage) {
+	public IEnergyStorage wrapStorage(@Nullable IEnergyStorage energyStorage) {
 		if (Boolean.TRUE.equals(Config.SERVER.inceptionUpgrade.upgradesInContainedBackpacksAreFunctional.get())) {
 			initSubBackpacksHandler();
 			return new InceptionEnergyStorage(energyStorage, getInventoryOrder(), subBackpacksHandler);
