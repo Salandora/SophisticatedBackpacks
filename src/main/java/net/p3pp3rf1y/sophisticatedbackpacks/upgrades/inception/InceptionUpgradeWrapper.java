@@ -1,7 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.upgrades.inception;
 
-import team.reborn.energy.api.EnergyStorage;
-
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.IEnergyStorage;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.Config;
 import net.p3pp3rf1y.sophisticatedbackpacks.api.IEnergyStorageUpgradeWrapper;
@@ -15,8 +14,8 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.IUpgradeWrapperAccessor;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgradeWrapper, InceptionUpgradeItem>
 		implements IInventoryWrapperUpgrade, IUpgradeAccessModifier, IFluidHandlerWrapperUpgrade, IEnergyStorageUpgradeWrapper {
@@ -76,7 +75,7 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 
 	@Override
 	@Nullable
-	public EnergyStorage wrapStorage(@Nullable EnergyStorage energyStorage) {
+	public IEnergyStorage wrapStorage(@Nullable IEnergyStorage energyStorage) {
 		if (Boolean.TRUE.equals(Config.SERVER.inceptionUpgrade.upgradesInContainedBackpacksAreFunctional.get())) {
 			initSubBackpacksHandler();
 			return new InceptionEnergyStorage(energyStorage, getInventoryOrder(), subBackpacksHandler);

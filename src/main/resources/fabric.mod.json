@@ -46,8 +46,7 @@
         "minecraft": "${minecraft_version}",
         "sophisticatedcore": "${sc_version}",
         "sophisticatedfabriclib": "${sl_version}",
-        "forgeconfigapiport": ">=${forge_config_version}",
-        "team_reborn_energy": ">=${energy_version}"
+        "forgeconfigapiport": ">=${forge_config_version}"
     },
     "suggests": {
         "modmenu": "*"

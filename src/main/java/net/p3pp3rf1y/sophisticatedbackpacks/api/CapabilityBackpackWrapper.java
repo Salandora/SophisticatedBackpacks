@@ -1,5 +1,6 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.api;
 
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.wrapper.teamreborn.IEnergyStorageWrapper;
 import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.wrapper.fabric.FabricFluidHandlerWrapper;
 import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.wrapper.fabric.FabricItemHandlerWrapper;
 import com.github.salandora.sophisticatedfabriclib.util.Capabilities;
@@ -27,19 +28,21 @@ public class CapabilityBackpackWrapper {
     static {
 		ITEM.registerForItems(BackpackItem.initCapabilities(), BACKPACKS);
 
-		Capabilities.ItemHandler.ITEM.registerForItems(((stack, ctx) -> stack.sophisticatedLibrary_getLazyCapability(ITEM).map(IStorageWrapper::getInventoryForInputOutput).orElse(null)), BACKPACKS);
-		Capabilities.FluidHandler.ITEM.registerForItems(((stack, ctx) -> stack.sophisticatedLibrary_getLazyCapability(ITEM).flatMap(IStorageWrapper::getFluidHandler).orElse(null)), BACKPACKS);
+		Capabilities.ItemHandler.ITEM.registerForItems(((stack, ctx) -> stack.sophisticatedFabricLibrary_getLazyCapability(ITEM).map(IStorageWrapper::getInventoryForInputOutput).orElse(null)), BACKPACKS);
+		Capabilities.FluidHandler.ITEM.registerForItems(((stack, ctx) -> stack.sophisticatedFabricLibrary_getLazyCapability(ITEM).flatMap(IStorageWrapper::getFluidHandler).orElse(null)), BACKPACKS);
+		Capabilities.EnergyStorage.ITEM.registerForItems(((stack, ctx) -> stack.sophisticatedFabricLibrary_getLazyCapability(ITEM).flatMap(IStorageWrapper::getEnergyStorage).orElse(null)), BACKPACKS);
 
 		//ItemItemStorages.ITEM.registerForItems((stack, ctx) -> get(stack).map(IStorageWrapper::getInventoryForInputOutput).orElse(null), BACKPACKS);
-		FluidStorage.ITEM.registerForItems((stack, ctx) -> stack.sophisticatedLibrary_getLazyCapability(ITEM).flatMap(IStorageWrapper::getFluidHandler).map(FabricFluidHandlerWrapper::of).orElse(null), BACKPACKS);
-		EnergyStorage.ITEM.registerForItems((stack, ctx) -> stack.sophisticatedLibrary_getLazyCapability(ITEM).flatMap(IStorageWrapper::getEnergyStorage).orElse(null), BACKPACKS);
-
+		FluidStorage.ITEM.registerForItems((stack, ctx) -> stack.sophisticatedFabricLibrary_getLazyCapability(ITEM).flatMap(IStorageWrapper::getFluidHandler).map(FabricFluidHandlerWrapper::of).orElse(null), BACKPACKS);
+		EnergyStorage.ITEM.registerForItems((stack, ctx) -> stack.sophisticatedFabricLibrary_getLazyCapability(ITEM).flatMap(IStorageWrapper::getEnergyStorage).map(IEnergyStorageWrapper::of).orElse(null), BACKPACKS);
 
 		Capabilities.ItemHandler.SIDED.registerForBlockEntity((be, dir) -> be.getCapability(Capabilities.ItemHandler.SIDED, dir).orElse(null), ModBlocks.BACKPACK_TILE_TYPE);
 		Capabilities.FluidHandler.SIDED.registerForBlockEntity((be, dir) -> be.getCapability(Capabilities.FluidHandler.SIDED, dir).orElse(null), ModBlocks.BACKPACK_TILE_TYPE);
+		Capabilities.EnergyStorage.SIDED.registerForBlockEntity((be, dir) -> be.getCapability(Capabilities.EnergyStorage.SIDED, dir).orElse(null), ModBlocks.BACKPACK_TILE_TYPE);
 
+		// TODO:
 		ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(Capabilities.ItemHandler.SIDED, direction).map(FabricItemHandlerWrapper::of).orElse(null), ModBlocks.BACKPACK_TILE_TYPE);
         FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(Capabilities.FluidHandler.SIDED, direction).map(FabricFluidHandlerWrapper::of).orElse(null), ModBlocks.BACKPACK_TILE_TYPE);
-        EnergyStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(EnergyStorage.SIDED, direction).orElse(null), ModBlocks.BACKPACK_TILE_TYPE);
+        EnergyStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.getCapability(Capabilities.EnergyStorage.SIDED, direction).map(IEnergyStorageWrapper::of).orElse(null), ModBlocks.BACKPACK_TILE_TYPE);
     }
 }

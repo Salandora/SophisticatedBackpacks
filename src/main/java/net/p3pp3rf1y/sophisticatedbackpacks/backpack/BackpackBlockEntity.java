@@ -1,6 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.backpack;
 
 import com.github.salandora.sophisticatedfabriclib.common.api.v1.extensions.block.entity.SophisticatedBlockEntity;
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.EmptyEnergyStorage;
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.IEnergyStorage;
 import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.EmptyFluidHandler;
 import com.github.salandora.sophisticatedfabriclib.fluid.api.v1.IFluidHandler;
 import com.github.salandora.sophisticatedfabriclib.transfer.api.v1.IItemHandler;
@@ -26,7 +28,6 @@ import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderInfo;
 import net.p3pp3rf1y.sophisticatedcore.renderdata.TankPosition;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.util.WorldHelper;
-import team.reborn.energy.api.EnergyStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +50,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	@Nullable
 	private LazyOptional<IFluidHandler> fluidHandlerCap;
 	@Nullable
-	private LazyOptional<EnergyStorage> energyStorageCap;
+	private LazyOptional<IEnergyStorage> energyStorageCap;
 
 	public BackpackBlockEntity(BlockPos pos, BlockState state) {
 		super(BACKPACK_TILE_TYPE, pos, state);
@@ -146,9 +147,9 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 				fluidHandlerCap = LazyOptional.of(() -> getBackpackWrapper().getFluidHandler().map(IFluidHandler.class::cast).orElse(EmptyFluidHandler.INSTANCE));
 			}
 			return fluidHandlerCap.cast();
-		} else if (cap == EnergyStorage.SIDED) {
+		} else if (cap == Capabilities.EnergyStorage.SIDED) {
 			if (energyStorageCap == null) {
-				energyStorageCap = LazyOptional.of(() -> getBackpackWrapper().getEnergyStorage().map(EnergyStorage.class::cast).orElse(EnergyStorage.EMPTY));
+				energyStorageCap = LazyOptional.of(() -> getBackpackWrapper().getEnergyStorage().map(IEnergyStorage.class::cast).orElse(EmptyEnergyStorage.INSTANCE));
 			}
 			return energyStorageCap.cast();
 		}
@@ -173,7 +174,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 			tempFluidHandlerCap.invalidate();
 		}
 		if (energyStorageCap != null) {
-			LazyOptional<EnergyStorage> tempEnergyStorageCap = energyStorageCap;
+			LazyOptional<IEnergyStorage> tempEnergyStorageCap = energyStorageCap;
 			energyStorageCap = null;
 			tempEnergyStorageCap.invalidate();
 		}

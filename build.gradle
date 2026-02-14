@@ -288,8 +288,7 @@ processResources {
             fabric_version      : project.fabric_version,
             sc_version          : mavenVersionToFabric(project.sc_version),
             sl_version          : mavenVersionToFabric(project.sl_version),
-            forge_config_version: project.forge_config_api_port_version,
-            energy_version      : project.energy_version
+            forge_config_version: project.forge_config_api_port_version
     ]
 
     inputs.properties replaceProperties

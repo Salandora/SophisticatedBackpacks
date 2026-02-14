@@ -1,10 +1,10 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.api;
 
-import team.reborn.energy.api.EnergyStorage;
+import com.github.salandora.sophisticatedfabriclib.energy.api.v1.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
 public interface IEnergyStorageUpgradeWrapper {
 	@Nullable
-	EnergyStorage wrapStorage(@Nullable EnergyStorage energyStorage);
+	IEnergyStorage wrapStorage(@Nullable IEnergyStorage energyStorage);
 }
