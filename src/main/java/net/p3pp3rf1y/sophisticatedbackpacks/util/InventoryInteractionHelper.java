@@ -33,7 +33,7 @@ public class InventoryInteractionHelper {
 		}
 
 		return Optional.ofNullable(Capabilities.ItemHandler.SIDED.find(world, pos, face))
-				.map(itemHandler -> player.level().isClientSide || backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+				.map(itemHandler -> player.level().isClientSide || backpack.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 						.map(wrapper -> tryRunningInteractionWrappers(itemHandler, wrapper, player))
 						.orElse(false)
 				).orElse(false);

@@ -50,7 +50,7 @@ public class AnotherPlayerBackpackOpenMessage {
 				if (canAnotherPlayerOpenBackpack(anotherPlayer, backpack)) {
 
 					BackpackContext.AnotherPlayer backpackContext = new BackpackContext.AnotherPlayer(inventoryName, identifier, slot, anotherPlayer);
-					player.sophisticatedLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName()),
+					player.sophisticatedFabricLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName()),
 							backpackContext::toBuffer);
 				} else {
 					player.displayClientMessage(Component.translatable("gui.sophisticatedbackpacks.status.backpack_cannot_be_open_by_another_player"), true);
@@ -61,7 +61,7 @@ public class AnotherPlayerBackpackOpenMessage {
 	}
 
 	private static boolean canAnotherPlayerOpenBackpack(Player anotherPlayer, ItemStack backpack) {
-		return backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).map(wrapper -> {
+		return backpack.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).map(wrapper -> {
 			MainSettingsCategory<?> category = wrapper.getSettingsHandler().getGlobalSettingsCategory();
 			return SettingsManager.getSettingValue(anotherPlayer, category.getPlayerSettingsTagName(), category, BackpackMainSettingsCategory.ANOTHER_PLAYER_CAN_OPEN);
 		}).orElse(false);

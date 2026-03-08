@@ -87,14 +87,14 @@ public class BackpackOpenMessage {
 	private static void findAndOpenFirstBackpack(ServerPlayer player) {
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier, slot) -> {
 			BackpackContext.Item backpackContext = new BackpackContext.Item(inventoryName, identifier, slot);
-			player.sophisticatedLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName(), false),
+			player.sophisticatedFabricLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName(), false),
 					backpackContext::toBuffer);
 			return true;
 		});
 	}
 
 	private static void openBackpack(ServerPlayer player, BackpackContext backpackContext) {
-		player.sophisticatedLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext.getDisplayName(player), false),
+		player.sophisticatedFabricLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext.getDisplayName(player), false),
 				backpackContext::toBuffer);
 	}
 }

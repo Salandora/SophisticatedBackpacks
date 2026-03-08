@@ -57,7 +57,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	public void setBackpack(ItemStack backpack) {
-		backpackWrapper = backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).orElse(IBackpackWrapper.Noop.INSTANCE);
+		backpackWrapper = backpack.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).orElse(IBackpackWrapper.Noop.INSTANCE);
 		backpackWrapper.setContentsChangeHandler(() -> {
 			setChanged();
 			updateBlockRender = false;
@@ -90,8 +90,8 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void sophisticatedLibrary_onLoad() {
-		SophisticatedBlockEntity.super.sophisticatedLibrary_onLoad();
+	public void sophisticatedFabricLibrary_onLoad() {
+		SophisticatedBlockEntity.super.sophisticatedFabricLibrary_onLoad();
 		registerWithControllerOnLoad();
 	}
 
@@ -157,8 +157,8 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void sophisticatedLibrary_invalidateCaps() {
-		SophisticatedBlockEntity.super.sophisticatedLibrary_invalidateCaps();
+	public void sophisticatedFabricLibrary_invalidateCaps() {
+		SophisticatedBlockEntity.super.sophisticatedFabricLibrary_invalidateCaps();
 		invalidateBackpackCaps();
 	}
 
@@ -259,8 +259,8 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void sophisticatedLibrary_onChunkUnloaded() {
-		SophisticatedBlockEntity.super.sophisticatedLibrary_onChunkUnloaded();
+	public void sophisticatedFabricLibrary_onChunkUnloaded() {
+		SophisticatedBlockEntity.super.sophisticatedFabricLibrary_onChunkUnloaded();
 		chunkBeingUnloaded = true;
 	}
 

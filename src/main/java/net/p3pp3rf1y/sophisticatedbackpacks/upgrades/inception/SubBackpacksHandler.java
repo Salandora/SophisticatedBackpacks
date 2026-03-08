@@ -44,7 +44,7 @@ public class SubBackpacksHandler {
 		if (backpackWasInTheSlot != backpackIsInTheSlot) {
 			notifyAndRefreshSubbackpacks();
 		} else {
-			LazyOptional<IBackpackWrapper> backpackWrapper = stackInSlot.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance());
+			LazyOptional<IBackpackWrapper> backpackWrapper = stackInSlot.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance());
 			if (backpackWrapper.isPresent() && backpackWrapper.map(w -> w != subBackpacks.get(slot)).orElse(false)) {
 				notifyAndRefreshSubbackpacks();
 			}
@@ -76,7 +76,7 @@ public class SubBackpacksHandler {
 
 		for (int slot = 0; slot < inventoryHandler.getSlotCount(); slot++) {
 			int finalSlot = slot;
-			inventoryHandler.getStackInSlot(slot).sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+			inventoryHandler.getStackInSlot(slot).sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 					.ifPresent(wrapper -> subBackpacks.put(finalSlot, wrapper));
 		}
 	}

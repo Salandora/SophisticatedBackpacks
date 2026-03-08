@@ -25,7 +25,7 @@ public class BackpackItemStackRenderer implements BuiltinItemRendererRegistry.Dy
 		RenderType rendertype = ItemBlockRenderTypes.getRenderType(stack, true);
 		VertexConsumer ivertexbuilder = ItemRenderer.getFoilBufferDirect(buffer, rendertype, true, stack.hasFoil());
 		((ItemRendererAccessor) itemRenderer).callRenderModelLists(model, stack, combinedLight, combinedOverlay, poseStack, ivertexbuilder);
-		stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(backpackWrapper ->
+		stack.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(backpackWrapper ->
 				backpackWrapper.getRenderInfo().getItemDisplayRenderInfo().getDisplayItem().ifPresent(displayItem -> {
 			poseStack.translate(0.5, 0.6, 0.25);
 			poseStack.scale(0.5f, 0.5f, 0.5f);

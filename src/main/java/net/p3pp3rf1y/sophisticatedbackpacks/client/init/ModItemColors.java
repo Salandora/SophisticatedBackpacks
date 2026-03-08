@@ -21,7 +21,7 @@ public class ModItemColors {
 			if (layer > 3 || !(backpack.getItem() instanceof BackpackItem)) {
 				return -1;
 			}
-			return backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).map(backpackWrapper -> {
+			return backpack.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).map(backpackWrapper -> {
 				if (layer == 0) {
 					return backpackWrapper.getMainColor();
 				} else if (layer == 1) {

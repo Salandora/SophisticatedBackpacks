@@ -121,7 +121,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public float sophisticatedLibrary_getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
+	public float sophisticatedFabricLibrary_getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return BEDROCK_RESISTANCE;
 		}
@@ -162,10 +162,10 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 		}
 
-		if (!heldItem.isEmpty() && heldItem.sophisticatedLibrary_getCapability(Capabilities.FluidHandler.ITEM).isPresent()) {
+		if (!heldItem.isEmpty() && heldItem.sophisticatedFabricLibrary_getCapability(Capabilities.FluidHandler.ITEM).isPresent()) {
 			WorldHelper.getBlockEntity(level, pos, BackpackBlockEntity.class)
 					.flatMap(te -> te.getBackpackWrapper().getFluidHandler()).ifPresent(backpackFluidHandler ->
-							player.sophisticatedLibrary_getCapability(Capabilities.ItemHandler.ENTITY).ifPresent(playerInventory -> {
+							player.sophisticatedFabricLibrary_getCapability(Capabilities.ItemHandler.ENTITY).ifPresent(playerInventory -> {
 								FluidActionResult resultOfEmptying = FluidUtil.tryEmptyContainerAndStow(heldItem, backpackFluidHandler, playerInventory, FluidType.BUCKET_VOLUME, player, true);
 								if (resultOfEmptying.isSuccess()) {
 									player.setItemInHand(hand, resultOfEmptying.getResult());
@@ -180,7 +180,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 		}
 
 		BackpackContext.Block backpackContext = new BackpackContext.Block(pos);
-		player.sophisticatedLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext),
+		player.sophisticatedFabricLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext),
 				getBackpackDisplayName(level, pos)), backpackContext::toBuffer);
 		return InteractionResult.SUCCESS;
 	}
@@ -229,7 +229,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	private static void stopBackpackSounds(ItemStack backpack, Level world, BlockPos pos) {
-		backpack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(wrapper -> wrapper.getContentsUuid().ifPresent(uuid ->
+		backpack.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance()).ifPresent(wrapper -> wrapper.getContentsUuid().ifPresent(uuid ->
 				ServerStorageSoundHandler.stopPlayingDisc((ServerLevel) world, Vec3.atCenterOf(pos), uuid))
 		);
 	}
@@ -278,11 +278,11 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public boolean sophisticatedLibrary_canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity) {
+	public boolean sophisticatedFabricLibrary_canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return false;
 		}
-		return super.sophisticatedLibrary_canEntityDestroy(state, world, pos, entity);
+		return super.sophisticatedFabricLibrary_canEntityDestroy(state, world, pos, entity);
 	}
 
 	private void tryToPickup(Level world, ItemEntity itemEntity, IStorageWrapper w) {

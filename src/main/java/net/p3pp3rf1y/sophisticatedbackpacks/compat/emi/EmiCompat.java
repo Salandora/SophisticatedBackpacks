@@ -63,8 +63,8 @@ public class EmiCompat implements EmiPlugin {
         registerCraftingRecipes(registry, DyeRecipesMaker.getRecipes());
 
         Comparison compareColor = Comparison.of((a, b) ->
-            a.getItemStack().sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
-                .map(stackA -> b.getItemStack().sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+            a.getItemStack().sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+                .map(stackA -> b.getItemStack().sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
                     .map(stackB -> stackA.getMainColor() == stackB.getMainColor() && stackA.getAccentColor() == stackB.getAccentColor())
                     .orElse(false))
                 .orElse(false));

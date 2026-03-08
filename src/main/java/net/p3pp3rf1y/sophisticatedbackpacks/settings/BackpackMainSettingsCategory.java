@@ -28,8 +28,8 @@ public class BackpackMainSettingsCategory extends MainSettingsCategory<BackpackM
 	}
 
 	private static void onPlayerClone(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wasDeath) {
-		CompoundTag oldData = oldPlayer.sophisticatedLibrary_getCustomData();
-		CompoundTag newData = newPlayer.sophisticatedLibrary_getCustomData();
+		CompoundTag oldData = oldPlayer.sophisticatedFabricLibrary_getCustomData();
+		CompoundTag newData = newPlayer.sophisticatedFabricLibrary_getCustomData();
 
 		if (oldData.contains(SOPHISTICATED_BACKPACK_SETTINGS_PLAYER_TAG)) {
 			//noinspection ConstantConditions

@@ -90,7 +90,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 			return;
 		}
 		if (entity instanceof Player player) {;
-			player.sophisticatedLibrary_getCapability(Capabilities.ItemHandler.ENTITY, null).ifPresent(playerInvHandler -> InventoryHelper.iterate(filterLogic.getFilterHandler(), (slot, filter) -> {
+			player.sophisticatedFabricLibrary_getCapability(Capabilities.ItemHandler.ENTITY, null).ifPresent(playerInvHandler -> InventoryHelper.iterate(filterLogic.getFilterHandler(), (slot, filter) -> {
 				if (filter.isEmpty()) {
 					return;
 				}

@@ -22,7 +22,7 @@ public class REIServerCompat implements REIServerPlugin {
         EntryComparator<Tag> nbt = EntryComparator.nbt();
         Function<ItemStack, CompoundTag> colorTag = stack -> {
             CompoundTag tag = new CompoundTag();
-            stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+            stack.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
                     .ifPresent(wrapper -> {
                         tag.putInt("clothColor", wrapper.getMainColor());
                         tag.putInt("borderColor", wrapper.getAccentColor());
