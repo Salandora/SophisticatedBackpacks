@@ -42,7 +42,7 @@ public record AnotherPlayerBackpackOpenPayload(int anotherPlayerId) implements C
 				if (canAnotherPlayerOpenBackpack(anotherPlayer, backpack)) {
 
 					BackpackContext.AnotherPlayer backpackContext = new BackpackContext.AnotherPlayer(inventoryName, identifier, slot, anotherPlayer);
-					player.sophisticatedCore_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName()), backpackContext::toBuffer);
+					player.sophisticatedFabricLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName()), backpackContext::toBuffer);
 				} else {
 					player.displayClientMessage(Component.translatable("gui.sophisticatedbackpacks.status.backpack_cannot_be_open_by_another_player"), true);
 				}

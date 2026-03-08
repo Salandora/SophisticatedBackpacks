@@ -1,8 +1,8 @@
 package net.p3pp3rf1y.sophisticatedbackpacks.settings;
 
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.p3pp3rf1y.sophisticatedcore.settings.MainSetting;
 import net.p3pp3rf1y.sophisticatedcore.settings.SettingsManager;
 import net.p3pp3rf1y.sophisticatedcore.settings.main.MainSettingsCategory;
@@ -28,8 +28,8 @@ public class BackpackMainSettingsCategory extends MainSettingsCategory<BackpackM
 	}
 
 	private static void onPlayerClone(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wasDeath) {
-		CompoundTag oldData = oldPlayer.sophisticatedLibrary_getCustomData();
-		CompoundTag newData = newPlayer.sophisticatedLibrary_getCustomData();
+		CompoundTag oldData = oldPlayer.sophisticatedFabricLibrary_getCustomData();
+		CompoundTag newData = newPlayer.sophisticatedFabricLibrary_getCustomData();
 
 		if (oldData.contains(SOPHISTICATED_BACKPACK_SETTINGS_PLAYER_TAG)) {
 			//noinspection ConstantConditions

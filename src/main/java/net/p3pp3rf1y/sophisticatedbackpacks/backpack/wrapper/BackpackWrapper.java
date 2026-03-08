@@ -137,7 +137,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private int getNumberOfInventorySlots() {
-		Integer inventorySlots = getBackpackStack().sophisticatedLibrary_get(ModCoreDataComponents.NUMBER_OF_INVENTORY_SLOTS);
+		Integer inventorySlots = getBackpackStack().sophisticatedFabricLibrary_get(ModCoreDataComponents.NUMBER_OF_INVENTORY_SLOTS);
 
 		if (inventorySlots != null) {
 			return inventorySlots;
@@ -155,7 +155,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private void setNumberOfInventorySlots(int itemInventorySlots) {
-		getBackpackStack().sophisticatedLibrary_set(ModCoreDataComponents.NUMBER_OF_INVENTORY_SLOTS, itemInventorySlots);
+		getBackpackStack().sophisticatedFabricLibrary_set(ModCoreDataComponents.NUMBER_OF_INVENTORY_SLOTS, itemInventorySlots);
 	}
 
 	private CompoundTag getBackpackContentsNbt() {
@@ -277,7 +277,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private int getNumberOfUpgradeSlots() {
-		Integer upgradeSlots = getBackpackStack().sophisticatedLibrary_get(ModCoreDataComponents.NUMBER_OF_UPGRADE_SLOTS);
+		Integer upgradeSlots = getBackpackStack().sophisticatedFabricLibrary_get(ModCoreDataComponents.NUMBER_OF_UPGRADE_SLOTS);
 
 		if (upgradeSlots != null) {
 			return upgradeSlots;
@@ -290,7 +290,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public Optional<UUID> getContentsUuid() {
-		return Optional.ofNullable(getBackpackStack().sophisticatedLibrary_get(ModCoreDataComponents.STORAGE_UUID));
+		return Optional.ofNullable(getBackpackStack().sophisticatedFabricLibrary_get(ModCoreDataComponents.STORAGE_UUID));
 	}
 
 	private UUID getOrCreateContentsUuid() {
@@ -315,28 +315,28 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public int getMainColor() {
-		return getBackpackStack().sophisticatedLibrary_getOrDefault(ModCoreDataComponents.MAIN_COLOR, DEFAULT_MAIN_COLOR);
+		return getBackpackStack().sophisticatedFabricLibrary_getOrDefault(ModCoreDataComponents.MAIN_COLOR, DEFAULT_MAIN_COLOR);
 	}
 
 	@Override
 	public int getAccentColor() {
-		return getBackpackStack().sophisticatedLibrary_getOrDefault(ModCoreDataComponents.ACCENT_COLOR, DEFAULT_ACCENT_COLOR);
+		return getBackpackStack().sophisticatedFabricLibrary_getOrDefault(ModCoreDataComponents.ACCENT_COLOR, DEFAULT_ACCENT_COLOR);
 	}
 
 	@Override
 	public Optional<Integer> getOpenTabId() {
-		return Optional.ofNullable(getBackpackStack().sophisticatedLibrary_get(ModCoreDataComponents.OPEN_TAB_ID));
+		return Optional.ofNullable(getBackpackStack().sophisticatedFabricLibrary_get(ModCoreDataComponents.OPEN_TAB_ID));
 	}
 
 	@Override
 	public void setOpenTabId(int openTabId) {
-		getBackpackStack().sophisticatedLibrary_set(ModCoreDataComponents.OPEN_TAB_ID, openTabId);
+		getBackpackStack().sophisticatedFabricLibrary_set(ModCoreDataComponents.OPEN_TAB_ID, openTabId);
 		backpackSaveHandler.run();
 	}
 
 	@Override
 	public void removeOpenTabId() {
-		getBackpackStack().sophisticatedLibrary_remove(ModCoreDataComponents.OPEN_TAB_ID);
+		getBackpackStack().sophisticatedFabricLibrary_remove(ModCoreDataComponents.OPEN_TAB_ID);
 		backpackSaveHandler.run();
 	}
 
@@ -349,13 +349,13 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void setSortBy(SortBy sortBy) {
-		getBackpackStack().sophisticatedLibrary_set(ModCoreDataComponents.SORT_BY, sortBy);
+		getBackpackStack().sophisticatedFabricLibrary_set(ModCoreDataComponents.SORT_BY, sortBy);
 		backpackSaveHandler.run();
 	}
 
 	@Override
 	public SortBy getSortBy() {
-		return getBackpackStack().sophisticatedLibrary_getOrDefault(ModCoreDataComponents.SORT_BY, SortBy.NAME);
+		return getBackpackStack().sophisticatedFabricLibrary_getOrDefault(ModCoreDataComponents.SORT_BY, SortBy.NAME);
 	}
 
 	@Override
@@ -398,7 +398,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	private ItemStack cloneBackpack(IBackpackWrapper originalWrapper) {
 		ItemStack backpackCopy = originalWrapper.getBackpack().copy();
-		backpackCopy.sophisticatedLibrary_remove(ModCoreDataComponents.STORAGE_UUID);
+		backpackCopy.sophisticatedFabricLibrary_remove(ModCoreDataComponents.STORAGE_UUID);
 		IBackpackWrapper wrapperCopy = BackpackWrapper.fromStack(backpackCopy);
 		originalWrapper.copyDataTo(wrapperCopy);
 		return wrapperCopy.getBackpack();
@@ -424,8 +424,8 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void setLoot(ResourceLocation lootTableName, float lootFactor) {
-		getBackpackStack().sophisticatedLibrary_set(ModDataComponents.LOOT_TABLE, lootTableName);
-		getBackpackStack().sophisticatedLibrary_set(ModDataComponents.LOOT_FACTOR, lootFactor);
+		getBackpackStack().sophisticatedFabricLibrary_set(ModDataComponents.LOOT_TABLE, lootTableName);
+		getBackpackStack().sophisticatedFabricLibrary_set(ModDataComponents.LOOT_FACTOR, lootFactor);
 		backpackSaveHandler.run();
 	}
 
@@ -447,8 +447,8 @@ public class BackpackWrapper implements IBackpackWrapper {
 		}
 
 		ItemContainerContents containerItems = backpack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
-		for (int slot = 0; slot < containerItems.sophisticatedLibrary_getSlots(); slot++) {
-			ItemStack stack = containerItems.sophisticatedLibrary_getStackInSlot(slot);
+		for (int slot = 0; slot < containerItems.sophisticatedFabricLibrary_getSlots(); slot++) {
+			ItemStack stack = containerItems.sophisticatedFabricLibrary_getStackInSlot(slot);
 			if (stack.isEmpty()) {
 				continue;
 			}
@@ -458,7 +458,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private void fillWithLoot(Level level, BlockPos pos) {
-		ResourceLocation lootTable = getBackpackStack().sophisticatedLibrary_get(ModDataComponents.LOOT_TABLE);
+		ResourceLocation lootTable = getBackpackStack().sophisticatedFabricLibrary_get(ModDataComponents.LOOT_TABLE);
 		if (lootTable == null) {
 			return;
 		}
@@ -467,7 +467,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void setContentsUuid(UUID storageUuid) {
-		getBackpackStack().sophisticatedLibrary_set(ModCoreDataComponents.STORAGE_UUID, storageUuid);
+		getBackpackStack().sophisticatedFabricLibrary_set(ModCoreDataComponents.STORAGE_UUID, storageUuid);
 /* TODO add in the future
 		StorageWrapperRepository.migrateToUuid(this, backpack, storageUuid);
 */
@@ -481,7 +481,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public void removeContentsUUIDTag() {
-		getBackpackStack().sophisticatedLibrary_remove(ModCoreDataComponents.STORAGE_UUID);
+		getBackpackStack().sophisticatedFabricLibrary_remove(ModCoreDataComponents.STORAGE_UUID);
 	}
 
 	private ItemStack getBackpackStack() {
@@ -499,7 +499,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	@Override
 	public void setColumnsTaken(int columnsTaken, boolean hasChanged) {
 		int originalColumnsTaken = getColumnsTaken();
-		getBackpackStack().sophisticatedLibrary_set(ModDataComponents.COLUMNS_TAKEN, columnsTaken);
+		getBackpackStack().sophisticatedFabricLibrary_set(ModDataComponents.COLUMNS_TAKEN, columnsTaken);
 		if (hasChanged) {
 			int diff = (columnsTaken - originalColumnsTaken) * getNumberOfSlotRows();
 			onSlotsChange.accept(diff);
@@ -520,7 +520,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 
 	@Override
 	public int getColumnsTaken() {
-		return getBackpackStack().sophisticatedLibrary_getOrDefault(ModDataComponents.COLUMNS_TAKEN, 0);
+		return getBackpackStack().sophisticatedFabricLibrary_getOrDefault(ModDataComponents.COLUMNS_TAKEN, 0);
 	}
 
 	private void fillWithLootFromTable(Level level, BlockPos pos, ResourceLocation lootTable) {
@@ -529,10 +529,10 @@ public class BackpackWrapper implements IBackpackWrapper {
 			return;
 		}
 
-		float lootFactor = getBackpackStack().sophisticatedLibrary_getOrDefault(ModDataComponents.LOOT_FACTOR, 0f);
+		float lootFactor = getBackpackStack().sophisticatedFabricLibrary_getOrDefault(ModDataComponents.LOOT_FACTOR, 0f);
 
-		getBackpackStack().sophisticatedLibrary_remove(ModDataComponents.LOOT_TABLE);
-		getBackpackStack().sophisticatedLibrary_remove(ModDataComponents.LOOT_FACTOR);
+		getBackpackStack().sophisticatedFabricLibrary_remove(ModDataComponents.LOOT_TABLE);
+		getBackpackStack().sophisticatedFabricLibrary_remove(ModDataComponents.LOOT_FACTOR);
 
 		List<ItemStack> loot = LootHelper.getLoot(lootTable, server, serverLevel, pos);
 		loot.removeIf(stack -> stack.getItem() instanceof BackpackItem);
@@ -541,7 +541,7 @@ public class BackpackWrapper implements IBackpackWrapper {
 	}
 
 	private void setNumberOfUpgradeSlots(int numberOfUpgradeSlots) {
-		getBackpackStack().sophisticatedLibrary_set(ModCoreDataComponents.NUMBER_OF_UPGRADE_SLOTS, numberOfUpgradeSlots);
+		getBackpackStack().sophisticatedFabricLibrary_set(ModCoreDataComponents.NUMBER_OF_UPGRADE_SLOTS, numberOfUpgradeSlots);
 	}
 
 	@Override

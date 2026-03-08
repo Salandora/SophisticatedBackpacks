@@ -40,20 +40,20 @@ public class AnvilUpgradeWrapper extends UpgradeWrapperBase<AnvilUpgradeWrapper,
 	}
 
 	public boolean shouldShiftClickIntoStorage() {
-		return upgrade.sophisticatedLibrary_getOrDefault(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, true);
+		return upgrade.sophisticatedFabricLibrary_getOrDefault(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, true);
 	}
 
 	public void setShiftClickIntoStorage(boolean shiftClickIntoStorage) {
-		upgrade.sophisticatedLibrary_set(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, shiftClickIntoStorage);
+		upgrade.sophisticatedFabricLibrary_set(ModCoreDataComponents.SHIFT_CLICK_INTO_STORAGE, shiftClickIntoStorage);
 		save();
 	}
 
 	public String getItemName() {
-		return upgrade.sophisticatedLibrary_getOrDefault(ModDataComponents.ITEM_NAME, "");
+		return upgrade.sophisticatedFabricLibrary_getOrDefault(ModDataComponents.ITEM_NAME, "");
 	}
 
 	public void setItemName(String itemName) {
-		upgrade.sophisticatedLibrary_set(ModDataComponents.ITEM_NAME, itemName);
+		upgrade.sophisticatedFabricLibrary_set(ModDataComponents.ITEM_NAME, itemName);
 		save();
 	}
 }

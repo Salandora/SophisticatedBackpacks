@@ -80,7 +80,7 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 	}
 
 	private void renderSlotBg(GuiGraphics guiGraphics, Slot slot) {
-		GuiHelper.renderSlotsBackground(guiGraphics, slot.x + screen.sophisticatedLibrary_getGuiLeft() - 1, slot.y + screen.sophisticatedLibrary_getGuiTop() - 1, 1, 1);
+		GuiHelper.renderSlotsBackground(guiGraphics, slot.x + screen.sophisticatedFabricLibrary_getGuiLeft() - 1, slot.y + screen.sophisticatedFabricLibrary_getGuiTop() - 1, 1, 1);
 	}
 
 	@Override
@@ -94,11 +94,11 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 		renderCost(guiGraphics, x + 3, y + 62);
 
 		Slot firstSlot = getContainer().getSlots().get(0);
-		int inputSlotsY = firstSlot.y + screen.sophisticatedLibrary_getGuiTop();
-		int firstInputSlotX = firstSlot.x + screen.sophisticatedLibrary_getGuiLeft();
-		int secondInputSlotX = getContainer().getSlots().get(1).x + screen.sophisticatedLibrary_getGuiLeft();
+		int inputSlotsY = firstSlot.y + screen.sophisticatedFabricLibrary_getGuiTop();
+		int firstInputSlotX = firstSlot.x + screen.sophisticatedFabricLibrary_getGuiLeft();
+		int secondInputSlotX = getContainer().getSlots().get(1).x + screen.sophisticatedFabricLibrary_getGuiLeft();
 		Slot resultSlot = getContainer().getSlots().get(2);
-		int resultSlotX = resultSlot.x + screen.sophisticatedLibrary_getGuiLeft();
+		int resultSlotX = resultSlot.x + screen.sophisticatedFabricLibrary_getGuiLeft();
 
 		GuiHelper.blit(guiGraphics, firstInputSlotX + 18 + (secondInputSlotX - (firstInputSlotX + 18)) / 2 - PLUS_SIGN.getWidth() / 2 - 1, inputSlotsY + 2, PLUS_SIGN);
 		int arrowX = secondInputSlotX + 18 + (resultSlotX - (secondInputSlotX + 18)) / 2 - ARROW.getWidth() / 2 - 1;
@@ -113,16 +113,16 @@ public class AnvilUpgradeTab extends UpgradeSettingsTab<AnvilUpgradeContainer> {
 	@Override
 	protected void moveSlotsToTab() {
 		Slot firstInputSlot = getContainer().getSlots().get(0);
-		firstInputSlot.x = x - screen.sophisticatedLibrary_getGuiLeft() + 4;
-		firstInputSlot.y = y + 42 - screen.sophisticatedLibrary_getGuiTop() + 1;
+		firstInputSlot.x = x - screen.sophisticatedFabricLibrary_getGuiLeft() + 4;
+		firstInputSlot.y = y + 42 - screen.sophisticatedFabricLibrary_getGuiTop() + 1;
 
 		Slot secondInputSlot = getContainer().getSlots().get(1);
-		secondInputSlot.x = x - screen.sophisticatedLibrary_getGuiLeft() + getWidth() / 2 - 9;
-		secondInputSlot.y = y + 42 - screen.sophisticatedLibrary_getGuiTop() + 1;
+		secondInputSlot.x = x - screen.sophisticatedFabricLibrary_getGuiLeft() + getWidth() / 2 - 9;
+		secondInputSlot.y = y + 42 - screen.sophisticatedFabricLibrary_getGuiTop() + 1;
 
 		Slot resultSlot = getContainer().getSlots().get(2);
-		resultSlot.x = x - screen.sophisticatedLibrary_getGuiLeft() + getWidth() - 2 - 3 - 18;
-		resultSlot.y = y + 42 - screen.sophisticatedLibrary_getGuiTop() + 1;
+		resultSlot.x = x - screen.sophisticatedFabricLibrary_getGuiLeft() + getWidth() - 2 - 3 - 18;
+		resultSlot.y = y + 42 - screen.sophisticatedFabricLibrary_getGuiTop() + 1;
 	}
 
 	protected void renderCost(GuiGraphics guiGraphics, int x, int y) {

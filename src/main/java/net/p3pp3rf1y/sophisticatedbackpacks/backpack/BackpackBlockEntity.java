@@ -88,7 +88,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void sophisticatedLibrary_onLoad() {
+	public void sophisticatedFabricLibrary_onLoad() {
 		// super.sophisticatedCore_onLoad();
 		registerWithControllerOnLoad();
 	}
@@ -143,7 +143,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	private void invalidateHandlers() {
-		sophisticatedLibrary_invalidateCapabilities();
+		sophisticatedFabricLibrary_invalidateCapabilities();
 		externalItemHandler = null;
 		externalFluidHandler = null;
 		externalEnergyStorage = null;
@@ -265,7 +265,7 @@ public class BackpackBlockEntity extends BlockEntity implements IControllableSto
 	}
 
 	@Override
-	public void sophisticatedLibrary_onChunkUnloaded() {
+	public void sophisticatedFabricLibrary_onChunkUnloaded() {
 		// super.sophisticatedCore_onChunkUnloaded();
 		chunkBeingUnloaded = true;
 	}

@@ -115,7 +115,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public float sophisticatedLibrary_getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
+	public float sophisticatedFabricLibrary_getExplosionResistance(BlockState state, BlockGetter world, BlockPos pos, Explosion explosion) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return BEDROCK_RESISTANCE;
 		}
@@ -156,7 +156,7 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 
 		BackpackContext.Block backpackContext = new BackpackContext.Block(pos);
 
-		player.sophisticatedCore_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), getBackpackDisplayName(level, pos)), backpackContext::toBuffer);
+		player.sophisticatedFabricLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), getBackpackDisplayName(level, pos)), backpackContext::toBuffer);
 		return InteractionResult.SUCCESS;
 	}
 
@@ -272,11 +272,11 @@ public class BackpackBlock extends Block implements EntityBlock, SimpleWaterlogg
 	}
 
 	@Override
-	public boolean sophisticatedLibrary_canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity) {
+	public boolean sophisticatedFabricLibrary_canEntityDestroy(BlockState state, BlockGetter world, BlockPos pos, Entity entity) {
 		if (hasEverlastingUpgrade(world, pos)) {
 			return false;
 		}
-		return super.sophisticatedLibrary_canEntityDestroy(state, world, pos, entity);
+		return super.sophisticatedFabricLibrary_canEntityDestroy(state, world, pos, entity);
 	}
 
 	private void tryToPickup(Level level, ItemEntity itemEntity, IStorageWrapper w) {

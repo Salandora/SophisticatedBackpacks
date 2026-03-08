@@ -83,8 +83,8 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	public static void setColors(ItemStack backpackStack, int mainColor, int accentColor) {
-		backpackStack.sophisticatedLibrary_set(ModCoreDataComponents.MAIN_COLOR, mainColor);
-		backpackStack.sophisticatedLibrary_set(ModCoreDataComponents.ACCENT_COLOR, accentColor);
+		backpackStack.sophisticatedFabricLibrary_set(ModCoreDataComponents.MAIN_COLOR, mainColor);
+		backpackStack.sophisticatedFabricLibrary_set(ModCoreDataComponents.ACCENT_COLOR, accentColor);
 	}
 
 	@Override
@@ -254,7 +254,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 			String handlerName = hand == InteractionHand.MAIN_HAND ? PlayerInventoryProvider.MAIN_INVENTORY : PlayerInventoryProvider.OFFHAND_INVENTORY;
 			int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 0;
 			BackpackContext.Item context = new BackpackContext.Item(handlerName, slot);
-			player.sophisticatedCore_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), stack.getHoverName()), context::toBuffer);
+			player.sophisticatedFabricLibrary_openMenu(new SimpleMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, context), stack.getHoverName()), context::toBuffer);
 		}
 		return InteractionResultHolder.success(stack);
 	}
@@ -279,7 +279,7 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	@Override
-	public boolean sophisticatedLibrary_onDroppedByPlayer(ItemStack item, Player player) {
+	public boolean sophisticatedFabricLibrary_onDroppedByPlayer(ItemStack item, Player player) {
 		return !(player.containerMenu instanceof BackpackContainer backpackContainer && backpackContainer.getVisibleStorageItem().map(visibleStorageItem -> visibleStorageItem == item).orElse(false));
 	}
 
@@ -290,12 +290,12 @@ public class BackpackItem extends ItemBase implements IStashStorageItem, Equipab
 	}
 
 	@Override
-	public boolean sophisticatedLibrary_shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+	public boolean sophisticatedFabricLibrary_shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
 		return slotChanged;
 	}
 
 	@Override
-	public boolean sophisticatedLibrary_makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+	public boolean sophisticatedFabricLibrary_makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
 		return stack.getItem() == ModItems.GOLD_BACKPACK.get();
 	}
 

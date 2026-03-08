@@ -179,7 +179,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private static boolean canPerformAnyAction(ItemStack stack, Set<ItemAbility> toolActions) {
 		for (ItemAbility toolAction : toolActions) {
-			if (stack.sophisticatedLibrary_canPerformAction(toolAction)) {
+			if (stack.sophisticatedFabricLibrary_canPerformAction(toolAction)) {
 				return true;
 			}
 		}
@@ -192,7 +192,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		}
 
 		AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
-		if (!stack.isEmpty() && stack.sophisticatedLibrary_canPerformAction(ItemAbilities.SWORD_SWEEP)) {
+		if (!stack.isEmpty() && stack.sophisticatedFabricLibrary_canPerformAction(ItemAbilities.SWORD_SWEEP)) {
 			return attackDamage != null && attackDamage.getModifier(Item.BASE_ATTACK_DAMAGE_ID) != null;
 		}
 		return false;
@@ -233,12 +233,12 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 		});
 
 		double damageValue = attribute.getValue();
-		if (stack.sophisticatedLibrary_canPerformAction(ItemAbilities.AXE_DIG)) {
+		if (stack.sophisticatedFabricLibrary_canPerformAction(ItemAbilities.AXE_DIG)) {
 			if (damageValue > bestAxeDamage.get()) {
 				bestAxe.set(stack);
 				bestAxeDamage.set(damageValue);
 			}
-		} else if ((SwordRegistry.isSword(stack) || stack.sophisticatedLibrary_canPerformAction(ItemAbilities.SWORD_SWEEP)) && damageValue > bestSwordDamage.get()) {
+		} else if ((SwordRegistry.isSword(stack) || stack.sophisticatedFabricLibrary_canPerformAction(ItemAbilities.SWORD_SWEEP)) && damageValue > bestSwordDamage.get()) {
 			bestSword.set(stack);
 			bestSwordDamage.set(damageValue);
 		}
@@ -272,20 +272,20 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	public boolean shouldSwapWeapon() {
-		return upgrade.sophisticatedLibrary_getOrDefault(ModDataComponents.SHOULD_SWAP_WEAPON, true);
+		return upgrade.sophisticatedFabricLibrary_getOrDefault(ModDataComponents.SHOULD_SWAP_WEAPON, true);
 	}
 
 	public void setSwapWeapon(boolean shouldSwapWeapon) {
-		upgrade.sophisticatedLibrary_set(ModDataComponents.SHOULD_SWAP_WEAPON, shouldSwapWeapon);
+		upgrade.sophisticatedFabricLibrary_set(ModDataComponents.SHOULD_SWAP_WEAPON, shouldSwapWeapon);
 		save();
 	}
 
 	public ToolSwapMode getToolSwapMode() {
-		return upgrade.sophisticatedLibrary_getOrDefault(ModDataComponents.TOOL_SWAP_MODE, ToolSwapMode.ANY);
+		return upgrade.sophisticatedFabricLibrary_getOrDefault(ModDataComponents.TOOL_SWAP_MODE, ToolSwapMode.ANY);
 	}
 
 	public void setToolSwapMode(ToolSwapMode toolSwapMode) {
-		upgrade.sophisticatedLibrary_set(ModDataComponents.TOOL_SWAP_MODE, toolSwapMode);
+		upgrade.sophisticatedFabricLibrary_set(ModDataComponents.TOOL_SWAP_MODE, toolSwapMode);
 		save();
 	}
 
@@ -389,7 +389,7 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 
 	private boolean itemWorksOnBlock(Level level, BlockPos pos, BlockState blockState, Player player, ItemStack stack) {
 		for (ItemAbility action : BLOCK_MODIFICATION_ACTIONS) {
-			if (stack.sophisticatedLibrary_canPerformAction(action) && blockState.sophisticatedLibrary_getToolModifiedState(
+			if (stack.sophisticatedFabricLibrary_canPerformAction(action) && blockState.sophisticatedFabricLibrary_getToolModifiedState(
 					new UseOnContext(level, player, InteractionHand.MAIN_HAND, stack, new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true)), action, true) != null) {
 				return true;
 			}
@@ -407,11 +407,11 @@ public class ToolSwapperUpgradeWrapper extends UpgradeWrapperBase<ToolSwapperUpg
 	}
 
 	private boolean isShearInteractionBlock(Level level, BlockPos pos, ItemStack stack, Block block) {
-		return (block instanceof SophisticatedShearable shearable && shearable.sophisticatedBackpacks_isShearable(null, stack, level, pos)) || block instanceof BeehiveBlock;
+		return (block instanceof SophisticatedShearable shearable && shearable.sophisticatedFabricLibrary_isShearable(null, stack, level, pos)) || block instanceof BeehiveBlock;
 	}
 
 	private boolean isShearableEntity(Entity entity, ItemStack stack) {
-		return entity instanceof SophisticatedShearable shearable && shearable.sophisticatedBackpacks_isShearable(null, stack, entity.level(), entity.blockPosition());
+		return entity instanceof SophisticatedShearable shearable && shearable.sophisticatedFabricLibrary_isShearable(null, stack, entity.level(), entity.blockPosition());
 	}
 
 	@Override

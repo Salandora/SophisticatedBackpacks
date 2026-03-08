@@ -31,11 +31,11 @@ public class InceptionUpgradeWrapper extends UpgradeWrapperBase<InceptionUpgrade
 	}
 
 	public InventoryOrder getInventoryOrder() {
-		return upgrade.sophisticatedLibrary_getOrDefault(ModDataComponents.INVENTORY_ORDER, InventoryOrder.MAIN_FIRST);
+		return upgrade.sophisticatedFabricLibrary_getOrDefault(ModDataComponents.INVENTORY_ORDER, InventoryOrder.MAIN_FIRST);
 	}
 
 	public void setInventoryOrder(InventoryOrder inventoryOrder) {
-		upgrade.sophisticatedLibrary_set(ModDataComponents.INVENTORY_ORDER, inventoryOrder);
+		upgrade.sophisticatedFabricLibrary_set(ModDataComponents.INVENTORY_ORDER, inventoryOrder);
 		save();
 		storageWrapper.refreshInventoryForUpgradeProcessing();
 	}

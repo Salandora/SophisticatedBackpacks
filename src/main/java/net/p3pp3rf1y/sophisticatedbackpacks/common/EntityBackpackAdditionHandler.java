@@ -293,7 +293,7 @@ public class EntityBackpackAdditionHandler {
 					inventoryItems.add(backpackwrapper.getUpgradeHandler().extractItem(slot, stack.getCount(), false));
 				}
 			});
-			UUID backpackUuid = backpack.sophisticatedLibrary_remove(ModCoreDataComponents.STORAGE_UUID);
+			UUID backpackUuid = backpack.sophisticatedFabricLibrary_remove(ModCoreDataComponents.STORAGE_UUID);
 			if (backpackUuid != null) {
 				BackpackStorage.get().removeBackpackContents(backpackUuid);
 			}
@@ -309,7 +309,7 @@ public class EntityBackpackAdditionHandler {
 			return false;
 		}
 		float lootingChanceMultiplier = dropChanceMultiplier.getOrDefault(backpack.getItem(), 1F);
-		int lootingLevel = player.level().registryAccess().registry(Registries.ENCHANTMENT).map(registry -> player.getMainHandItem().sophisticatedLibrary_getEnchantmentLevel(registry.getHolderOrThrow(Enchantments.LOOTING))).orElse(0);
+		int lootingLevel = player.level().registryAccess().registry(Registries.ENCHANTMENT).map(registry -> player.getMainHandItem().sophisticatedFabricLibrary_getEnchantmentLevel(registry.getHolderOrThrow(Enchantments.LOOTING))).orElse(0);
 		return mob.level().random.nextFloat() < (additionsConfig.backpackDropChance.get() + lootingLevel * additionsConfig.lootingChanceIncreasePerLevel.get()) * lootingChanceMultiplier;
 	}
 

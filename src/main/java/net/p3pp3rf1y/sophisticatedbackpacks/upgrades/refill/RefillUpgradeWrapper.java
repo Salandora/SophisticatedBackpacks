@@ -55,7 +55,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	public RefillUpgradeWrapper(IStorageWrapper backpackWrapper, ItemStack upgrade, Consumer<ItemStack> upgradeSaveHandler) {
 		super(backpackWrapper, upgrade, upgradeSaveHandler);
 		filterLogic = new FilterLogic(upgrade, upgradeSaveHandler, upgradeItem.getFilterSlotCount(), ModCoreDataComponents.FILTER_ATTRIBUTES);
-		targetSlots = new HashMap<>(upgrade.sophisticatedLibrary_getOrDefault(ModDataComponents.TARGET_SLOTS, new HashMap<>()));
+		targetSlots = new HashMap<>(upgrade.sophisticatedFabricLibrary_getOrDefault(ModDataComponents.TARGET_SLOTS, new HashMap<>()));
 		if (upgradeItem.allowsTargetSlotSelection()) {
 			FilterLogic.ObservableFilterItemStackHandler filterHandler = filterLogic.getFilterHandler();
 			filterHandler.setOnSlotChange(s -> onFilterChange(filterHandler, s));
@@ -84,7 +84,7 @@ public class RefillUpgradeWrapper extends UpgradeWrapperBase<RefillUpgradeWrappe
 	}
 
 	private void saveTargetSlots() {
-		upgrade.sophisticatedLibrary_set(ModDataComponents.TARGET_SLOTS, ImmutableMap.copyOf(targetSlots));
+		upgrade.sophisticatedFabricLibrary_set(ModDataComponents.TARGET_SLOTS, ImmutableMap.copyOf(targetSlots));
 		save();
 	}
 

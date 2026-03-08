@@ -76,12 +76,12 @@ public record BackpackOpenPayload(int slotIndex, String identifier, String handl
 	private static void findAndOpenFirstBackpack(Player player) {
 		PlayerInventoryProvider.get().runOnBackpacks(player, (backpack, inventoryName, identifier, slot) -> {
 			BackpackContext.Item backpackContext = new BackpackContext.Item(inventoryName, identifier, slot);
-			player.sophisticatedCore_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName(), false), backpackContext::toBuffer);
+			player.sophisticatedFabricLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpack.getHoverName(), false), backpackContext::toBuffer);
 			return true;
 		});
 	}
 
 	private static void openBackpack(Player player, BackpackContext backpackContext) {
-		player.sophisticatedCore_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext.getDisplayName(player), false), backpackContext::toBuffer);
+		player.sophisticatedFabricLibrary_openMenu(new SophisticatedMenuProvider((w, p, pl) -> new BackpackContainer(w, pl, backpackContext), backpackContext.getDisplayName(player), false), backpackContext::toBuffer);
 	}
 }
