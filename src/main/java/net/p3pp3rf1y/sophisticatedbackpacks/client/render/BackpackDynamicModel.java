@@ -216,7 +216,7 @@ public class BackpackDynamicModel implements IUnbakedGeometry {
 			float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F};
 			TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
 			*/
-			FluidVariant fluidVariant = fluidStack.getVariant();
+			FluidVariant fluidVariant = fluidStack.getResource();
 			int color = FluidVariantRendering.getColor(fluidVariant);
 			float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F, tintIndex};
 			TextureAtlasSprite still = FluidVariantRendering.getSprite(fluidVariant);

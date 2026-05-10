@@ -34,7 +34,7 @@ public class ModItemColors {
 					return -1;
 				}
 
-				return FluidVariantRendering.getColor(info.getFluid().get().getVariant());
+				return FluidVariantRendering.getColor(info.getFluid().get().getResource());
 			}
 			return -1;
 		}, ModItems.BACKPACKS.stream().map(Supplier::get).toArray(BackpackItem[]::new));
