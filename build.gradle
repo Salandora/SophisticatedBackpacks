@@ -45,8 +45,8 @@ repositories {
     exclusiveContent {
         forRepository {
             maven {
-                name "CurseForge"
-                url "https://cursemaven.com"
+                name = "CurseForge"
+                url = "https://cursemaven.com"
             }
         }
         filter {
