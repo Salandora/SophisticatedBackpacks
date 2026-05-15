@@ -1,3 +1,4 @@
+import me.modmuss50.mpp.ReleaseType
 import net.fabricmc.loom.task.ValidateMixinNameTask
 import net.fabricmc.loom.util.gradle.SourceSetHelper
 import net.fabricmc.loom.util.gradle.SourceSetReference
@@ -14,8 +15,7 @@ plugins {
     id 'idea'
     id 'fabric-loom' version '1.16.+'
     id 'maven-publish'
-    id "net.darkhax.curseforgegradle" version "1.1.15"
-    id "com.modrinth.minotaur" version "2.+"
+    id "me.modmuss50.mod-publish-plugin" version "2.0.0-beta.1"
 }
 
 apply from: getProject().file('gradle/package-info.gradle')
@@ -403,28 +403,21 @@ tasks.register('generateChangelog') {
             return message
         }
 
-        // Get the latest commit hash
-        def latestCommitHash = "git rev-parse HEAD".execute(null, project.projectDir).text.trim()
-
-        // Check if the latest commit is a merge commit
-        def parentCommits = "git rev-list --parents -n 1 ${latestCommitHash}".execute(null, project.projectDir).text.split()
-        logger.info("Parent commits: ${parentCommits}")
-
-        def commitMessages = []
-        if (parentCommits.size() > 2) { // Merge commit has more than 2 parents
-            def firstParent = parentCommits[1]
-            def secondParent = parentCommits[2]
-            def gitLogCommand = [
-                    "bash", "-c", "git log --pretty=format:%B ${firstParent}..${secondParent}"
-            ]
-            commitMessages = gitLogCommand.execute(null, project.projectDir).text.split('\n\n')  // Split by two newlines for each commit
-            logger.info("Merge commit, ran git log command: ${gitLogCommand.join(' ')} and got ${commitMessages}")
-        } else {
-            // Single commit log
-            commitMessages = "git log -1 --pretty=%B".execute(null, project.projectDir).text.split('\n\n')
-            // Split by two newlines for each commit
-            logger.info("Single commit, ran git log command: git log -1 --pretty=%B and got ${commitMessages}");
+        def git = { List<String> arguments ->
+            def command = ['git'] + arguments
+            def process = command.execute(null, project.projectDir)
+            def output = process.text.trim()
+            if (process.waitFor() != 0) {
+                throw new GradleException("Git command failed: ${command.join(' ')}")
+            }
+            return output
         }
+
+        def currentReleaseTag = "${project.mod_version}+${project.minecraft_version}"
+        def relevantTagPattern = "*+${project.minecraft_version}"
+        def lastRelevantTag = git(['tag', '--merged', 'HEAD', '--list', relevantTagPattern, '--sort=-creatordate'])
+                .readLines()
+                .find { tag -> tag != currentReleaseTag }
 
         def generals = []
         def features = []
@@ -433,24 +426,35 @@ tasks.register('generateChangelog') {
         def mergedFeatures = []
         def mergedFixes = []
         def cleanup = false
-        commitMessages.each { String commitMessage ->
-            commitMessage = removeHighUnicodeChars(commitMessage) // Remove high Unicode characters
-            commitMessage = removeDevSection(commitMessage) // Remove [DEV] section
 
-            if (commitMessage.startsWith('[General]: ')) {
-                generals.add(commitMessage.replaceFirst('\\[General]: ', '').trim())
-            } else if (commitMessage.startsWith('[Feat]: ')) {
-                features.add(commitMessage.replaceFirst('\\[Feat]: ', '').trim())
-            } else if (commitMessage.startsWith('[Fix]: ')) {
-                fixes.add(commitMessage.replaceFirst('\\[Fix]: ', '').trim())
-            } else if (commitMessage.startsWith('[Compatibility]: ')) {
-                compatibility.add(commitMessage.replaceFirst('\\[Compatibility]: ', '').trim())
-            } else if (commitMessage.startsWith('[Cleanup]: ')) {
-                cleanup = true
-            } else if (commitMessage.startsWith('feat: ')) {
-                mergedFeatures.add(commitMessage.replaceFirst('feat: ', '').trim())
-            } else if (commitMessage.startsWith('fix: ')) {
-                mergedFixes.add(commitMessage.replaceFirst('fix: ', '').trim())
+        if (lastRelevantTag != null) {
+            def logRange = "${lastRelevantTag}..HEAD"
+            def commitLog = git(['log', '--pretty=format:%B%x1e', logRange])
+            def commitMessages = commitLog
+                    .split('\u001E')
+                    .collect { it.trim() }
+                    .findAll { !it.isEmpty() }
+            logger.info("Generated changelog from git range ${logRange} using last relevant tag ${lastRelevantTag ?: '<none>'}: ${commitMessages}")
+
+            commitMessages.each { String commitMessage ->
+                commitMessage = removeHighUnicodeChars(commitMessage) // Remove high Unicode characters
+                commitMessage = removeDevSection(commitMessage) // Remove [DEV] section
+
+                if (commitMessage.startsWith('[General]: ')) {
+                    generals.add(commitMessage.replaceFirst('\\[General]: ', '').trim())
+                } else if (commitMessage.startsWith('[Feat]: ')) {
+                    features.add(commitMessage.replaceFirst('\\[Feat]: ', '').trim())
+                } else if (commitMessage.startsWith('[Fix]: ')) {
+                    fixes.add(commitMessage.replaceFirst('\\[Fix]: ', '').trim())
+                } else if (commitMessage.startsWith('[Compatibility]: ')) {
+                    compatibility.add(commitMessage.replaceFirst('\\[Compatibility]: ', '').trim())
+                } else if (commitMessage.startsWith('[Cleanup]: ')) {
+                    cleanup = true
+                } else if (commitMessage.startsWith('feat: ')) {
+                    mergedFeatures.add(commitMessage.replaceFirst('feat: ', '').trim())
+                } else if (commitMessage.startsWith('fix: ')) {
+                    mergedFixes.add(commitMessage.replaceFirst('fix: ', '').trim())
+                }
             }
         }
 
@@ -459,7 +463,12 @@ tasks.register('generateChangelog') {
         changelog.append("# Changelog\n\n")
 
         changelog.append("### General\n")
-        changelog.append("- Update to version ${project.mod_version}\n")
+        if (lastRelevantTag == null) {
+            changelog.append("- Initial release for ${project.minecraft_version}\n")
+            changelog.append("- Based on version ${project.mod_version}\n")
+        } else {
+            changelog.append("- Update to version ${project.mod_version}\n")
+        }
         if (cleanup) {
             changelog.append("- Code cleanup\n")
         }
@@ -509,57 +518,48 @@ tasks.register('generateChangelog') {
     project.ext.changelog = ""
 }
 
-task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
-    dependsOn 'generateChangelog'
+publishMods {
+    changelog = providers.provider { project.ext.changelog }
+    file = remapJar.archiveFile
+    type = ReleaseType.valueOf(project.release_type)
+    modLoaders.add("fabric")
+    dryRun = providers.environmentVariable("CURSEFORGE_API_KEY").getOrNull() == null || System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev")
 
-    apiToken = System.getenv("CURSEFORGE_TOKEN")
-    def mainFile = upload(project.curseforge_id, file("${project.layout.buildDirectory.get()}/libs/${base.archivesName.get()}-${version}.jar"))
-    mainFile.changelogType = 'markdown'
-    mainFile.changelog = { project.ext.changelog }
-    mainFile.addModLoader('Fabric')
-    mainFile.releaseType = "${release_type}"
+    curseforge {
+        accessToken = System.getenv("CURSEFORGE_TOKEN")
+        projectId = project.curseforge_id
 
-    // Game versions
-    mainFile.addGameVersion("${release_versions}".split(','))
+        // Game versions
+        minecraftVersionList(project.release_versions)
 
-    // Dependencies
-    mainFile.addRequirement('sophisticated-core-unofficial-fabric-port')
-    mainFile.addRequirement('fabric-api')
-    mainFile.addRequirement('forge-config-api-port-fabric')
-    mainFile.addEmbedded('porting-lib')
-    mainFile.addOptional('jei')
-    mainFile.addOptional('emi')
-    mainFile.addOptional('roughly-enough-items')
-    mainFile.addOptional('trinkets')
-    mainFile.addOptional('modern-keybinding-fabric')
-    mainFile.addOptional('crafting-tweaks-fabric')
-    onlyIf { !project.ext.changelog.isEmpty() }
-}
+        // Dependencies
+        requires("sophisticated-core-unofficial-fabric-port")
+        requires("fabric-api", "forge-config-api-port")
 
-modrinth {
-    token = System.getenv("MODRINTH_TOKEN")
-    projectId = "${modrinth_project_id}"
-    versionType = "${release_type}"
-    uploadFile = remapJar
-    gameVersions = "${release_versions}".split(',').collect {e -> e}
-    loaders = ["fabric"]
-    dependencies {
-        required.project "sophisticated-core-(unofficial-fabric-port)"
-        required.project "fabric-api"
-        required.project "forge-config-api-port"
-        embedded.project "porting_lib"
-        optional.project "jei"
-        optional.project "emi"
-        optional.project "rei"
-        optional.project "trinkets"
-        optional.project "crafting-tweaks"
-        optional.project "modernkeybinding"
+        optional("emi", "jei", "roughly-enough-items")
+        optional("trinkets")
+        optional("modern-keybinding-fabric")
+        optional("crafting-tweaks-fabric")
+
     }
-    changelog = provider {
-        project.ext.changelog
+    modrinth {
+        accessToken = System.getenv("MODRINTH_TOKEN")
+        projectId = project.modrinth_project_id
+
+        // Game versions
+        minecraftVersionList(project.release_versions)
+
+        // Dependencies
+        requires("sophisticated-core-(unofficial-fabric-port)")
+        requires("fabric-api", "forge-config-api-port")
+
+        optional("emi", "jei", "rei")
+        optional("trinkets")
+        optional("crafting-tweaks")
+        optional("modernkeybinding")
     }
 }
-tasks.modrinth {
+tasks.publishMods {
     dependsOn(tasks.generateChangelog)
     onlyIf { !project.ext.changelog.isEmpty() }
 }
