@@ -4,39 +4,78 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 200
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: zulu
-          cache: gradle
-      - name: Loom Cache
-        uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: "**/.gradle/loom-cache"
           key: "${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}"
           restore-keys: "${{ runner.os }}-gradle-"
-      - uses: gradle/actions/wrapper-validation@v4
+      - uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: zulu
+          cache: gradle
+      - uses: gradle/actions/wrapper-validation@v5
       - run: chmod +x ./gradlew
-      - name: Build with Gradle
+      - run: ./gradlew build publishToMavenLocal --stacktrace
         env:
           USERNAME: ${{ secrets.USERNAME }}
           READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
-        run: ./gradlew build
-      - name: Read minecraft version from gradle.properties
-        id: read-version
-        run: |
+      - run: |
           minecraft_version=$(grep '^minecraft_version=' gradle.properties | cut -d'=' -f2)
           echo "minecraft_version=$minecraft_version" >> $GITHUB_ENV
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: SophisticatedBackpacks-${{ env.minecraft_version }}
           path: build/libs
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Maven Local SophisticatedBackpacks-${{ env.minecraft_version }}
+          path: ~/.m2/repository/sophisticatedbackpacks
+
+#  server_test:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v6
+#        with:
+#          fetch-depth: 0
+#      - uses: actions/cache@v5
+#        with:
+#          path: "**/.gradle/loom-cache"
+#          key: "${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}"
+#          restore-keys: "${{ runner.os }}-gradle-"
+#      - uses: actions/setup-java@v5
+#        with:
+#          distribution: zulu
+#          java-version: 21
+#          cache: gradle
+#      - run: mkdir run && echo "eula=true" >> run/eula.txt
+#      - run: ./gradlew runGametest --stacktrace --warning-mode=fail
+
+  release:
+    needs:
+      - build
+      # - server_test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 200
+      - uses: actions/cache@v5
+        with:
+          path: "**/.gradle/loom-cache"
+          key: "${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}"
+          restore-keys: "${{ runner.os }}-gradle-"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: 21
+          cache: gradle
+      - uses: gradle/actions/wrapper-validation@v5
+      - run: chmod +x ./gradlew
+      - run: ./gradlew build --stacktrace --no-configuration-cache
       - name: Publish to Github Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,24 +86,27 @@ jobs:
           package-name: 'sophisticatedbackpacks.sophisticatedbackpacks'
           package-type: 'maven'
           min-versions-to-keep: 10
-      - name: Publish to CurseForge
+      - name: PublishMods
         env:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
-        run: |
-          BRANCH_NAME=${GITHUB_REF##*/}
-          if [[ "$BRANCH_NAME" =~ ^[0-9]+\.[0-9]+\.([0-9]+|x)-fabric$ ]]; then
-            ./gradlew curseforge
-          else
-            echo "Branch name does not match the pattern: $BRANCH_NAME. Skipping CurseForge upload."
-            exit 0
-          fi
-      - name: Publish to Modrinth
-        env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         run: |
           BRANCH_NAME=${GITHUB_REF##*/}
           if [[ "$BRANCH_NAME" =~ ^[0-9]+\.[0-9]+\.([0-9]+|x)-fabric$ ]]; then
-            ./gradlew modrinth
+            ./gradlew publishMods -x check
+          
+            mod_version=$(grep -E '^mod_version[[:space:]]*=' gradle.properties | sed 's/.*=[[:space:]]*//')
+            minecraft_version=$(grep -E '^minecraft_version[[:space:]]*=' gradle.properties | sed 's/.*=[[:space:]]*//')
+            tag_name="${mod_version}+${minecraft_version}"
+
+            if git rev-parse -q --verify "refs/tags/${tag_name}" >/dev/null; then
+              echo "Tag ${tag_name} already exists. Skipping tag creation."
+            else
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+              git tag -a "${tag_name}" -m "Release ${tag_name}"
+              git push origin "refs/tags/${tag_name}"
+            fi
           else
             echo "Branch name does not match the pattern: $BRANCH_NAME. Skipping Modrinth upload."
             exit 0
