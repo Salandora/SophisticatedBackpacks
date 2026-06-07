@@ -270,7 +270,8 @@ public class EntityBackpackAdditionHandler {
 				ItemEntity backpackEntity = new ItemEntity(mob.level(), mob.getX(), mob.getY(), mob.getZ(), backpack);
 				drops.add(backpackEntity);
 				mob.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
-				mob.getTags().remove(SPAWNED_WITH_BACKPACK);
+				// Fabric: changed for compatibility with origins
+				mob.removeTag(SPAWNED_WITH_BACKPACK);
 			} else {
 				removeContentsUuid(backpack);
 			}
@@ -278,7 +279,8 @@ public class EntityBackpackAdditionHandler {
 	}
 
 	private static void putJukeboxItemsInContainerAndRemoveStorageUuid(DamageSource source, LivingEntity mob, ItemStack backpack) {
-		if (mob.getTags().remove(SPAWNED_WITH_JUKEBOX_UPGRADE)) {
+		// Fabric: changed for compatibility with origins
+		if (mob.removeTag(SPAWNED_WITH_JUKEBOX_UPGRADE)) {
 			List<ItemStack> inventoryItems = new ArrayList<>();
 			IBackpackWrapper backpackwrapper = BackpackWrapper.fromStack(backpack);
 			backpackwrapper.getUpgradeHandler().getTypeWrappers(JukeboxUpgradeItem.TYPE).forEach(wrapper -> {
