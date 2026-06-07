@@ -23,7 +23,10 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -274,7 +277,8 @@ public class EntityBackpackAdditionHandler {
 				ItemEntity backpackEntity = new ItemEntity(target.level(), target.getX(), target.getY(), target.getZ(), backpack);
 				drops.add(backpackEntity);
 				target.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
-				target.getTags().remove(SPAWNED_WITH_BACKPACK);
+				// Fabric: changed for compatibility with origins
+				target.removeTag(SPAWNED_WITH_BACKPACK);
 			} else {
 				removeContentsUuid(backpack);
 			}
