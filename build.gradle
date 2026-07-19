@@ -593,7 +593,7 @@ publishMods {
         minecraftVersionList(project.release_versions)
 
         // Dependencies
-        requires("sophisticated-core-unofficial-fabric-port")
+        requires("sophisticated-core-unofficial-fabric-port", "sophisticated-fabric-lib")
         requires("fabric-api", "forge-config-api-port")
 
         optional("emi", "jei", "roughly-enough-items")
@@ -610,7 +610,7 @@ publishMods {
         minecraftVersionList(project.release_versions)
 
         // Dependencies
-        requires("sophisticated-core-(unofficial-fabric-port)")
+        requires("sophisticated-core-(unofficial-fabric-port)", "sophisticated-fabric-lib")
         requires("fabric-api", "forge-config-api-port")
 
         optional("emi", "jei", "rei")
