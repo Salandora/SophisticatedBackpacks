@@ -242,7 +242,8 @@ dependencies {
     }
 
     // EMI
-    modCompileOnly("dev.emi:emi-fabric:$emi_version:api")
+    //modCompileOnly("dev.emi:emi-fabric:$emi_version:api")
+    modCompileOnly("curse.maven:emi-580555:8081407") // TerraformersMC Maven is currently unreliable in github actions so use curse maven instead
     // JEI
     modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version") { transitive = false }
     // REI
