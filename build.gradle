@@ -15,7 +15,7 @@ plugins {
     id 'idea'
     id 'fabric-loom' version '1.16.+'
     id 'maven-publish'
-    id "me.modmuss50.mod-publish-plugin" version "2.0.0-beta.1"
+    id "me.modmuss50.mod-publish-plugin" version "2.0.1"
 }
 
 apply from: getProject().file('gradle/package-info.gradle')
@@ -584,6 +584,10 @@ publishMods {
     curseforge {
         accessToken = System.getenv("CURSEFORGE_TOKEN")
         projectId = project.curseforge_id
+
+        // Environment
+        client = true
+        server = true
 
         // Game versions
         minecraftVersionList(project.release_versions)
