@@ -76,6 +76,9 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v5
       - run: chmod +x ./gradlew
       - run: ./gradlew build --stacktrace --no-configuration-cache
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
       - name: Publish to Github Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
