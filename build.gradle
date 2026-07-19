@@ -45,7 +45,7 @@ repositories {
         name = "Fuzs Mod Resources"
         url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
     }
-    maven { url = "https://maven.nova-committee.cn/releases" } // Modern KeyBinding
+    // maven { url = "https://maven.nova-committee.cn/releases" } // Modern KeyBinding
     maven { url = "https://maven.terraformersmc.com/releases/" } // Emi
     maven { url = "https://maven.shedaniel.me/" } // REI and deps
     exclusiveContent {
@@ -216,8 +216,12 @@ dependencies {
     modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
     modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
 
-    modCompileOnly("earth.terrarium.chipped:Chipped-fabric-${minecraft_version}:${project.chipped_version}")
-    modLocalRuntime("earth.terrarium.chipped:Chipped-fabric-${minecraft_version}:${project.chipped_version}")
+    modCompileOnly("earth.terrarium.chipped:Chipped-fabric-${minecraft_version}:${project.chipped_version}") {
+        exclude group: "com.terraformersmc", module: "modmenu"
+    }
+    modLocalRuntime("earth.terrarium.chipped:Chipped-fabric-${minecraft_version}:${project.chipped_version}") {
+        exclude group: "com.terraformersmc", module: "modmenu"
+    }
 
     /*modCompileOnly("vazkii.botania:Botania:${project.botania_version}") {
         transitive = false
@@ -228,7 +232,9 @@ dependencies {
     }*/
     modCompileOnly("maven.modrinth:modernkeybinding:${project.mkb_modrinth_mod_version}") { transitive = false }
 
+    // Trinkets
     modCompileOnly("dev.emi:trinkets:$project.trinkets_version")
+    //modCompileOnly("curse.maven:trinkets-341284:5173501")
 
     testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.+'
