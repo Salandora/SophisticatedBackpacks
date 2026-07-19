@@ -70,14 +70,25 @@ repositories {
     maven { url = "https://modmaven.dev" } // Jei
     maven { url = "https://maven.resourcefulbees.com/repository/maven-public/" } // Chipped, resourcefullib, athena
     maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
+        name = "SophisticatedCore GitHubPackages"
+        url = "https://maven.pkg.github.com/Salandora/SophisticatedCore"
         credentials {
             username = System.getenv("USERNAME")
             password = System.getenv("READ_PACKAGES_TOKEN")
         }
         content {
-            includeGroupByRegex "sophisticatedcore.*"
+            includeGroupAndSubgroups "sophisticatedcore"
+        }
+    }
+    maven {
+        name = "SophisticatedFabricLibrary GitHubPackages"
+        url = "https://maven.pkg.github.com/Salandora/SophisticatedFabricLib"
+        credentials {
+            username = System.getenv("USERNAME")
+            password = System.getenv("READ_PACKAGES_TOKEN")
+        }
+        content {
+            includeGroupAndSubgroups "com.github.salandora"
         }
     }
 }
