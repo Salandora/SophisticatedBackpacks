@@ -5,7 +5,7 @@
       "condition": "sophisticatedbackpacks:loot_enabled"
     },
     {
-      "condition": "sophisticatedlibrary:loot_table_id",
+      "condition": "sophisticatedfabriclib:loot_table_id",
       "loot_table_id": "minecraft:chests/end_city_treasure"
     }
   ],
