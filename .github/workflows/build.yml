@@ -1,5 +1,8 @@
 name: Build
-on: [ workflow_dispatch, push ]
+on:
+  push:
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,8 +17,8 @@ jobs:
           restore-keys: "${{ runner.os }}-gradle-"
       - uses: actions/setup-java@v5
         with:
-          java-version: 17
           distribution: zulu
+          java-version: 21
           cache: gradle
       - uses: gradle/actions/wrapper-validation@v5
       - run: chmod +x ./gradlew
@@ -59,6 +62,9 @@ jobs:
       - build
       # - server_test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -80,11 +86,10 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
       - name: Publish to Github Packages
+        run: ./gradlew publish -x check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew publish
-      - name: Cleanup old artifacts
-        uses: actions/delete-package-versions@v5
+      - uses: actions/delete-package-versions@v5
         with:
           package-name: 'sophisticatedbackpacks.sophisticatedbackpacks'
           package-type: 'maven'
